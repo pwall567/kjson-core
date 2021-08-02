@@ -28,6 +28,7 @@ package io.kjson
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.expect
 
 class JSONObjectTest {
@@ -40,7 +41,6 @@ class JSONObjectTest {
         expect("""{"abc":12345,"def":"X"}""") { jsonObject.toJSON() }
         expect("""{"abc":12345,"def":"X"}""") { jsonObject.toString() }
     }
-
 
     @Test fun `should build JSONObject using Builder`() {
         val json = JSONObject.Builder {
@@ -74,6 +74,37 @@ class JSONObjectTest {
         }.build()
         assertEquals<Map<*, *>>(json, mapOf("alpha" to JSONInt(1111), "beta" to JSONString("hello")))
         assertEquals<Map<*, *>>(mapOf("alpha" to JSONInt(1111), "beta" to JSONString("hello")), json)
+    }
+
+    @Test fun `should allow use of keys`() {
+        val jsonObject = JSONObject.of("abc" to JSONInt(12345), "def" to JSONString("X"))
+        expect(2) { jsonObject.size }
+        val keysIterator = jsonObject.keys.iterator()
+        expect("abc") { keysIterator.next() }
+        expect("def") { keysIterator.next() }
+        assertFalse { keysIterator.hasNext() }
+    }
+
+    @Test fun `should allow use of values`() {
+        val jsonObject = JSONObject.of("abc" to JSONInt(12345), "def" to JSONString("X"))
+        expect(2) { jsonObject.size }
+        val valuesIterator = jsonObject.values.iterator()
+        expect(JSONInt(12345)) { valuesIterator.next() }
+        expect(JSONString("X")) { valuesIterator.next() }
+        assertFalse { valuesIterator.hasNext() }
+    }
+
+    @Test fun `should allow use of entries`() {
+        val jsonObject = JSONObject.of("abc" to JSONInt(12345), "def" to JSONString("X"))
+        expect(2) { jsonObject.size }
+        val entriesIterator = jsonObject.entries.iterator()
+        val entry1 = entriesIterator.next()
+        expect("abc") { entry1.key }
+        expect(JSONInt(12345)) { entry1.value }
+        val entry2 = entriesIterator.next()
+        expect("def") { entry2.key }
+        expect(JSONString("X")) { entry2.value }
+        assertFalse { entriesIterator.hasNext() }
     }
 
 }

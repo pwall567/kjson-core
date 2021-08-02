@@ -48,6 +48,20 @@ object JSON {
 
     fun parse(json: String): JSONValue? = Parser.parse(json)
 
+    fun parseObject(json: String): JSONObject {
+        val result = parse(json)
+        if (result !is JSONObject)
+            throw JSONException("JSON is not an object")
+        return result
+    }
+
+    fun parseArray(json: String): JSONArray {
+        val result = parse(json)
+        if (result !is JSONArray)
+            throw JSONException("JSON is not an array")
+        return result
+    }
+
     fun JSONValue?.toJSON(): String = this?.toJSON() ?: "null"
 
     fun JSONValue?.appendTo(a: Appendable) {
@@ -62,20 +76,6 @@ object JSON {
             append("null")
         else
             json.appendTo(this)
-    }
-
-    fun parseObject(json: String): JSONObject {
-        val result = parse(json)
-        if (result !is JSONObject)
-            throw JSONException("JSON is not an object")
-        return result
-    }
-
-    fun parseArray(json: String): JSONArray {
-        val result = parse(json)
-        if (result !is JSONArray)
-            throw JSONException("JSON is not an array")
-        return result
     }
 
 }
