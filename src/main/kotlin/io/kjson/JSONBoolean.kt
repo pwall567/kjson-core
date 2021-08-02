@@ -30,7 +30,10 @@ package io.kjson
  *
  * @author  Peter Wall
  */
-class JSONBoolean private constructor(val value: Boolean) : JSONValue {
+enum class JSONBoolean(val value: Boolean) : JSONValue {
+
+    TRUE(true),
+    FALSE(false);
 
     override fun toJSON(): String = if (value) "true" else "false"
 
@@ -38,16 +41,9 @@ class JSONBoolean private constructor(val value: Boolean) : JSONValue {
         a.append(toJSON())
     }
 
-    override fun equals(other: Any?): Boolean = this === other || other is JSONBoolean && value == other.value
-
-    override fun hashCode(): Int = if (value) 1 else 0
-
     override fun toString(): String = toJSON()
 
     companion object {
-
-        val TRUE = JSONBoolean(true)
-        val FALSE = JSONBoolean(false)
 
         fun of(b: Boolean): JSONBoolean = if (b) TRUE else FALSE
 

@@ -27,6 +27,7 @@ package io.kjson
 
 import kotlin.test.Test
 import kotlin.test.assertSame
+import kotlin.test.assertTrue
 import kotlin.test.expect
 
 class JSONBooleanTest {
@@ -42,6 +43,23 @@ class JSONBooleanTest {
         expect(false) { test2.value }
         expect("false") { test2.toJSON() }
         expect("false") { test2.toString() }
+    }
+
+    @Test fun `should handle JSONBoolean in an array`() {
+        val test1 = JSON.parse("[12,true,false]")
+        assertTrue(test1 is JSONArray)
+        expect(3) { test1.size }
+        expect(JSONInt(12)) { test1[0] }
+        expect(JSONBoolean.TRUE) { test1[1] }
+        expect(JSONBoolean.FALSE) { test1[2] }
+    }
+
+    @Test fun `should handle JSONBoolean in an object`() {
+        val test1 = JSON.parse("""{"a":true,"b":false}""")
+        assertTrue(test1 is JSONObject)
+        expect(2) { test1.size }
+        expect(JSONBoolean.TRUE) { test1["a"] }
+        expect(JSONBoolean.FALSE) { test1["b"] }
     }
 
 }
