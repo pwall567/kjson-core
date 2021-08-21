@@ -31,6 +31,8 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.expect
 
+import java.math.BigDecimal
+
 class JSONObjectTest {
 
     @Test fun `should create JSONObject using of`() {
@@ -50,6 +52,32 @@ class JSONObjectTest {
         expect(2) { json.size }
         expect(JSONInt(123)) { json["first"] }
         expect(JSONString("dummy")) { json["second"] }
+    }
+
+    @Test fun `should build JSONObject using build`() {
+        val json = JSONObject.build {
+            add("first", JSONInt(123))
+            add("second", JSONString("dummy"))
+        }
+        expect(2) { json.size }
+        expect(JSONInt(123)) { json["first"] }
+        expect(JSONString("dummy")) { json["second"] }
+    }
+
+    @Test fun `should build JSONObject using build with non-JSON classes`() {
+        val json = JSONObject.build {
+            add("first", 123)
+            add("second", "dummy")
+            add("third", 123456789123456789)
+            add("fourth", BigDecimal("0.123"))
+            add("fifth", true)
+        }
+        expect(5) { json.size }
+        expect(JSONInt(123)) { json["first"] }
+        expect(JSONString("dummy")) { json["second"] }
+        expect(JSONLong(123456789123456789)) { json["third"] }
+        expect(JSONDecimal(BigDecimal("0.123"))) { json["fourth"] }
+        expect(JSONBoolean.TRUE) { json["fifth"] }
     }
 
     @Test fun `should limit Builder to single use`() {

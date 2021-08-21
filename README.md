@@ -35,12 +35,21 @@ classes that implement the `JSONValue` interface, or in the case of the JSON "`n
 ### `JSONValue`
 
 The `JSONValue` interface specifies two functions:
-- `appendJSON()` &ndash; this appends the JSON text form of the object to a specified `Appendable` (this is more
-efficient than creating individual string representations of each object)
+- `appendJSON()` &ndash; this appends the JSON text form of the object to a specified `Appendable` (when outputting
+  JSON, it is more efficient to append to a single `Appendable`, as opposed to creating strings for each element)
 - `toJSON()` &ndash; this outputs the value in syntactically-correct JSON (a default implementation makes use of the
-above `appendJSON()` function)
+  above `appendJSON()` function)
 
-The implementing classes all override `toString()` to output the `toJSON()` form, and they are all immutable.
+`JSONValue` is a sealed interface and the implementing classes are limited to:
+- [`JSONString`](#jsonstring) &ndash; a string value
+- [`JSONInt`](#jsonint) &ndash; a number value that fits in a 32-bit integer
+- [`JSONLong`](#jsonlong) &ndash; a number value that fits in a 64-bit integer
+- [`JSONDecimal`](#jsondecimal) &ndash; all other number values
+- [`JSONBoolean`](#jsonboolean) &ndash; a boolean value
+- [`JSONArray`](#jsonarray) &ndash; an array
+- [`JSONObject`](#jsonobject) &ndash; an object
+
+The implementing classes are all immutable.
 
 ### `JSONString`
 
@@ -49,6 +58,8 @@ The parser converts JSON escape sequences on input, and the `appendJSON()` and `
 characters to escape sequences on output.
 
 The `String` value may be accessed by the property `value` (which will never be `null`).
+
+`JSONString` also implements the `CharSequence` interface, 
 
 ### `JSONInt`
 
@@ -81,7 +92,7 @@ The `JSONArray` class implements the `List<JSONValue?>` interface, and all the f
 to navigate the array (indexing via `array[n]`, `contains(obj)`, `iterator()` _etc._).
 
 The constructor for `JSONArray` is not publicly accessible, but an `of()` function is available in the
-`companion object`, and a `Builder` nested class allows arrays to be constructed dynamically.
+`companion object`, and a `build` function and the `Builder` nested class allow arrays to be constructed dynamically.
 
 ### `JSONObject`
 
@@ -90,7 +101,7 @@ available to navigate the object (retrieval via `array["name"]`, `containsKey("n
 The original order of the input is maintained on parsing or on the programmatic creation of a `JSONObject`.
 
 The constructor for `JSONObject` is not publicly accessible, but an `of()` function is available in the
-`companion object`, and a `Builder` nested class allows objects to be constructed dynamically.
+`companion object`, and a `build` function and the `Builder` nested class allow objects to be constructed dynamically.
 
 ### `JSON`
 
@@ -105,25 +116,25 @@ possible leading and trailing whitespace).
 
 ## Dependency Specification
 
-The latest version of the library is 0.2, and it may be obtained from the Maven Central repository.
+The latest version of the library is 1.0, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>0.2</version>
+      <version>1.0</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:0.2"
+    implementation "io.kjson:kjson-core:1.0"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:0.2")
+    implementation("io.kjson:kjson-core:1.0")
 ```
 
 Peter Wall
 
-2021-08-02
+2021-08-21

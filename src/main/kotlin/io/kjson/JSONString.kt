@@ -32,7 +32,14 @@ import net.pwall.json.JSONFunctions
  *
  * @author  Peter Wall
  */
-class JSONString(val value: String) : JSONValue {
+class JSONString(val value: String) : JSONValue, CharSequence {
+
+    override val length: Int
+        get() = value.length
+
+    override fun get(index: Int): Char = value[index]
+
+    override fun subSequence(startIndex: Int, endIndex: Int): CharSequence = value.subSequence(startIndex, endIndex)
 
     override fun appendTo(a: Appendable) {
         JSONFunctions.appendString(a, value, false)
@@ -42,7 +49,7 @@ class JSONString(val value: String) : JSONValue {
 
     override fun hashCode(): Int = value.hashCode()
 
-    override fun toString(): String = toJSON()
+    override fun toString(): String = value
 
     companion object {
 

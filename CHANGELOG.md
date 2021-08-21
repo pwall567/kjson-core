@@ -2,6 +2,15 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [1.0] - 2021-08-21
+### Changed
+- `JSONObject`, `JSONArray`: added `build` functions
+- `JSONDecimal`: added constructors from Int, Long
+- `JSONInt`, `JSONLong`, `JSONDecimal`: implement `JSONNumberValue` functions
+- `JSON`: added `asString`, `asInt`, `asLong`, `asDecimal`, `asBoolean`, `asArray`, `asObject`
+### Added
+- `JSONNumberValue`: abstract class to help conversion between number types
+
 ## [0.2] - 2021-08-02
 ### Changed
 - `JSONBoolean`: changed `JSONBoolean` to an `enum class`

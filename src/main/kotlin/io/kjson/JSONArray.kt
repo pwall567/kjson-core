@@ -25,8 +25,9 @@
 
 package io.kjson
 
-import io.kjson.JSON.appendTo
+import java.math.BigDecimal
 
+import io.kjson.JSON.appendTo
 import net.pwall.util.ImmutableList
 
 /**
@@ -89,6 +90,8 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
         fun from(list: List<JSONValue?>): JSONArray =
                 if (list.isEmpty()) EMPTY else JSONArray(list.toTypedArray(), list.size)
 
+        fun build(block: Builder.() -> Unit): JSONArray = Builder(block = block).build()
+
     }
 
     class Builder(size: Int = 8, block: Builder.() -> Unit = {}) {
@@ -121,6 +124,26 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
                 else
                     validArray[count++] = value
             }
+        }
+
+        fun add(value: String) {
+            add(JSONString(value))
+        }
+
+        fun add(value: Int) {
+            add(JSONInt.of(value))
+        }
+
+        fun add(value: Long) {
+            add(JSONLong.of(value))
+        }
+
+        fun add(value: BigDecimal) {
+            add(JSONDecimal.of(value))
+        }
+
+        fun add(value: Boolean) {
+            add(JSONBoolean.of(value))
         }
 
         fun build(): JSONArray = checkArray().let { JSONArray(it, count).also { array = null } }

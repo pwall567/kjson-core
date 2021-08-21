@@ -1,5 +1,5 @@
 /*
- * @(#) JSONStringTest.kt
+ * @(#) JSONNumberValue.kt
  *
  * kjson-core  JSON Kotlin core functionality
  * Copyright (c) 2021 Peter Wall
@@ -25,37 +25,28 @@
 
 package io.kjson
 
-import kotlin.test.Test
-import kotlin.test.assertSame
-import kotlin.test.expect
+import java.math.BigDecimal
 
-import io.kjson.JSON.asString
+/**
+ * An abstract base class for the three number types of JSON value.  It includes functions to assist with conversion
+ * between number types.
+ *
+ * @author  Peter Wall
+ */
+abstract class JSONNumberValue internal constructor() : Number() {
 
-class JSONStringTest {
+    abstract val value: Number
 
-    @Test fun `should create JSONString`() {
-        val testString = JSONString("ab\u2014c\n")
-        expect("ab\u2014c\n") { testString.value }
-        expect("\"ab\\u2014c\\n\"") { testString.toJSON() }
-        expect("ab\u2014c\n") { testString.toString() }
-    }
+    abstract fun isIntegral(): Boolean
 
-    @Test fun `should create JSONString using of`() {
-        val testString = JSONString.of("Hello!")
-        expect("Hello!") { testString.value }
-        expect("\"Hello!\"") { testString.toJSON() }
-        expect("Hello!") { testString.toString() }
-    }
+    abstract fun isLong(): Boolean
 
-    @Test fun `should use EMPTY`() {
-        val testString = JSONString.of("")
-        assertSame(JSONString.EMPTY, testString)
-        expect("") { testString.toString() }
-    }
+    abstract fun isInt(): Boolean
 
-    @Test fun `should get value using stringValue`() {
-        val json = JSON.parse("\"abc\"")
-        expect("abc") { json.asString }
-    }
+    abstract fun isShort(): Boolean
+
+    abstract fun isByte(): Boolean
+
+    abstract fun toDecimal(): BigDecimal
 
 }

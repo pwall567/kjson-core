@@ -31,7 +31,6 @@ import kotlin.test.assertTrue
 import kotlin.test.expect
 
 import io.kjson.JSONString
-
 import net.pwall.json.JSONFunctions
 
 class ParserStringTest {

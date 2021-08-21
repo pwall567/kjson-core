@@ -26,6 +26,9 @@
 package io.kjson
 
 import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 import kotlin.test.expect
 
 class JSONLongTest {
@@ -46,10 +49,39 @@ class JSONLongTest {
         expect(1122334455667788) { test1.value }
         expect("1122334455667788") { test1.toJSON() }
         expect("1122334455667788") { test1.toString() }
-        val test2 = JSONLong(-1234567812345678)
+        val test2 = JSONLong.of(-1234567812345678)
         expect(-1234567812345678) { test2.value }
         expect("-1234567812345678") { test2.toJSON() }
         expect("-1234567812345678") { test2.toString() }
+        val test3 = JSONLong.of(0)
+        assertSame(JSONLong.ZERO, test3)
+    }
+
+    @Test fun `should implement isXxxx functions`() {
+        val test0 = JSONLong(123456789123456789)
+        assertTrue(test0.isIntegral())
+        assertTrue(test0.isLong())
+        assertFalse(test0.isInt())
+        assertFalse(test0.isShort())
+        assertFalse(test0.isByte())
+        val test1 = JSONLong(123456789)
+        assertTrue(test1.isIntegral())
+        assertTrue(test1.isLong())
+        assertTrue(test1.isInt())
+        assertFalse(test1.isShort())
+        assertFalse(test1.isByte())
+        val test2 = JSONLong(12345)
+        assertTrue(test2.isIntegral())
+        assertTrue(test2.isLong())
+        assertTrue(test2.isInt())
+        assertTrue(test2.isShort())
+        assertFalse(test2.isByte())
+        val test3 = JSONLong(123)
+        assertTrue(test3.isIntegral())
+        assertTrue(test3.isLong())
+        assertTrue(test3.isInt())
+        assertTrue(test3.isShort())
+        assertTrue(test3.isByte())
     }
 
 }

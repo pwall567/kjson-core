@@ -26,7 +26,9 @@
 package io.kjson
 
 import kotlin.test.Test
+import kotlin.test.assertFalse
 import kotlin.test.assertSame
+import kotlin.test.assertTrue
 import kotlin.test.expect
 
 import java.math.BigDecimal
@@ -52,7 +54,28 @@ class JSONIntTest {
         expect("12345") { test1.toJSON() }
         expect("12345") { test1.toString() }
         val test2 = JSONInt.of(0)
-        assertSame(test2, JSONInt.ZERO)
+        assertSame(JSONInt.ZERO, test2)
+    }
+
+    @Test fun `should implement isXxxx functions`() {
+        val test1 = JSONInt(123456789)
+        assertTrue(test1.isIntegral())
+        assertTrue(test1.isLong())
+        assertTrue(test1.isInt())
+        assertFalse(test1.isShort())
+        assertFalse(test1.isByte())
+        val test2 = JSONInt(12345)
+        assertTrue(test2.isIntegral())
+        assertTrue(test2.isLong())
+        assertTrue(test2.isInt())
+        assertTrue(test2.isShort())
+        assertFalse(test2.isByte())
+        val test3 = JSONInt(123)
+        assertTrue(test3.isIntegral())
+        assertTrue(test3.isLong())
+        assertTrue(test3.isInt())
+        assertTrue(test3.isShort())
+        assertTrue(test3.isByte())
     }
 
 }

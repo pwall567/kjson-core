@@ -32,15 +32,32 @@ import java.math.BigDecimal
  *
  * @author  Peter Wall
  */
-class JSONDecimal(val value: BigDecimal) : Number(), JSONValue {
+class JSONDecimal(override val value: BigDecimal) : JSONNumberValue(), JSONValue {
 
     constructor(str: String): this(BigDecimal(str))
+
+    constructor(long: Long): this(BigDecimal(long))
+
+    constructor(int: Int): this(BigDecimal(int))
 
     override fun toJSON(): String = value.toString()
 
     override fun appendTo(a: Appendable) {
         a.append(value.toString())
     }
+
+    override fun isIntegral(): Boolean =
+        value.scale() <= 0 || value.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0
+
+    override fun isLong(): Boolean = isIntegral() && value in BigDecimal(Long.MIN_VALUE)..BigDecimal(Long.MAX_VALUE)
+
+    override fun isInt(): Boolean = isIntegral() && value in BigDecimal(Int.MIN_VALUE)..BigDecimal(Int.MAX_VALUE)
+
+    override fun isShort(): Boolean =
+        isIntegral() && value in BigDecimal(Short.MIN_VALUE.toInt())..BigDecimal(Short.MAX_VALUE.toInt())
+
+    override fun isByte(): Boolean =
+        isIntegral() && value in BigDecimal(Byte.MIN_VALUE.toInt())..BigDecimal(Byte.MAX_VALUE.toInt())
 
     override fun toDouble(): Double = value.toDouble()
 
@@ -55,6 +72,8 @@ class JSONDecimal(val value: BigDecimal) : Number(), JSONValue {
     override fun toShort(): Short = value.toShort()
 
     override fun toByte(): Byte = value.toByte()
+
+    override fun toDecimal(): BigDecimal = value
 
     override fun equals(other: Any?): Boolean {
         if (this === other)

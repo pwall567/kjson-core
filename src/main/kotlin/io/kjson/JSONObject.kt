@@ -25,8 +25,9 @@
 
 package io.kjson
 
-import io.kjson.JSON.appendTo
+import java.math.BigDecimal
 
+import io.kjson.JSON.appendTo
 import net.pwall.json.JSONFunctions
 import net.pwall.util.ImmutableMap
 import net.pwall.util.ImmutableMap.MapEntry
@@ -108,6 +109,8 @@ class JSONObject internal constructor(array: Array<MapEntry<String, JSONValue?>>
             }.let { JSONObject(it, it.size) }
         }
 
+        fun build(block: Builder.() -> Unit): JSONObject = Builder(block = block).build()
+
     }
 
     class Builder(size: Int = 8, block: Builder.() -> Unit = {}) {
@@ -143,6 +146,26 @@ class JSONObject internal constructor(array: Array<MapEntry<String, JSONValue?>>
                 else
                     validArray[count++] = entry(name, value)
             }
+        }
+
+        fun add(name: String, value: String) {
+            add(name, JSONString(value))
+        }
+
+        fun add(name: String, value: Int) {
+            add(name, JSONInt.of(value))
+        }
+
+        fun add(name: String, value: Long) {
+            add(name, JSONLong.of(value))
+        }
+
+        fun add(name: String, value: BigDecimal) {
+            add(name, JSONDecimal.of(value))
+        }
+
+        fun add(name: String, value: Boolean) {
+            add(name, JSONBoolean.of(value))
         }
 
         fun build(): JSONObject = checkArray().let { JSONObject(it, count).also { array = null } }

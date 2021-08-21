@@ -34,11 +34,21 @@ import net.pwall.json.JSONFunctions
  *
  * @author  Peter Wall
  */
-class JSONLong(val value: Long) : Number(), JSONValue {
+class JSONLong(override val value: Long) : JSONNumberValue(), JSONValue {
 
     override fun appendTo(a: Appendable) {
         JSONFunctions.appendLong(a, value)
     }
+
+    override fun isIntegral(): Boolean = true
+
+    override fun isLong(): Boolean = true
+
+    override fun isInt(): Boolean = value in Int.MIN_VALUE..Int.MAX_VALUE
+
+    override fun isShort(): Boolean = value in Short.MIN_VALUE..Short.MAX_VALUE
+
+    override fun isByte(): Boolean = value in Byte.MIN_VALUE..Byte.MAX_VALUE
 
     override fun toDouble(): Double = value.toDouble()
 
@@ -53,6 +63,8 @@ class JSONLong(val value: Long) : Number(), JSONValue {
     override fun toShort(): Short = value.toShort()
 
     override fun toByte(): Byte = value.toByte()
+
+    override fun toDecimal(): BigDecimal = BigDecimal(value)
 
     override fun equals(other: Any?): Boolean {
         if (this === other)

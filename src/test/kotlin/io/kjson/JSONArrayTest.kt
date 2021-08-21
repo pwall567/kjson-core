@@ -30,6 +30,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.expect
 
+import java.math.BigDecimal
+
 class JSONArrayTest {
 
     @Test fun `should create JSONArray`() {
@@ -73,6 +75,34 @@ class JSONArrayTest {
         expect(JSONInt(123)) { json[0] }
         expect(JSONInt(456)) { json[1] }
         expect(JSONInt(789)) { json[2] }
+    }
+
+    @Test fun `should build JSONArray using build`() {
+        val json = JSONArray.build {
+            add(JSONInt(123))
+            add(JSONInt(456))
+            add(JSONInt(789))
+        }
+        expect(3) { json.size }
+        expect(JSONInt(123)) { json[0] }
+        expect(JSONInt(456)) { json[1] }
+        expect(JSONInt(789)) { json[2] }
+    }
+
+    @Test fun `should build JSONArray using build with non-JSON classes`() {
+        val json = JSONArray.build {
+            add(123)
+            add("abc")
+            add(112233445566778899)
+            add(BigDecimal("1.456"))
+            add(true)
+        }
+        expect(5) { json.size }
+        expect(JSONInt(123)) { json[0] }
+        expect(JSONString("abc")) { json[1] }
+        expect(JSONLong(112233445566778899)) { json[2] }
+        expect(JSONDecimal(BigDecimal("1.456"))) { json[3] }
+        expect(JSONBoolean.TRUE) { json[4] }
     }
 
     @Test fun `should limit Builder to single use`() {
