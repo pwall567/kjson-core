@@ -27,7 +27,7 @@ package io.kjson
 
 import java.math.BigDecimal
 
-import net.pwall.json.JSONFunctions
+import net.pwall.util.IntOutput.appendLong
 
 /**
  * A JSON long integer value (more than 32 bits but not more than 64 bits).
@@ -37,7 +37,7 @@ import net.pwall.json.JSONFunctions
 class JSONLong(override val value: Long) : JSONNumberValue(), JSONValue {
 
     override fun appendTo(a: Appendable) {
-        JSONFunctions.appendLong(a, value)
+        appendLong(a, value)
     }
 
     override fun isIntegral(): Boolean = true

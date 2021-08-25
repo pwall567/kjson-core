@@ -27,7 +27,7 @@ package io.kjson
 
 import java.math.BigDecimal
 
-import net.pwall.json.JSONFunctions
+import net.pwall.util.IntOutput.appendInt
 
 /**
  * A JSON integer value (up to 32 bits).
@@ -37,7 +37,7 @@ import net.pwall.json.JSONFunctions
 class JSONInt(override val value: Int) : JSONNumberValue(), JSONValue {
 
     override fun appendTo(a: Appendable) {
-        JSONFunctions.appendInt(a, value)
+        appendInt(a, value)
     }
 
     override fun isIntegral(): Boolean = true
