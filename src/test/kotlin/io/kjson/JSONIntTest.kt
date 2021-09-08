@@ -78,4 +78,25 @@ class JSONIntTest {
         assertTrue(test3.isByte())
     }
 
+    @Test fun `should implement isZero etc functions`() {
+        val test1 = JSONInt.ZERO
+        assertTrue(test1.isZero())
+        assertFalse(test1.isPositive())
+        assertFalse(test1.isNegative())
+        assertTrue(test1.isNotNegative())
+        assertTrue(test1.isNotPositive())
+        val test2 = JSONInt(-123)
+        assertFalse(test2.isZero())
+        assertFalse(test2.isPositive())
+        assertTrue(test2.isNegative())
+        assertFalse(test2.isNotNegative())
+        assertTrue(test2.isNotPositive())
+        val test3 = JSONInt(123)
+        assertFalse(test3.isZero())
+        assertTrue(test3.isPositive())
+        assertFalse(test3.isNegative())
+        assertTrue(test3.isNotNegative())
+        assertFalse(test3.isNotPositive())
+    }
+
 }

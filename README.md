@@ -103,6 +103,29 @@ The original order of the input is maintained on parsing or on the programmatic 
 The constructor for `JSONObject` is not publicly accessible, but an `of()` function is available in the
 `companion object`, and a `build` function and the `Builder` nested class allow objects to be constructed dynamically.
 
+### `JSONNumberValue`
+
+The number value classes all derive from the abstract class `JSONNumberValue`, which itself derives from the system
+class `Number`.
+That class provides a set of `toInt()`, `toLong()` _etc._ functions, to which `JSONNumberValue` adds `toDecimal()` which
+converts the value to `BigDecimal`.
+
+`JSONNumberValue` also provides the following boolean functions:
+
+Function          | Returns `true` iff...
+------------------|-----------------------------------------------------------------
+`isIntegral()`    | the value has no fractional part, or the fractional part is zero
+`isLong()`        | the value may be converted to `Long` with no loss of precision
+`isInt()`         | the value may be converted to `Int` with no loss of precision
+`isShort()`       | the value may be converted to `Short` with no loss of precision
+`isByte()`        | the value may be converted to `Byte` with no loss of precision
+`isZero()`        | the value is equal to 0
+`isNegative()`    | the value is less than 0
+`isPositive()`    | the value is greater than 0
+`isNotZero()`     | the value is not equal to 0
+`isNotNegative()` | the value is greater than or equal to 0
+`isNotPositive()` | the value is less than or equal to 0
+
 ### `JSON`
 
 The `JSON` object contains a number of functions to assist with parsing and object creation.
@@ -111,30 +134,76 @@ The simplest way to parse JSON text is:
         val json = JSON.parse(text)
 ```
 
-The result will be of type `JSONValue?` - it will be `null` if the text consists of just the string "`null`" (with
+The result will be of type `JSONValue?` &ndash; it will be `null` if the text consists of just the string "`null`" (with
 possible leading and trailing whitespace).
+
+If the JSON is expected to be an object (and it is an error if it is not):
+```kotlin
+        val json = JSON.parseObject(text)
+```
+In this case the result will be of type `JSONObject`, and an exception will be thrown if it is not an object.
+
+Similarly, if the JSON is expected to be an array:
+```kotlin
+        val json = JSON.parseArray(text)
+```
+The result type will be `JSONArray`, and again, an exception will be thrown if the input is not of the correct type.
+
+The `JSON` object also provides a number of shortcut functions to create `JSONValue`s:
+
+Function                                   | Creates
+------------------------------------------ | --------
+`JSON.of(Int)`                             | `JSONInt`
+`JSON.of(Long)`                            | `JSONLong`
+`JSON.of(BigDecimal)`                      | `JSONDecimal`
+`JSON.of(String)`                          | `JSONString`
+`JSON.of(Boolean)`                         | `JSONBoolean`
+`JSON.of(vararg JSONValue?)`               | `JSONArray`
+`JSON.of(vararg Pair<String, JSONValue?>)` | `JSONObject`
+
+To simplify casting a `JSONValue` to the expected type, the `JSON` object provides extension functions on `JSONValue?`:
+
+Function                     | Result type   | If the value is not of that type...
+---------------------------- | ------------- | -----------------------------------
+`JSONValue?.asString`        | `String`      | throw exception
+`JSONValue?.asStringOrNull`  | `String?`     | return `null`
+`JSONValue?.asInt`           | `Int`         | throw exception
+`JSONValue?.asIntOrNull`     | `Int?`        | return `null`
+`JSONValue?.asLong`          | `Long`        | throw exception
+`JSONValue?.asLongOrNull`    | `Long?`       | return `null`
+`JSONValue?.asDecimal`       | `BigDecimal`  | throw exception
+`JSONValue?.asDecimalOrNull` | `BigDecimal?` | return `null`
+`JSONValue?.asBoolean`       | `Boolean`     | throw exception
+`JSONValue?.asBooleanOrNull` | `Boolean?`    | return `null`
+`JSONValue?.asArray`         | `JSONArray`   | throw exception
+`JSONValue?.asArrayOrNull`   | `JSONArray?`  | return `null`
+`JSONValue?.asObject`        | `JSONObject`  | throw exception
+`JSONValue?.asObjectOrNull`  | `JSONObject?` | return `null`
+
+Lastly, to simplify error reporting, the `JSON` object provides a `displayValue()` extension function on `JSONValue?` to
+create an abbreviated form of the value suitable for error messages.
 
 ## Dependency Specification
 
-The latest version of the library is 1.2, and it may be obtained from the Maven Central repository.
+The latest version of the library is 1.3, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>1.2</version>
+      <version>1.3</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:1.2"
+    implementation "io.kjson:kjson-core:1.3"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:1.2")
+    implementation("io.kjson:kjson-core:1.3")
 ```
 
 Peter Wall
 
-2021-08-25
+2021-09-08

@@ -2,6 +2,12 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [1.3] - 2021-08-24
+### Changed
+- `JSONNumberValue`, `JSONInt`, `JSONLong`, `JSONDecimal`: added functions (`isZero` etc.)
+- `JSON`: added `of()` function for array and object
+- `README.md`: expanded documentation
+
 ## [1.2] - 2021-08-24
 ### Changed
 - `pom.xml`: switched to `int-output` library

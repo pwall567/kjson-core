@@ -50,6 +50,18 @@ class JSONInt(override val value: Int) : JSONNumberValue(), JSONValue {
 
     override fun isByte(): Boolean = value in Byte.MIN_VALUE..Byte.MAX_VALUE
 
+    override fun isZero(): Boolean = value == 0
+
+    override fun isNegative(): Boolean = value < 0
+
+    override fun isPositive(): Boolean = value > 0
+
+    override fun isNotZero(): Boolean = value != 0
+
+    override fun isNotNegative(): Boolean = value >= 0
+
+    override fun isNotPositive(): Boolean = value <= 0
+
     override fun toDouble(): Double = value.toDouble()
 
     override fun toFloat(): Float = value.toFloat()

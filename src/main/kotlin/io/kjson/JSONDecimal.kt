@@ -59,6 +59,18 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumberValue(), JSONValue
     override fun isByte(): Boolean =
         isIntegral() && value in BigDecimal(Byte.MIN_VALUE.toInt())..BigDecimal(Byte.MAX_VALUE.toInt())
 
+    override fun isZero(): Boolean = value.compareTo(BigDecimal.ZERO) == 0
+
+    override fun isNegative(): Boolean = value < BigDecimal.ZERO
+
+    override fun isPositive(): Boolean = value > BigDecimal.ZERO
+
+    override fun isNotZero(): Boolean = value.compareTo(BigDecimal.ZERO) != 0
+
+    override fun isNotNegative(): Boolean = value >= BigDecimal.ZERO
+
+    override fun isNotPositive(): Boolean = value <= BigDecimal.ZERO
+
     override fun toDouble(): Double = value.toDouble()
 
     override fun toFloat(): Float = value.toFloat()

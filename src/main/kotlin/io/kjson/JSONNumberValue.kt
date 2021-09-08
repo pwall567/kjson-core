@@ -47,6 +47,18 @@ abstract class JSONNumberValue internal constructor() : Number() {
 
     abstract fun isByte(): Boolean
 
+    abstract fun isZero(): Boolean
+
+    abstract fun isNegative(): Boolean
+
+    abstract fun isPositive(): Boolean
+
+    abstract fun isNotZero(): Boolean
+
+    abstract fun isNotNegative(): Boolean
+
+    abstract fun isNotPositive(): Boolean
+
     abstract fun toDecimal(): BigDecimal
 
 }

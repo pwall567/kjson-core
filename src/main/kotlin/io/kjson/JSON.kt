@@ -47,6 +47,10 @@ object JSON {
 
     fun of(value: Boolean): JSONBoolean = JSONBoolean.of(value)
 
+    fun of(vararg items: JSONValue?): JSONArray = JSONArray.of(*items)
+
+    fun of(vararg items: Pair<String, JSONValue?>): JSONObject = JSONObject.of(*items)
+
     fun parse(json: String): JSONValue? = Parser.parse(json)
 
     fun parseArray(json: String): JSONArray = parse(json).asArray
