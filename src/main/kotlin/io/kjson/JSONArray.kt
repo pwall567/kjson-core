@@ -146,7 +146,9 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
             add(JSONBoolean.of(value))
         }
 
-        fun build(): JSONArray = checkArray().let { JSONArray(it, count).also { array = null } }
+        fun build(): JSONArray = checkArray().let {
+            (if (count == 0) EMPTY else JSONArray(it, count)).also { array = null }
+        }
 
     }
 

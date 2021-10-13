@@ -25,7 +25,6 @@
 
 package io.kjson.parser
 
-import java.lang.NumberFormatException
 import java.math.BigDecimal
 
 import io.kjson.JSONArray
@@ -39,7 +38,6 @@ import io.kjson.JSONValue
 
 import net.pwall.json.JSONFunctions
 import net.pwall.text.TextMatcher
-import net.pwall.util.ImmutableMap
 
 object Parser {
 
@@ -69,26 +67,19 @@ object Parser {
         tm.skip(JSONFunctions::isSpaceCharacter)
 
         if (tm.match('{')) {
-            var array = ImmutableMap.createArray<String, JSONValue?>(8)
-            var index = 0
+            val builder = JSONObject.Builder()
             tm.skip(JSONFunctions::isSpaceCharacter)
             if (!tm.match('}')) {
                 while (true) {
                     if (!tm.match('"'))
                         throw ParseException(ILLEGAL_KEY, pointer)
                     val key = parseString(tm, pointer)
-                    if (ImmutableMap.containsKey(array, index, key))
+                    if (builder.containsKey(key))
                         throw ParseException(DUPLICATE_KEY, pointer)
                     tm.skip(JSONFunctions::isSpaceCharacter)
                     if (!tm.match(':'))
                         throw ParseException(MISSING_COLON, pointer)
-                    if (index == array.size) {
-                        val newArray =
-                                ImmutableMap.createArray<String, JSONValue?>(array.size + array.size.coerceAtMost(4096))
-                        System.arraycopy(array, 0, newArray, 0, array.size)
-                        array = newArray
-                    }
-                    array[index++] = ImmutableMap.entry(key, parse(tm, "$pointer/$key"))
+                    builder.add(key, parse(tm, "$pointer/$key"))
                     tm.skip(JSONFunctions::isSpaceCharacter)
                     if (!tm.match(','))
                         break
@@ -97,23 +88,15 @@ object Parser {
                 if (!tm.match('}'))
                     throw ParseException(MISSING_CLOSING_BRACE, pointer)
             }
-            return if (index == 0) JSONObject.EMPTY else JSONObject(array, index)
+            return builder.build()
         }
 
         if (tm.match('[')) {
-            var array = Array<JSONValue?>(16) { null }
-            var index = 0
+            val builder = JSONArray.Builder()
             tm.skip(JSONFunctions::isSpaceCharacter)
             if (!tm.match(']')) {
                 while (true) {
-                    if (index == array.size) {
-                        val newArray = Array(array.size + array.size.coerceAtMost(4096)) { n ->
-                            if (n < array.size) array[n] else null
-                        }
-                        array = newArray
-                    }
-                    array[index] = parse(tm, "$pointer/$index")
-                    index++
+                    builder.add(parse(tm, "$pointer/${builder.size}"))
                     tm.skip(JSONFunctions::isSpaceCharacter)
                     if (!tm.match(','))
                         break
@@ -121,7 +104,7 @@ object Parser {
                 if (!tm.match(']'))
                     throw ParseException(MISSING_CLOSING_BRACKET, pointer)
             }
-            return if (index == 0) JSONArray.EMPTY else JSONArray(array, index)
+            return builder.build()
         }
 
         if (tm.match('"'))

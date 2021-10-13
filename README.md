@@ -185,25 +185,25 @@ create an abbreviated form of the value suitable for error messages.
 
 ## Dependency Specification
 
-The latest version of the library is 1.3, and it may be obtained from the Maven Central repository.
+The latest version of the library is 1.4, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>1.3</version>
+      <version>1.4</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:1.3"
+    implementation "io.kjson:kjson-core:1.4"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:1.3")
+    implementation("io.kjson:kjson-core:1.4")
 ```
 
 Peter Wall
 
-2021-09-08
+2021-10-13

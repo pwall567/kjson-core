@@ -29,6 +29,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import kotlin.test.expect
 
 import java.math.BigDecimal
@@ -84,6 +85,7 @@ class JSONObjectTest {
         val builder = JSONObject.Builder()
         builder.add("first", JSONInt(123))
         builder.add("second", JSONString("dummy"))
+        assertTrue(builder.containsKey("second"))
         assertFailsWith<JSONException> { builder.add("second", JSONString("another")) }.let {
             expect("Duplicate key - second") { it.message }
         }

@@ -2,6 +2,12 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [1.4] - 2021-10-13
+### Changed
+- `JSONObject`: added `containsKey()` to `Builder`
+- `JSONObject`, `JSONArray`: optimised builder when length = 0
+- `pom.xml`: bumped dependency versions
+
 ## [1.3] - 2021-08-24
 ### Changed
 - `JSONNumberValue`, `JSONInt`, `JSONLong`, `JSONDecimal`: added functions (`isZero` etc.)

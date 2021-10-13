@@ -130,12 +130,19 @@ class JSONObject internal constructor(array: Array<MapEntry<String, JSONValue?>>
 
         private fun checkArray() = array ?: throw JSONException("Builder is closed")
 
-        fun add(name: String, value: JSONValue?) {
+        fun containsKey(name: String): Boolean {
             checkArray().let { validArray ->
-                for (i in 0 until count) {
+                for (i in 0 until count)
                     if (validArray[i].key == name)
-                        throw JSONException("Duplicate key - $name")
-                }
+                        return true
+            }
+            return false
+        }
+
+        fun add(name: String, value: JSONValue?) {
+            if (containsKey(name))
+                throw JSONException("Duplicate key - $name")
+            checkArray().let { validArray ->
                 val len = validArray.size
                 if (count >= len) {
                     val newArray: Array<MapEntry<String, JSONValue?>> = createArray(len + len.coerceAtMost(4096))
@@ -168,7 +175,9 @@ class JSONObject internal constructor(array: Array<MapEntry<String, JSONValue?>>
             add(name, JSONBoolean.of(value))
         }
 
-        fun build(): JSONObject = checkArray().let { JSONObject(it, count).also { array = null } }
+        fun build(): JSONObject = checkArray().let {
+            (if (count == 0) EMPTY else JSONObject(it, count)).also { array = null }
+        }
 
     }
 
