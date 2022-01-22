@@ -2,6 +2,15 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [1.5.1] - 2022-01-22
+### Changed
+- `pom.xml`: bumped dependency version
+
+## [1.5] - 2022-01-21
+### Changed
+- `pom.xml`: bumped dependency versions
+- `JSONObject`: modified for change to `immutables`
+
 ## [1.4] - 2021-10-13
 ### Changed
 - `JSONObject`: added `containsKey()` to `Builder`

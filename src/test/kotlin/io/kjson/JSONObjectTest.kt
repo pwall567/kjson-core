@@ -2,7 +2,7 @@
  * @(#) JSONObjectTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2021, 2022 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -135,6 +135,12 @@ class JSONObjectTest {
         expect("def") { entry2.key }
         expect(JSONString("X")) { entry2.value }
         assertFalse { entriesIterator.hasNext() }
+        for ((a, b) in jsonObject.entries) { // check that destructuring works
+            if (a == "abc")
+                expect(JSONInt(12345)) { b }
+            if (a == "def")
+                expect(JSONString("X")) { b }
+        }
     }
 
 }

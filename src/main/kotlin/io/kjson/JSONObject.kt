@@ -2,7 +2,7 @@
  * @(#) JSONObject.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2021, 2022 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,16 +30,16 @@ import java.math.BigDecimal
 import io.kjson.JSON.appendTo
 import net.pwall.json.JSONFunctions
 import net.pwall.util.ImmutableMap
-import net.pwall.util.ImmutableMap.MapEntry
 import net.pwall.util.ImmutableMap.createArray
 import net.pwall.util.ImmutableMap.entry
+import net.pwall.util.ImmutableMapEntry
 
 /**
  * A JSON object.
  *
  * @author  Peter Wall
  */
-class JSONObject internal constructor(array: Array<MapEntry<String, JSONValue?>>, size: Int) : JSONValue,
+class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSONValue?>>, size: Int) : JSONValue,
         Map<String, JSONValue?> {
 
     private val immutableMap = ImmutableMap<String, JSONValue?>(array, size)
@@ -92,7 +92,7 @@ class JSONObject internal constructor(array: Array<MapEntry<String, JSONValue?>>
         val EMPTY = JSONObject(emptyArray(), 0)
 
         fun of(vararg items: Pair<String, JSONValue?>): JSONObject {
-            return if (items.isEmpty()) EMPTY else Array<MapEntry<String, JSONValue?>>(items.size) { i ->
+            return if (items.isEmpty()) EMPTY else Array<ImmutableMapEntry<String, JSONValue?>>(items.size) { i ->
                 items[i].let { entry(it.first, it.second) }
             }.let { JSONObject(it, it.size) }
         }
@@ -104,7 +104,7 @@ class JSONObject internal constructor(array: Array<MapEntry<String, JSONValue?>>
         }
 
         fun from(list: List<Pair<String, JSONValue?>>): JSONObject {
-            return if (list.isEmpty()) EMPTY else Array<MapEntry<String, JSONValue?>>(list.size) { i ->
+            return if (list.isEmpty()) EMPTY else Array<ImmutableMapEntry<String, JSONValue?>>(list.size) { i ->
                 list[i].let { entry(it.first, it.second) }
             }.let { JSONObject(it, it.size) }
         }
@@ -115,7 +115,7 @@ class JSONObject internal constructor(array: Array<MapEntry<String, JSONValue?>>
 
     class Builder(size: Int = 8, block: Builder.() -> Unit = {}) {
 
-        private var array: Array<MapEntry<String, JSONValue?>>? = createArray(size)
+        private var array: Array<ImmutableMapEntry<String, JSONValue?>>? = createArray(size)
         private var count: Int = 0
 
         init {
@@ -145,7 +145,8 @@ class JSONObject internal constructor(array: Array<MapEntry<String, JSONValue?>>
             checkArray().let { validArray ->
                 val len = validArray.size
                 if (count >= len) {
-                    val newArray: Array<MapEntry<String, JSONValue?>> = createArray(len + len.coerceAtMost(4096))
+                    val newArray: Array<ImmutableMapEntry<String, JSONValue?>> =
+                            createArray(len + len.coerceAtMost(4096))
                     System.arraycopy(validArray, 0, newArray, 0, len)
                     newArray[count++] = entry(name, value)
                     array = newArray
