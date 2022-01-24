@@ -69,4 +69,12 @@ abstract class JSONNumberValue internal constructor() : Number() {
 
     abstract fun toDecimal(): BigDecimal
 
+    abstract fun toULong(): ULong
+
+    abstract fun toUInt(): UInt
+
+    abstract fun toUShort(): UShort
+
+    abstract fun toUByte(): UByte
+
 }

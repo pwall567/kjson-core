@@ -86,6 +86,14 @@ class JSONLong(override val value: Long) : JSONNumberValue(), JSONValue {
 
     override fun toDecimal(): BigDecimal = BigDecimal(value)
 
+    override fun toULong(): ULong = value.toULong()
+
+    override fun toUInt(): UInt = value.toUInt()
+
+    override fun toUShort(): UShort = value.toUShort()
+
+    override fun toUByte(): UByte = value.toUByte()
+
     override fun equals(other: Any?): Boolean {
         if (this === other)
             return true

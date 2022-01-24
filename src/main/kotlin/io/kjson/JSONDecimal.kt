@@ -93,6 +93,14 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumberValue(), JSONValue
 
     override fun toDecimal(): BigDecimal = value
 
+    override fun toULong(): ULong = value.toLong().toULong()
+
+    override fun toUInt(): UInt = value.toInt().toUInt()
+
+    override fun toUShort(): UShort = value.toInt().toUShort()
+
+    override fun toUByte(): UByte = value.toInt().toUByte()
+
     override fun equals(other: Any?): Boolean {
         if (this === other)
             return true

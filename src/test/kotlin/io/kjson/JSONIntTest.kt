@@ -157,4 +157,24 @@ class JSONIntTest {
         expect(BigDecimal(-9)) { JSONInt(-9).toDecimal() }
     }
 
+    @Test fun `should implement toULong`() {
+        expect(0U) { JSONInt.ZERO.toULong() }
+        expect(12345U) { JSONInt(12345).toULong() }
+    }
+
+    @Test fun `should implement toUInt`() {
+        expect(0U) { JSONInt.ZERO.toUInt() }
+        expect(12345U) { JSONInt(12345).toUInt() }
+    }
+
+    @Test fun `should implement toUShort`() {
+        expect(0U) { JSONInt.ZERO.toUShort() }
+        expect(32768U) { JSONInt(32768).toUShort() }
+    }
+
+    @Test fun `should implement toUByte`() {
+        expect(0U) { JSONInt.ZERO.toUByte() }
+        expect(129U) { JSONInt(129).toUByte() }
+    }
+
 }

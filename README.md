@@ -42,8 +42,8 @@ The `JSONValue` interface specifies two functions:
 
 `JSONValue` is a sealed interface and the implementing classes are limited to:
 - [`JSONString`](#jsonstring) &ndash; a string value
-- [`JSONInt`](#jsonint) &ndash; a number value that fits in a 32-bit integer
-- [`JSONLong`](#jsonlong) &ndash; a number value that fits in a 64-bit integer
+- [`JSONInt`](#jsonint) &ndash; a number value that fits in a 32-bit signed integer
+- [`JSONLong`](#jsonlong) &ndash; a number value that fits in a 64-bit signed integer
 - [`JSONDecimal`](#jsondecimal) &ndash; all other number values
 - [`JSONBoolean`](#jsonboolean) &ndash; a boolean value
 - [`JSONArray`](#jsonarray) &ndash; an array
@@ -63,13 +63,14 @@ The `String` value may be accessed by the property `value` (which will never be 
 
 ### `JSONInt`
 
-The `JSONInt` class holds JSON number values that fit in a 32-bit integer.
+The `JSONInt` class holds JSON number values that fit in a 32-bit signed integer.
 
 The `Int` value may be accessed by the property `value`.
 
 ### `JSONLong`
 
-The `JSONLong` class holds JSON number values that are too big for `JSONInt`, but will fit in a 64-bit long integer.
+The `JSONLong` class holds JSON number values that are too big for `JSONInt`, but will fit in a 64-bit signed long
+integer.
 
 The `Long` value may be accessed by the property `value`.
 
@@ -107,8 +108,15 @@ The constructor for `JSONObject` is not publicly accessible, but an `of()` funct
 
 The number value classes all derive from the abstract class `JSONNumberValue`, which itself derives from the system
 class `Number`.
-That class provides a set of `toInt()`, `toLong()` _etc._ functions, to which `JSONNumberValue` adds `toDecimal()` which
-converts the value to `BigDecimal`.
+That class provides a set of `toInt()`, `toLong()` _etc._ functions, to which `JSONNumberValue` adds the following:
+
+Function      | Converts the value to...
+--------------|-------------------------
+`toDecimal()` | `BigDecimal`
+`toUlong()`   | `ULong`
+`toUInt()`    | `UInt`
+`toUShort()`  | `UShort`
+`toUByte()`   | `UByte`
 
 `JSONNumberValue` also provides the following boolean functions:
 
@@ -119,6 +127,10 @@ Function          | Returns `true` iff...
 `isInt()`         | the value may be converted to `Int` with no loss of precision
 `isShort()`       | the value may be converted to `Short` with no loss of precision
 `isByte()`        | the value may be converted to `Byte` with no loss of precision
+`isULong()`       | the value may be converted to `ULong` with no loss of precision
+`isUInt()`        | the value may be converted to `UInt` with no loss of precision
+`isUShort()`      | the value may be converted to `UShort` with no loss of precision
+`isUByte()`       | the value may be converted to `UByte` with no loss of precision
 `isZero()`        | the value is equal to 0
 `isNegative()`    | the value is less than 0
 `isPositive()`    | the value is greater than 0
@@ -185,25 +197,25 @@ create an abbreviated form of the value suitable for error messages.
 
 ## Dependency Specification
 
-The latest version of the library is 1.5.1, and it may be obtained from the Maven Central repository.
+The latest version of the library is 2.0, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>1.5.1</version>
+      <version>2.0</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:1.5.1"
+    implementation "io.kjson:kjson-core:2.0"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:1.5.1")
+    implementation("io.kjson:kjson-core:2.0")
 ```
 
 Peter Wall
 
-2022-01-22
+2022-01-24

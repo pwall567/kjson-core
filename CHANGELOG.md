@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [2.0] - 2022-01-24
+### Changed
+- `JSONNumberValue`, `JSONInt`, `JSONLong`, `JSONDecimal`: added support for unsigned integers
+
 ## [1.5.1] - 2022-01-22
 ### Changed
 - `pom.xml`: bumped dependency version

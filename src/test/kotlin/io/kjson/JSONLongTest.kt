@@ -181,4 +181,25 @@ class JSONLongTest {
         expect(BigDecimal(-9)) { JSONLong(-9).toDecimal() }
     }
 
+    @Test fun `should implement toULong`() {
+        expect(0U) { JSONLong.ZERO.toULong() }
+        expect(123456789123456789U) { JSONLong(123456789123456789).toULong() }
+    }
+
+    @Test fun `should implement toUInt`() {
+        expect(0U) { JSONLong.ZERO.toUInt() }
+        expect(12345U) { JSONLong(12345).toUInt() }
+        expect(2147483648U) { JSONLong(2147483648).toUInt() }
+    }
+
+    @Test fun `should implement toUShort`() {
+        expect(0U) { JSONLong.ZERO.toUShort() }
+        expect(32768U) { JSONLong(32768).toUShort() }
+    }
+
+    @Test fun `should implement toUByte`() {
+        expect(0U) { JSONLong.ZERO.toUByte() }
+        expect(129U) { JSONLong(129).toUByte() }
+    }
+
 }

@@ -2,7 +2,7 @@
  * @(#) JSONDecimalTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2021, 2022 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -232,6 +232,27 @@ class JSONDecimalTest {
         expect(BigDecimal(12345)) { JSONDecimal(12345).toDecimal() }
         expect(BigDecimal(-9)) { JSONDecimal(-9).toDecimal() }
         expect(BigDecimal("567.89")) { JSONDecimal("567.89").toDecimal() }
+    }
+
+    @Test fun `should implement toULong`() {
+        expect(0U) { JSONDecimal.ZERO.toULong() }
+        expect(123456789123456789U) { JSONDecimal(123456789123456789).toULong() }
+    }
+
+    @Test fun `should implement toUInt`() {
+        expect(0U) { JSONDecimal.ZERO.toUInt() }
+        expect(12345U) { JSONDecimal(12345).toUInt() }
+        expect(2147483648U) { JSONDecimal(2147483648).toUInt() }
+    }
+
+    @Test fun `should implement toUShort`() {
+        expect(0U) { JSONDecimal.ZERO.toUShort() }
+        expect(32768U) { JSONDecimal(32768).toUShort() }
+    }
+
+    @Test fun `should implement toUByte`() {
+        expect(0U) { JSONDecimal.ZERO.toUByte() }
+        expect(129U) { JSONDecimal(129).toUByte() }
     }
 
 }
