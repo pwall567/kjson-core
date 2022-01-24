@@ -30,6 +30,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.test.expect
+import java.math.BigDecimal
 
 class JSONLongTest {
 
@@ -172,6 +173,12 @@ class JSONLongTest {
             assertTrue(it.isNotNegative())
             assertFalse(it.isNotPositive())
         }
+    }
+
+    @Test fun `should implement toDecimal`() {
+        expect(BigDecimal.ZERO) { JSONLong.ZERO.toDecimal() }
+        expect(BigDecimal(123456789123456789)) { JSONLong(123456789123456789).toDecimal() }
+        expect(BigDecimal(-9)) { JSONLong(-9).toDecimal() }
     }
 
 }

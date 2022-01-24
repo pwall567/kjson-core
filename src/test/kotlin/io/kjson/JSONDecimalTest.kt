@@ -227,4 +227,11 @@ class JSONDecimalTest {
         }
     }
 
+    @Test fun `should implement toDecimal`() {
+        expect(BigDecimal.ZERO) { JSONDecimal.ZERO.toDecimal() }
+        expect(BigDecimal(12345)) { JSONDecimal(12345).toDecimal() }
+        expect(BigDecimal(-9)) { JSONDecimal(-9).toDecimal() }
+        expect(BigDecimal("567.89")) { JSONDecimal("567.89").toDecimal() }
+    }
+
 }

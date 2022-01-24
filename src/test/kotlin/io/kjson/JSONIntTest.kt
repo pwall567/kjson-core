@@ -151,4 +151,10 @@ class JSONIntTest {
         }
     }
 
+    @Test fun `should implement toDecimal`() {
+        expect(BigDecimal.ZERO) { JSONInt.ZERO.toDecimal() }
+        expect(BigDecimal(12345)) { JSONInt(12345).toDecimal() }
+        expect(BigDecimal(-9)) { JSONInt(-9).toDecimal() }
+    }
+
 }
