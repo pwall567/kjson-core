@@ -2,7 +2,7 @@
  * @(#) JSONLongTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2021, 2022 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,75 +34,144 @@ import kotlin.test.expect
 class JSONLongTest {
 
     @Test fun `should create a JSONLong`() {
-        val test1 = JSONLong(123)
-        expect(123L) { test1.value }
-        expect("123") { test1.toJSON() }
-        expect("123") { test1.toString() }
-        val test2 = JSONLong(-1234567812345678)
-        expect(-1234567812345678) { test2.value }
-        expect("-1234567812345678") { test2.toJSON() }
-        expect("-1234567812345678") { test2.toString() }
+        JSONLong(123).let {
+            expect(123L) { it.value }
+            expect("123") { it.toJSON() }
+            expect("123") { it.toString() }
+        }
+        JSONLong(-1234567812345678).let {
+            expect(-1234567812345678) { it.value }
+            expect("-1234567812345678") { it.toJSON() }
+            expect("-1234567812345678") { it.toString() }
+        }
     }
 
     @Test fun `should create a JSONLong using of`() {
-        val test1 = JSONLong.of(1122334455667788)
-        expect(1122334455667788) { test1.value }
-        expect("1122334455667788") { test1.toJSON() }
-        expect("1122334455667788") { test1.toString() }
-        val test2 = JSONLong.of(-1234567812345678)
-        expect(-1234567812345678) { test2.value }
-        expect("-1234567812345678") { test2.toJSON() }
-        expect("-1234567812345678") { test2.toString() }
-        val test3 = JSONLong.of(0)
-        assertSame(JSONLong.ZERO, test3)
+        JSONLong.of(1122334455667788).let {
+            expect(1122334455667788) { it.value }
+            expect("1122334455667788") { it.toJSON() }
+            expect("1122334455667788") { it.toString() }
+        }
+        JSONLong.of(-1234567812345678).let {
+            expect(-1234567812345678) { it.value }
+            expect("-1234567812345678") { it.toJSON() }
+            expect("-1234567812345678") { it.toString() }
+        }
+        assertSame(JSONLong.ZERO, JSONLong.of(0))
     }
 
     @Test fun `should implement isXxxx functions`() {
-        val test0 = JSONLong(123456789123456789)
-        assertTrue(test0.isIntegral())
-        assertTrue(test0.isLong())
-        assertFalse(test0.isInt())
-        assertFalse(test0.isShort())
-        assertFalse(test0.isByte())
-        val test1 = JSONLong(123456789)
-        assertTrue(test1.isIntegral())
-        assertTrue(test1.isLong())
-        assertTrue(test1.isInt())
-        assertFalse(test1.isShort())
-        assertFalse(test1.isByte())
-        val test2 = JSONLong(12345)
-        assertTrue(test2.isIntegral())
-        assertTrue(test2.isLong())
-        assertTrue(test2.isInt())
-        assertTrue(test2.isShort())
-        assertFalse(test2.isByte())
-        val test3 = JSONLong(123)
-        assertTrue(test3.isIntegral())
-        assertTrue(test3.isLong())
-        assertTrue(test3.isInt())
-        assertTrue(test3.isShort())
-        assertTrue(test3.isByte())
+        JSONLong(123456789123456789).let {
+            assertTrue(it.isIntegral())
+            assertTrue(it.isLong())
+            assertFalse(it.isInt())
+            assertFalse(it.isShort())
+            assertFalse(it.isByte())
+            assertTrue(it.isULong())
+            assertFalse(it.isUInt())
+            assertFalse(it.isUShort())
+            assertFalse(it.isUByte())
+        }
+        JSONLong(-123456789123456789).let {
+            assertTrue(it.isIntegral())
+            assertTrue(it.isLong())
+            assertFalse(it.isInt())
+            assertFalse(it.isShort())
+            assertFalse(it.isByte())
+            assertFalse(it.isULong())
+            assertFalse(it.isUInt())
+            assertFalse(it.isUShort())
+            assertFalse(it.isUByte())
+        }
+        JSONLong(123456789).let {
+            assertTrue(it.isIntegral())
+            assertTrue(it.isLong())
+            assertTrue(it.isInt())
+            assertFalse(it.isShort())
+            assertFalse(it.isByte())
+            assertTrue(it.isULong())
+            assertFalse(it.isUShort())
+            assertFalse(it.isUByte())
+        }
+        JSONLong(-123456789).let {
+            assertTrue(it.isIntegral())
+            assertTrue(it.isLong())
+            assertTrue(it.isInt())
+            assertFalse(it.isShort())
+            assertFalse(it.isByte())
+            assertFalse(it.isULong())
+            assertFalse(it.isUInt())
+            assertFalse(it.isUShort())
+            assertFalse(it.isUByte())
+        }
+        JSONLong(12345).let {
+            assertTrue(it.isIntegral())
+            assertTrue(it.isLong())
+            assertTrue(it.isInt())
+            assertTrue(it.isShort())
+            assertFalse(it.isByte())
+            assertTrue(it.isULong())
+            assertTrue(it.isUInt())
+            assertTrue(it.isUShort())
+            assertFalse(it.isUByte())
+        }
+        JSONLong(-12345).let {
+            assertTrue(it.isIntegral())
+            assertTrue(it.isLong())
+            assertTrue(it.isInt())
+            assertTrue(it.isShort())
+            assertFalse(it.isByte())
+            assertFalse(it.isULong())
+            assertFalse(it.isUInt())
+            assertFalse(it.isUShort())
+            assertFalse(it.isUByte())
+        }
+        JSONLong(123).let {
+            assertTrue(it.isIntegral())
+            assertTrue(it.isLong())
+            assertTrue(it.isInt())
+            assertTrue(it.isShort())
+            assertTrue(it.isByte())
+            assertTrue(it.isULong())
+            assertTrue(it.isUInt())
+            assertTrue(it.isUShort())
+            assertTrue(it.isUByte())
+        }
+        JSONLong(-123).let {
+            assertTrue(it.isIntegral())
+            assertTrue(it.isLong())
+            assertTrue(it.isInt())
+            assertTrue(it.isShort())
+            assertTrue(it.isByte())
+            assertFalse(it.isULong())
+            assertFalse(it.isUInt())
+            assertFalse(it.isUShort())
+            assertFalse(it.isUByte())
+        }
     }
 
     @Test fun `should implement isZero etc functions`() {
-        val test1 = JSONLong.ZERO
-        assertTrue(test1.isZero())
-        assertFalse(test1.isPositive())
-        assertFalse(test1.isNegative())
-        assertTrue(test1.isNotNegative())
-        assertTrue(test1.isNotPositive())
-        val test2 = JSONLong(-123)
-        assertFalse(test2.isZero())
-        assertFalse(test2.isPositive())
-        assertTrue(test2.isNegative())
-        assertFalse(test2.isNotNegative())
-        assertTrue(test2.isNotPositive())
-        val test3 = JSONLong(123)
-        assertFalse(test3.isZero())
-        assertTrue(test3.isPositive())
-        assertFalse(test3.isNegative())
-        assertTrue(test3.isNotNegative())
-        assertFalse(test3.isNotPositive())
+        JSONLong.ZERO.let {
+            assertTrue(it.isZero())
+            assertFalse(it.isPositive())
+            assertFalse(it.isNegative())
+            assertTrue(it.isNotNegative())
+            assertTrue(it.isNotPositive())
+        }
+        JSONLong(-123).let {
+            assertFalse(it.isZero())
+            assertFalse(it.isPositive())
+            assertTrue(it.isNegative())
+            assertFalse(it.isNotNegative())
+            assertTrue(it.isNotPositive())
+        }
+        JSONLong(123).let {
+            assertFalse(it.isZero())
+            assertTrue(it.isPositive())
+            assertFalse(it.isNegative())
+            assertTrue(it.isNotNegative())
+            assertFalse(it.isNotPositive())
+        }
     }
 
 }

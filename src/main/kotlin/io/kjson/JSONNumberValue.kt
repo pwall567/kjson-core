@@ -2,7 +2,7 @@
  * @(#) JSONNumberValue.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2021, 2022 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,6 +46,14 @@ abstract class JSONNumberValue internal constructor() : Number() {
     abstract fun isShort(): Boolean
 
     abstract fun isByte(): Boolean
+
+    abstract fun isULong(): Boolean
+
+    abstract fun isUInt(): Boolean
+
+    abstract fun isUShort(): Boolean
+
+    abstract fun isUByte(): Boolean
 
     abstract fun isZero(): Boolean
 

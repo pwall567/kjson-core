@@ -2,7 +2,7 @@
  * @(#) JSONDecimal.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2021, 2022 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -49,15 +49,21 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumberValue(), JSONValue
     override fun isIntegral(): Boolean =
         value.scale() <= 0 || value.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0
 
-    override fun isLong(): Boolean = isIntegral() && value in BigDecimal(Long.MIN_VALUE)..BigDecimal(Long.MAX_VALUE)
+    override fun isLong(): Boolean = isIntegral() && value in MIN_LONG..MAX_LONG
 
-    override fun isInt(): Boolean = isIntegral() && value in BigDecimal(Int.MIN_VALUE)..BigDecimal(Int.MAX_VALUE)
+    override fun isInt(): Boolean = isIntegral() && value in MIN_INT..MAX_INT
 
-    override fun isShort(): Boolean =
-        isIntegral() && value in BigDecimal(Short.MIN_VALUE.toInt())..BigDecimal(Short.MAX_VALUE.toInt())
+    override fun isShort(): Boolean = isIntegral() && value in MIN_SHORT..MAX_SHORT
 
-    override fun isByte(): Boolean =
-        isIntegral() && value in BigDecimal(Byte.MIN_VALUE.toInt())..BigDecimal(Byte.MAX_VALUE.toInt())
+    override fun isByte(): Boolean = isIntegral() && value in MIN_BYTE..MAX_BYTE
+
+    override fun isULong(): Boolean = isIntegral() && value in BigDecimal.ZERO..MAX_ULONG
+
+    override fun isUInt(): Boolean = isIntegral() && value in BigDecimal.ZERO..MAX_UINT
+
+    override fun isUShort(): Boolean = isIntegral() && value in BigDecimal.ZERO..MAX_USHORT
+
+    override fun isUByte(): Boolean = isIntegral() && value in BigDecimal.ZERO..MAX_UBYTE
 
     override fun isZero(): Boolean = value.compareTo(BigDecimal.ZERO) == 0
 
@@ -107,6 +113,19 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumberValue(), JSONValue
     companion object {
 
         val ZERO = JSONDecimal(BigDecimal.ZERO)
+
+        private val MIN_LONG = BigDecimal(Long.MIN_VALUE)
+        private val MAX_LONG = BigDecimal(Long.MAX_VALUE)
+        private val MIN_INT = BigDecimal(Int.MIN_VALUE)
+        private val MAX_INT = BigDecimal(Int.MAX_VALUE)
+        private val MIN_SHORT = BigDecimal(Short.MIN_VALUE.toInt())
+        private val MAX_SHORT = BigDecimal(Short.MAX_VALUE.toInt())
+        private val MIN_BYTE = BigDecimal(Byte.MIN_VALUE.toInt())
+        private val MAX_BYTE = BigDecimal(Byte.MAX_VALUE.toInt())
+        private val MAX_ULONG = BigDecimal(Long.MAX_VALUE) * BigDecimal(2) + BigDecimal.ONE
+        private val MAX_UINT = BigDecimal(UInt.MAX_VALUE.toLong())
+        private val MAX_USHORT = BigDecimal(UShort.MAX_VALUE.toInt())
+        private val MAX_UBYTE = BigDecimal(UByte.MAX_VALUE.toInt())
 
         fun of(d: BigDecimal): JSONDecimal = if (d == BigDecimal.ZERO) ZERO else JSONDecimal(d)
 

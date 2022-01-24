@@ -2,7 +2,7 @@
  * @(#) JSONLong.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2021, 2022 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -49,6 +49,14 @@ class JSONLong(override val value: Long) : JSONNumberValue(), JSONValue {
     override fun isShort(): Boolean = value in Short.MIN_VALUE..Short.MAX_VALUE
 
     override fun isByte(): Boolean = value in Byte.MIN_VALUE..Byte.MAX_VALUE
+
+    override fun isULong(): Boolean = value >= 0
+
+    override fun isUInt(): Boolean = value in 0..UInt.MAX_VALUE.toLong()
+
+    override fun isUShort(): Boolean = value in 0..UShort.MAX_VALUE.toLong()
+
+    override fun isUByte(): Boolean = value in 0..UByte.MAX_VALUE.toLong()
 
     override fun isZero(): Boolean = value == 0L
 
