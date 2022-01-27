@@ -2,7 +2,7 @@
  * @(#) JSONTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2021, 2022 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,6 +39,8 @@ import io.kjson.JSON.asArray
 import io.kjson.JSON.asArrayOrNull
 import io.kjson.JSON.asBoolean
 import io.kjson.JSON.asBooleanOrNull
+import io.kjson.JSON.asByte
+import io.kjson.JSON.asByteOrNull
 import io.kjson.JSON.asDecimal
 import io.kjson.JSON.asDecimalOrNull
 import io.kjson.JSON.asInt
@@ -47,8 +49,18 @@ import io.kjson.JSON.asLong
 import io.kjson.JSON.asLongOrNull
 import io.kjson.JSON.asObject
 import io.kjson.JSON.asObjectOrNull
+import io.kjson.JSON.asShort
+import io.kjson.JSON.asShortOrNull
 import io.kjson.JSON.asString
 import io.kjson.JSON.asStringOrNull
+import io.kjson.JSON.asUByte
+import io.kjson.JSON.asUByteOrNull
+import io.kjson.JSON.asUInt
+import io.kjson.JSON.asUIntOrNull
+import io.kjson.JSON.asULong
+import io.kjson.JSON.asULongOrNull
+import io.kjson.JSON.asUShort
+import io.kjson.JSON.asUShortOrNull
 import io.kjson.JSON.displayValue
 import net.pwall.json.format.Formatter
 import net.pwall.json.format.Formatter.unixLineSeparator
@@ -171,6 +183,11 @@ class JSONTest {
         assertFailsWith<JSONException> { jsonArray.asInt }.let {
             expect("Not an int - [\"Testing\"]") { it.message }
         }
+        val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
+        assertNull(jsonDecimal.asIntOrNull)
+        assertFailsWith<JSONException> { jsonDecimal.asInt }.let {
+            expect("Not an int - 123.5000") { it.message }
+        }
     }
 
     @Test fun `should return asLong for number types`() {
@@ -194,6 +211,211 @@ class JSONTest {
         val jsonObject = JSONObject.of("name" to JSONString("value"))
         assertFailsWith<JSONException> { jsonObject.asLong }.let {
             expect("Not a long - {\"name\":\"value\"}") { it.message }
+        }
+        val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
+        assertNull(jsonDecimal.asLongOrNull)
+        assertFailsWith<JSONException> { jsonDecimal.asLong }.let {
+            expect("Not a long - 123.5000") { it.message }
+        }
+    }
+
+    @Test fun `should return asShort for number types`() {
+        val jsonInt = JSONInt(8)
+        expect(8) { jsonInt.asShort }
+        expect(8) { jsonInt.asShortOrNull }
+        val jsonLong = JSONLong(12345)
+        expect(12345) { jsonLong.asShort }
+        expect(12345) { jsonLong.asShortOrNull }
+        val jsonDecimal = JSONDecimal(BigDecimal("123.0000"))
+        expect(123) { jsonDecimal.asShort }
+        expect(123) { jsonDecimal.asShortOrNull }
+    }
+
+    @Test fun `should fail on attempt to get asShort of other types`() {
+        val jsonString = JSONString("not a number")
+        assertNull(jsonString.asShortOrNull)
+        assertFailsWith<JSONException> { jsonString.asShort }.let {
+            expect("Not a short - \"not a number\"") { it.message }
+        }
+        val jsonArray = JSONArray.of(JSONString("Testing"))
+        assertNull(jsonArray.asShortOrNull)
+        assertFailsWith<JSONException> { jsonArray.asShort }.let {
+            expect("Not a short - [\"Testing\"]") { it.message }
+        }
+        val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
+        assertNull(jsonDecimal.asShortOrNull)
+        assertFailsWith<JSONException> { jsonDecimal.asShort }.let {
+            expect("Not a short - 123.5000") { it.message }
+        }
+    }
+
+    @Test fun `should return asByte for number types`() {
+        val jsonInt = JSONInt(8)
+        expect(8) { jsonInt.asByte }
+        expect(8) { jsonInt.asByteOrNull }
+        val jsonLong = JSONLong(123)
+        expect(123) { jsonLong.asByte }
+        expect(123) { jsonLong.asByteOrNull }
+        val jsonDecimal = JSONDecimal(BigDecimal("123.0000"))
+        expect(123) { jsonDecimal.asByte }
+        expect(123) { jsonDecimal.asByteOrNull }
+    }
+
+    @Test fun `should fail on attempt to get asByte of other types`() {
+        val jsonString = JSONString("not a number")
+        assertNull(jsonString.asByteOrNull)
+        assertFailsWith<JSONException> { jsonString.asByte }.let {
+            expect("Not a byte - \"not a number\"") { it.message }
+        }
+        val jsonArray = JSONArray.of(JSONString("Testing"))
+        assertNull(jsonArray.asByteOrNull)
+        assertFailsWith<JSONException> { jsonArray.asByte }.let {
+            expect("Not a byte - [\"Testing\"]") { it.message }
+        }
+        val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
+        assertNull(jsonDecimal.asByteOrNull)
+        assertFailsWith<JSONException> { jsonDecimal.asByte }.let {
+            expect("Not a byte - 123.5000") { it.message }
+        }
+    }
+
+    @Test fun `should return asULong for number types`() {
+        val jsonInt = JSONInt(8)
+        expect(8.toULong()) { jsonInt.asULong }
+        expect(8.toULong()) { jsonInt.asULongOrNull }
+        val jsonLong = JSONLong(12345)
+        expect(12345.toULong()) { jsonLong.asULong }
+        expect(12345.toULong()) { jsonLong.asULongOrNull }
+        val jsonDecimal = JSONDecimal(BigDecimal("123.0000"))
+        expect(123.toULong()) { jsonDecimal.asULong }
+        expect(123.toULong()) { jsonDecimal.asULongOrNull }
+    }
+
+    @Test fun `should fail on attempt to get asULong of other types`() {
+        val jsonString = JSONString("not a number")
+        assertNull(jsonString.asULongOrNull)
+        assertFailsWith<JSONException> { jsonString.asULong }.let {
+            expect("Not an unsigned long - \"not a number\"") { it.message }
+        }
+        val jsonArray = JSONArray.of(JSONString("Testing"))
+        assertNull(jsonArray.asULongOrNull)
+        assertFailsWith<JSONException> { jsonArray.asULong }.let {
+            expect("Not an unsigned long - [\"Testing\"]") { it.message }
+        }
+        val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
+        assertNull(jsonDecimal.asULongOrNull)
+        assertFailsWith<JSONException> { jsonDecimal.asULong }.let {
+            expect("Not an unsigned long - 123.5000") { it.message }
+        }
+        val jsonInt = JSONInt(-1)
+        assertNull(jsonInt.asULongOrNull)
+        assertFailsWith<JSONException> { jsonInt.asULong }.let {
+            expect("Not an unsigned long - -1") { it.message }
+        }
+    }
+
+    @Test fun `should return asUInt for number types`() {
+        val jsonInt = JSONInt(8)
+        expect(8U) { jsonInt.asUInt }
+        expect(8U) { jsonInt.asUIntOrNull }
+        val jsonLong = JSONLong(12345)
+        expect(12345U) { jsonLong.asUInt }
+        expect(12345U) { jsonLong.asUIntOrNull }
+        val jsonDecimal = JSONDecimal(BigDecimal("123.0000"))
+        expect(123U) { jsonDecimal.asUInt }
+        expect(123U) { jsonDecimal.asUIntOrNull }
+    }
+
+    @Test fun `should fail on attempt to get asUInt of other types`() {
+        val jsonString = JSONString("not a number")
+        assertNull(jsonString.asUIntOrNull)
+        assertFailsWith<JSONException> { jsonString.asUInt }.let {
+            expect("Not an unsigned int - \"not a number\"") { it.message }
+        }
+        val jsonArray = JSONArray.of(JSONString("Testing"))
+        assertNull(jsonArray.asUIntOrNull)
+        assertFailsWith<JSONException> { jsonArray.asUInt }.let {
+            expect("Not an unsigned int - [\"Testing\"]") { it.message }
+        }
+        val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
+        assertNull(jsonDecimal.asUIntOrNull)
+        assertFailsWith<JSONException> { jsonDecimal.asUInt }.let {
+            expect("Not an unsigned int - 123.5000") { it.message }
+        }
+        val jsonInt = JSONInt(-1)
+        assertNull(jsonInt.asUIntOrNull)
+        assertFailsWith<JSONException> { jsonInt.asUInt }.let {
+            expect("Not an unsigned int - -1") { it.message }
+        }
+    }
+
+    @Test fun `should return asUShort for number types`() {
+        val jsonInt = JSONInt(8)
+        expect(8U) { jsonInt.asUShort }
+        expect(8U) { jsonInt.asUShortOrNull }
+        val jsonLong = JSONLong(45678)
+        expect(45678U) { jsonLong.asUShort }
+        expect(45678U) { jsonLong.asUShortOrNull }
+        val jsonDecimal = JSONDecimal(BigDecimal("1234.0000"))
+        expect(1234U) { jsonDecimal.asUShort }
+        expect(1234U) { jsonDecimal.asUShortOrNull }
+    }
+
+    @Test fun `should fail on attempt to get asUShort of other types`() {
+        val jsonString = JSONString("not a number")
+        assertNull(jsonString.asUShortOrNull)
+        assertFailsWith<JSONException> { jsonString.asUShort }.let {
+            expect("Not an unsigned short - \"not a number\"") { it.message }
+        }
+        val jsonArray = JSONArray.of(JSONString("Testing"))
+        assertNull(jsonArray.asUShortOrNull)
+        assertFailsWith<JSONException> { jsonArray.asUShort }.let {
+            expect("Not an unsigned short - [\"Testing\"]") { it.message }
+        }
+        val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
+        assertNull(jsonDecimal.asUShortOrNull)
+        assertFailsWith<JSONException> { jsonDecimal.asUShort }.let {
+            expect("Not an unsigned short - 123.5000") { it.message }
+        }
+        val jsonInt = JSONInt(-1)
+        assertNull(jsonInt.asUShortOrNull)
+        assertFailsWith<JSONException> { jsonInt.asUShort }.let {
+            expect("Not an unsigned short - -1") { it.message }
+        }
+    }
+
+    @Test fun `should return asUByte for number types`() {
+        val jsonInt = JSONInt(8)
+        expect(8U) { jsonInt.asUByte }
+        expect(8U) { jsonInt.asUByteOrNull }
+        val jsonLong = JSONLong(234)
+        expect(234U) { jsonLong.asUByte }
+        expect(234U) { jsonLong.asUByteOrNull }
+        val jsonDecimal = JSONDecimal(BigDecimal("123.0000"))
+        expect(123U) { jsonDecimal.asUByte }
+        expect(123U) { jsonDecimal.asUByteOrNull }
+    }
+
+    @Test fun `should fail on attempt to get asUByte of other types`() {
+        val jsonString = JSONString("not a number")
+        assertNull(jsonString.asUByteOrNull)
+        assertFailsWith<JSONException> { jsonString.asUByte }.let {
+            expect("Not an unsigned byte - \"not a number\"") { it.message }
+        }
+        val jsonArray = JSONArray.of(JSONString("Testing"))
+        assertNull(jsonArray.asUByteOrNull)
+        assertFailsWith<JSONException> { jsonArray.asUByte }.let {
+            expect("Not an unsigned byte - [\"Testing\"]") { it.message }
+        }
+        val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
+        assertNull(jsonDecimal.asUByteOrNull)
+        assertFailsWith<JSONException> { jsonDecimal.asUByte }.let {
+            expect("Not an unsigned byte - 123.5000") { it.message }
+        }
+        val jsonInt = JSONInt(-1)
+        assertNull(jsonInt.asUByteOrNull)
+        assertFailsWith<JSONException> { jsonInt.asUByte }.let {
+            expect("Not an unsigned byte - -1") { it.message }
         }
     }
 

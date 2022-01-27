@@ -2,7 +2,7 @@
  * @(#) JSON.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2021, 2022 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -97,17 +97,53 @@ object JSON {
     val JSONValue?.asStringOrNull: String?
         get() = (this as? JSONString)?.value
 
+    val JSONValue?.asLong: Long
+        get() = asLongOrNull ?: throw JSONException("Not a long - ${displayValue()}")
+
+    val JSONValue?.asLongOrNull: Long?
+        get() = (this as? JSONNumberValue)?.let { if (it.isLong()) it.toLong() else null }
+
     val JSONValue?.asInt: Int
         get() = asIntOrNull ?: throw JSONException("Not an int - ${displayValue()}")
 
     val JSONValue?.asIntOrNull: Int?
         get() = (this as? JSONNumberValue)?.let { if (it.isInt()) it.toInt() else null }
 
-    val JSONValue?.asLong: Long
-        get() = asLongOrNull ?: throw JSONException("Not a long - ${displayValue()}")
+    val JSONValue?.asShort: Short
+        get() = asShortOrNull ?: throw JSONException("Not a short - ${displayValue()}")
 
-    val JSONValue?.asLongOrNull: Long?
-        get() = (this as? JSONNumberValue)?.let { if (it.isLong()) it.toLong() else null }
+    val JSONValue?.asShortOrNull: Short?
+        get() = (this as? JSONNumberValue)?.let { if (it.isShort()) it.toShort() else null }
+
+    val JSONValue?.asByte: Byte
+        get() = asByteOrNull ?: throw JSONException("Not a byte - ${displayValue()}")
+
+    val JSONValue?.asByteOrNull: Byte?
+        get() = (this as? JSONNumberValue)?.let { if (it.isByte()) it.toByte() else null }
+
+    val JSONValue?.asULong: ULong
+        get() = asULongOrNull ?: throw JSONException("Not an unsigned long - ${displayValue()}")
+
+    val JSONValue?.asULongOrNull: ULong?
+        get() = (this as? JSONNumberValue)?.let { if (it.isULong()) it.toULong() else null }
+
+    val JSONValue?.asUInt: UInt
+        get() = asUIntOrNull ?: throw JSONException("Not an unsigned int - ${displayValue()}")
+
+    val JSONValue?.asUIntOrNull: UInt?
+        get() = (this as? JSONNumberValue)?.let { if (it.isUInt()) it.toUInt() else null }
+
+    val JSONValue?.asUShort: UShort
+        get() = asUShortOrNull ?: throw JSONException("Not an unsigned short - ${displayValue()}")
+
+    val JSONValue?.asUShortOrNull: UShort?
+        get() = (this as? JSONNumberValue)?.let { if (it.isUShort()) it.toUShort() else null }
+
+    val JSONValue?.asUByte: UByte
+        get() = asUByteOrNull ?: throw JSONException("Not an unsigned byte - ${displayValue()}")
+
+    val JSONValue?.asUByteOrNull: UByte?
+        get() = (this as? JSONNumberValue)?.let { if (it.isUByte()) it.toUByte() else null }
 
     val JSONValue?.asDecimal: BigDecimal
         get() = asDecimalOrNull ?: throw JSONException("Not a decimal - ${displayValue()}")

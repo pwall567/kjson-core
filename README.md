@@ -179,10 +179,22 @@ Function                     | Result type   | If the value is not of that type.
 ---------------------------- | ------------- | -----------------------------------
 `JSONValue?.asString`        | `String`      | throw exception
 `JSONValue?.asStringOrNull`  | `String?`     | return `null`
-`JSONValue?.asInt`           | `Int`         | throw exception
-`JSONValue?.asIntOrNull`     | `Int?`        | return `null`
 `JSONValue?.asLong`          | `Long`        | throw exception
 `JSONValue?.asLongOrNull`    | `Long?`       | return `null`
+`JSONValue?.asInt`           | `Int`         | throw exception
+`JSONValue?.asIntOrNull`     | `Int?`        | return `null`
+`JSONValue?.asShort`         | `Short`       | throw exception
+`JSONValue?.asShortOrNull`   | `Short?`      | return `null`
+`JSONValue?.asByte`          | `Byte`        | throw exception
+`JSONValue?.asByteOrNull`    | `Byte?`       | return `null`
+`JSONValue?.asULong`         | `ULong`       | throw exception
+`JSONValue?.asULongOrNull`   | `ULong?`      | return `null`
+`JSONValue?.asUInt`          | `UInt`        | throw exception
+`JSONValue?.asUIntOrNull`    | `UInt?`       | return `null`
+`JSONValue?.asUShort`        | `UShort`      | throw exception
+`JSONValue?.asUShortOrNull`  | `UShort?`     | return `null`
+`JSONValue?.asUByte`         | `UByte`       | throw exception
+`JSONValue?.asUByteOrNull`   | `UByte?`      | return `null`
 `JSONValue?.asDecimal`       | `BigDecimal`  | throw exception
 `JSONValue?.asDecimalOrNull` | `BigDecimal?` | return `null`
 `JSONValue?.asBoolean`       | `Boolean`     | throw exception
@@ -197,25 +209,25 @@ create an abbreviated form of the value suitable for error messages.
 
 ## Dependency Specification
 
-The latest version of the library is 2.0, and it may be obtained from the Maven Central repository.
+The latest version of the library is 2.1, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>2.0</version>
+      <version>2.1</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:2.0"
+    implementation "io.kjson:kjson-core:2.1"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:2.0")
+    implementation("io.kjson:kjson-core:2.1")
 ```
 
 Peter Wall
 
-2022-01-24
+2022-01-27
