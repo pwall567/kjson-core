@@ -106,7 +106,7 @@ The constructor for `JSONObject` is not publicly accessible, but an `of()` funct
 
 ### `JSONNumberValue`
 
-The number value classes all derive from the abstract class `JSONNumberValue`, which itself derives from the system
+The number value classes all derive from the sealed class `JSONNumberValue`, which itself derives from the system
 class `Number`.
 That class provides a set of `toInt()`, `toLong()` _etc._ functions, to which `JSONNumberValue` adds the following:
 
@@ -209,25 +209,25 @@ create an abbreviated form of the value suitable for error messages.
 
 ## Dependency Specification
 
-The latest version of the library is 2.1, and it may be obtained from the Maven Central repository.
+The latest version of the library is 2.2, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>2.1</version>
+      <version>2.2</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:2.1"
+    implementation "io.kjson:kjson-core:2.2"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:2.1")
+    implementation("io.kjson:kjson-core:2.2")
 ```
 
 Peter Wall
 
-2022-01-27
+2022-01-28

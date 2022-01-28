@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [2.2] - 2022-01-28
+### Changed
+- `JSONNumberValue`: changed to sealed class
+
 ## [2.1] - 2022-01-27
 ### Changed
 - `JSON`: added more unsigned integer extension functions

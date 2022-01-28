@@ -33,7 +33,7 @@ import java.math.BigDecimal
  *
  * @author  Peter Wall
  */
-abstract class JSONNumberValue internal constructor() : Number() {
+sealed class JSONNumberValue : Number() {
 
     abstract val value: Number
 
