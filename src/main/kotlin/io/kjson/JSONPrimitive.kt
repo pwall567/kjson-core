@@ -1,8 +1,8 @@
 /*
- * @(#) JSONString.kt
+ * @(#) JSONPrimitive.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022 Peter Wall
+ * Copyright (c) 2022 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,37 +25,14 @@
 
 package io.kjson
 
-import net.pwall.json.JSONFunctions
-
 /**
- * A JSON string value.
+ * A sealed interface to specify the [JSONValue] classes that represent primitive values (that is, not structures).
  *
  * @author  Peter Wall
+ * @param   T       the primitive value type
  */
-class JSONString(override val value: String) : JSONPrimitive<String>, CharSequence {
+sealed interface JSONPrimitive<T> : JSONValue {
 
-    override val length = value.length
-
-    override fun get(index: Int): Char = value[index]
-
-    override fun subSequence(startIndex: Int, endIndex: Int) = JSONString(value.substring(startIndex, endIndex))
-
-    override fun appendTo(a: Appendable) {
-        JSONFunctions.appendString(a, value, false)
-    }
-
-    override fun equals(other: Any?): Boolean = this === other || other is JSONString && value == other.value
-
-    override fun hashCode(): Int = value.hashCode()
-
-    override fun toString(): String = value
-
-    companion object {
-
-        val EMPTY = JSONString("")
-
-        fun of(s: CharSequence): JSONString = if (s.isEmpty()) EMPTY else JSONString(s.toString())
-
-    }
+    val value: T
 
 }

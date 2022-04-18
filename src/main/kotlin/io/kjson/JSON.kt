@@ -66,29 +66,27 @@ object JSON {
             appendTo(a)
     }
 
-    fun Appendable.appendJSONValue(json: JSONValue?) = apply {
+    fun Appendable.appendJSONValue(json: JSONValue?): Appendable = apply {
         if (json == null)
             append("null")
         else
             json.appendTo(this)
     }
 
-    fun JSONValue?.displayValue(): String {
-        return when (this) {
-            null -> "null"
-            is JSONString -> displayString(value, 21)
-            is JSONArray -> when (size) {
-                0 -> "[]"
-                1 -> "[${this[0].displayValue()}]"
-                else -> "[...]"
-            }
-            is JSONObject -> when (size) {
-                0 -> "{}"
-                1 -> entries.iterator().next().let { "{${displayString(it.key, 21)}:${it.value.displayValue()}}" }
-                else -> "{...}"
-            }
-            else -> toString()
+    fun JSONValue?.displayValue(): String = when (this) {
+        null -> "null"
+        is JSONString -> displayString(value, 21)
+        is JSONArray -> when (size) {
+            0 -> "[]"
+            1 -> "[${this[0].displayValue()}]"
+            else -> "[...]"
         }
+        is JSONObject -> when (size) {
+            0 -> "{}"
+            1 -> entries.iterator().next().let { "{${displayString(it.key, 21)}:${it.value.displayValue()}}" }
+            else -> "{...}"
+        }
+        else -> toString()
     }
 
     val JSONValue?.asString: String

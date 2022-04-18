@@ -34,7 +34,7 @@ import net.pwall.util.IntOutput.appendLong
  *
  * @author  Peter Wall
  */
-class JSONLong(override val value: Long) : JSONNumberValue(), JSONValue {
+class JSONLong(override val value: Long) : JSONNumberValue(), JSONPrimitive<Long> {
 
     override fun appendTo(a: Appendable) {
         appendLong(a, value)
@@ -97,13 +97,12 @@ class JSONLong(override val value: Long) : JSONNumberValue(), JSONValue {
     override fun equals(other: Any?): Boolean {
         if (this === other)
             return true
-        if (other !is JSONValue)
+        if (other !is JSONNumberValue)
             return false
         return when (other) {
             is JSONInt -> value == other.value.toLong()
             is JSONLong -> value == other.value
             is JSONDecimal -> BigDecimal(value).compareTo(other.value) == 0
-            else -> false
         }
     }
 

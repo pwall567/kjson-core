@@ -28,6 +28,8 @@ package io.kjson
 import kotlin.test.Test
 import kotlin.test.expect
 
+import java.math.BigDecimal
+
 import io.kjson.JSON.appendJSONValue
 import io.kjson.JSON.appendTo
 import io.kjson.JSON.toJSON
@@ -44,6 +46,7 @@ class JSONValueTest {
         expect("222") { testNull.toJSON() }
         sb.setLength(0)
         testNull.appendTo(sb)
+        expect("222") { sb.toString() }
     }
 
     @Test fun `should use Appendable appendJSON`() {
@@ -52,9 +55,30 @@ class JSONValueTest {
         expect("[123,321]") { test.toString() }
     }
 
+    @Test fun `should create JSONValue of correct type`() {
+        expect("int") { getType(JSON.of(123)) }
+        expect("long") { getType(JSON.of(0L)) }
+        expect("decimal") { getType(JSON.of(BigDecimal.ONE)) }
+        expect("string") { getType(JSON.of("hello")) }
+        expect("boolean") { getType(JSON.of(true)) }
+        expect("array") { getType(JSON.of(JSON.of(0), JSON.of(1))) }
+        expect("object") { getType(JSON.of("alpha" to JSON.of(0), "beta" to JSON.of(1))) }
+    }
+
     @Suppress("RedundantNullableReturnType")
     private fun createJSONValue(): JSONValue? {
         return JSONInt(222)
+    }
+
+    private fun getType(jsonValue: JSONValue?): String = when (jsonValue) {
+        null -> "null"
+        is JSONInt -> "int"
+        is JSONLong -> "long"
+        is JSONDecimal -> "decimal"
+        is JSONString -> "string"
+        is JSONBoolean -> "boolean"
+        is JSONArray -> "array"
+        is JSONObject -> "object"
     }
 
 }

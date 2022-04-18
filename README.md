@@ -51,63 +51,19 @@ The `JSONValue` interface specifies two functions:
 
 The implementing classes are all immutable.
 
-### `JSONString`
+### `JSONPrimitive`
 
-The `JSONString` class holds a JSON string value.
-The parser converts JSON escape sequences on input, and the `appendJSON()` and `toJSON()` functions convert non-ASCII
-characters to escape sequences on output.
-
-The `String` value may be accessed by the property `value` (which will never be `null`).
-
-`JSONString` also implements the `CharSequence` interface, 
-
-### `JSONInt`
-
-The `JSONInt` class holds JSON number values that fit in a 32-bit signed integer.
-
-The `Int` value may be accessed by the property `value`.
-
-### `JSONLong`
-
-The `JSONLong` class holds JSON number values that are too big for `JSONInt`, but will fit in a 64-bit signed long
-integer.
-
-The `Long` value may be accessed by the property `value`.
-
-### `JSONDecimal`
-
-The `JSONDecimal` class holds all other JSON number values &ndash; integers that are too big for 64 bits, or numbers in
-floating point representation.
-
-The value is held as a `BigDecimal`, and this may be accessed by the property `value`.
-
-### `JSONBoolean`
-
-`JSONBoolean` is an `enum class` with two members &ndash; `TRUE` and `FALSE`.
-
-The `Boolean` value may be accessed by the property `value`.
-
-### `JSONArray`
-
-The `JSONArray` class implements the `List<JSONValue?>` interface, and all the functions of that interface are available
-to navigate the array (indexing via `array[n]`, `contains(obj)`, `iterator()` _etc._).
-
-The constructor for `JSONArray` is not publicly accessible, but an `of()` function is available in the
-`companion object`, and a `build` function and the `Builder` nested class allow arrays to be constructed dynamically.
-
-### `JSONObject`
-
-The `JSONObject` class implements the `Map<String, JSONValue?>` interface, and all the functions of that interface are
-available to navigate the object (retrieval via `array["name"]`, `containsKey("name")`, `entries` _etc._).
-The original order of the input is maintained on parsing or on the programmatic creation of a `JSONObject`.
-
-The constructor for `JSONObject` is not publicly accessible, but an `of()` function is available in the
-`companion object`, and a `build` function and the `Builder` nested class allow objects to be constructed dynamically.
+`JSONPrimitive` is a sealed interface (and a sub-interface of [`JSONValue`](#jsonvalue)) implemented by the classes for
+primitive values, _i.e._ [`JSONInt`](#jsonint), [`JSONLong`](#jsonlong), [`JSONDecimal`](#jsondecimal),
+[`JSONString`](#jsonstring) and [`JSONBoolean`](#jsonboolean).
+It is a parameterised interface, where the parameter is the type of the value.
+The interface specifies a single value (named `value`), of the parameter type.
+The value is never `null`.
 
 ### `JSONNumberValue`
 
-The number value classes all derive from the sealed class `JSONNumberValue`, which itself derives from the system
-class `Number`.
+In addition to implementing [`JSONPrimitive`](#jsonprimitive), the number value classes all derive from the sealed class
+`JSONNumberValue`, which itself derives from the system class `Number`.
 That class provides a set of `toInt()`, `toLong()` _etc._ functions, to which `JSONNumberValue` adds the following:
 
 Function      | Converts the value to...
@@ -137,6 +93,81 @@ Function          | Returns `true` iff...
 `isNotZero()`     | the value is not equal to 0
 `isNotNegative()` | the value is greater than or equal to 0
 `isNotPositive()` | the value is less than or equal to 0
+
+### `JSONInt`
+
+The `JSONInt` class holds JSON number values that fit in a 32-bit signed integer.
+The class derives from [`JSONNumberValue`](#jsonnumbervalue), providing implementations for all the abstract functions
+of that class, and it also implements [`JSONPrimitive`](#jsonprimitive) with the parameter type `Int`.
+
+The `Int` value may be accessed by the property `value`.
+
+### `JSONLong`
+
+The `JSONLong` class holds JSON number values that will fit in a 64-bit signed long integer.
+The class derives from [`JSONNumberValue`](#jsonnumbervalue), providing implementations for all the abstract functions
+of that class, and it also implements [`JSONPrimitive`](#jsonprimitive) with the parameter type `Long`.
+
+The `Long` value may be accessed by the property `value`.
+
+### `JSONDecimal`
+
+The `JSONDecimal` class holds all other JSON number values &ndash; integers that are too big for 64 bits, or numbers in
+floating point representation.
+The class derives from [`JSONNumberValue`](#jsonnumbervalue), providing implementations for all the abstract functions
+of that class, and it also implements [`JSONPrimitive`](#jsonprimitive) with the parameter type `BigDecimal`.
+
+The `BigDecimal` value may be accessed by the property `value`.
+
+### `JSONString`
+
+The `JSONString` class holds a JSON string value.
+The class implements [`JSONPrimitive`](#jsonprimitive) with the parameter type `String`.
+
+The parser converts JSON escape sequences on input, and the `appendJSON()` and `toJSON()` functions convert non-ASCII
+characters to escape sequences on output.
+
+The `String` value may be accessed by the property `value` (which will never be `null`).
+
+`JSONString` also implements the `CharSequence` interface, which allows access to all the functionality of that
+interface without having to extract the `value` property.
+The `subSequence()` function will return a new `JSONString`.
+
+### `JSONBoolean`
+
+`JSONBoolean` is an `enum class` with two members &ndash; `TRUE` and `FALSE`.
+The class implements [`JSONPrimitive`](#jsonprimitive) with the parameter type `Boolean`.
+
+The `Boolean` value may be accessed by the property `value`.
+
+### `JSONStructure`
+
+`JSONStructure` is a sealed interface (another sub-interface of [`JSONValue`](#jsonvalue)) implemented by the classes
+for structured types, that is, arrays and objects.
+It specifies a single value `size` (`Int`) which gives the number of entries in the array or object, and the function
+`isEmpty()` which (unsurprisingly) returns `true` if the structure is empty.
+
+### `JSONArray`
+
+The `JSONArray` class implements the `List<JSONValue?>` interface, and all the functions of that interface are available
+to navigate the array (indexing via `array[n]`, `contains(obj)`, `iterator()` _etc._).
+The `subList()` function will return a new `JSONArray`.
+
+The class also implements the [`JSONStructure`](#jsonstructure) interface.
+
+The constructor for `JSONArray` is not publicly accessible, but an `of()` function is available in the
+`companion object`, and a `build` function and the `Builder` nested class allow arrays to be constructed dynamically.
+
+### `JSONObject`
+
+The `JSONObject` class implements the `Map<String, JSONValue?>` interface, and all the functions of that interface are
+available to navigate the object (retrieval via `array["name"]`, `containsKey("name")`, `entries` _etc._).
+The class also implements the [`JSONStructure`](#jsonstructure) interface.
+
+The original order of the input is maintained on parsing or on the programmatic creation of a `JSONObject`.
+
+The constructor for `JSONObject` is not publicly accessible, but an `of()` function is available in the
+`companion object`, and a `build` function and the `Builder` nested class allow objects to be constructed dynamically.
 
 ### `JSON`
 
@@ -207,27 +238,35 @@ Function                     | Result type   | If the value is not of that type.
 Lastly, to simplify error reporting, the `JSON` object provides a `displayValue()` extension function on `JSONValue?` to
 create an abbreviated form of the value suitable for error messages.
 
+## Class Diagram
+
+This class diagram may help to explain the main classes and interfaces and the relationships between them.
+
+![Class Diagram](diagram.png "UML Class Diagram")
+
+The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram file is at [diagram.dia](diagram.dia).
+
 ## Dependency Specification
 
-The latest version of the library is 2.2, and it may be obtained from the Maven Central repository.
+The latest version of the library is 2.3, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>2.2</version>
+      <version>2.3</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:2.2"
+    implementation "io.kjson:kjson-core:2.3"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:2.2")
+    implementation("io.kjson:kjson-core:2.3")
 ```
 
 Peter Wall
 
-2022-01-28
+2022-04-18

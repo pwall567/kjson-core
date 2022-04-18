@@ -2,6 +2,19 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [2.3] - 2022-04-18
+### Added
+- `JSONStructure`, `JSONPrimitive`: additional interfaces
+### Changed
+- `JSONString`, `JSONInt`, `JSONLong`, `JSONDecimal`, `JSONBoolean`: implement `JSONPrimitive`
+- `JSONArray`, `JSONObject`: implement `JSONStructure`
+- `JSONString`: `subSequence()` now returns `JSONString` instead of `CharSequence`
+- `JSONArray`: `subList()` now returns `JSONArray` instead of `List`
+- `JSONArray`, `JSONObject`: minor optimisation in `appendTo()`
+- `JSONInt`, `JSONLong`, `JSONDecimal`: take advantage of sealed class `JSONNumberValue`
+- `README.md`, `diagram.dia`, `diagram.png`: expanded documentation
+- `pom.xml`: bumped dependency versions
+
 ## [2.2] - 2022-01-28
 ### Changed
 - `JSONNumberValue`: changed to sealed class

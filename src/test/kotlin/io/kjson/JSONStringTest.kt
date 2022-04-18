@@ -58,4 +58,10 @@ class JSONStringTest {
         expect("abc") { json.asString }
     }
 
+    @Test fun `should return JSONString from subSequence`() {
+        val json = JSONString.of("irrational")
+        val substring = json.subSequence(2, 7)
+        expect("\"ratio\"") { substring.toJSON() }
+    }
+
 }

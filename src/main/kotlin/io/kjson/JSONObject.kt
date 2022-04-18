@@ -39,21 +39,22 @@ import net.pwall.util.ImmutableMapEntry
  *
  * @author  Peter Wall
  */
-class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSONValue?>>, size: Int) : JSONValue,
-        Map<String, JSONValue?> {
+class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSONValue?>>, override val size: Int) :
+        JSONStructure, Map<String, JSONValue?> {
 
     private val immutableMap = ImmutableMap<String, JSONValue?>(array, size)
 
     override fun appendTo(a: Appendable) {
         a.append('{')
         if (isNotEmpty()) {
-            val iterator = entries.iterator()
+            val entrySet = immutableMap.entries
+            var i = 0
             while (true) {
-                val entry = iterator.next()
+                val entry = entrySet.get(i)
                 JSONFunctions.appendString(a, entry.key, false)
                 a.append(':')
                 entry.value.appendTo(a)
-                if (!iterator.hasNext())
+                if (++i >= size)
                     break
                 a.append(',')
             }
@@ -61,16 +62,13 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
         a.append('}')
     }
 
-    override fun isEmpty(): Boolean = immutableMap.isEmpty
+    override fun isEmpty(): Boolean = size == 0
 
     override val entries: Set<Map.Entry<String, JSONValue?>>
         get() = immutableMap.entries
 
     override val keys: Set<String>
         get() = immutableMap.keys
-
-    override val size: Int
-        get() = immutableMap.size
 
     override val values: Collection<JSONValue?>
         get() = immutableMap.values
@@ -91,23 +89,20 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
 
         val EMPTY = JSONObject(emptyArray(), 0)
 
-        fun of(vararg items: Pair<String, JSONValue?>): JSONObject {
-            return if (items.isEmpty()) EMPTY else Array<ImmutableMapEntry<String, JSONValue?>>(items.size) { i ->
+        fun of(vararg items: Pair<String, JSONValue?>): JSONObject =
+            if (items.isEmpty()) EMPTY else Array<ImmutableMapEntry<String, JSONValue?>>(items.size) { i ->
                 items[i].let { entry(it.first, it.second) }
             }.let { JSONObject(it, it.size) }
-        }
 
-        fun from(map: Map<String, JSONValue?>): JSONObject {
-            return if (map.isEmpty()) EMPTY else map.entries.map { entry(it.key, it.value) }.toTypedArray().let {
+        fun from(map: Map<String, JSONValue?>): JSONObject =
+            if (map.isEmpty()) EMPTY else map.entries.map { entry(it.key, it.value) }.toTypedArray().let {
                 JSONObject(it, it.size)
             }
-        }
 
-        fun from(list: List<Pair<String, JSONValue?>>): JSONObject {
-            return if (list.isEmpty()) EMPTY else Array<ImmutableMapEntry<String, JSONValue?>>(list.size) { i ->
+        fun from(list: List<Pair<String, JSONValue?>>): JSONObject =
+            if (list.isEmpty()) EMPTY else Array<ImmutableMapEntry<String, JSONValue?>>(list.size) { i ->
                 list[i].let { entry(it.first, it.second) }
             }.let { JSONObject(it, it.size) }
-        }
 
         fun build(block: Builder.() -> Unit): JSONObject = Builder(block = block).build()
 

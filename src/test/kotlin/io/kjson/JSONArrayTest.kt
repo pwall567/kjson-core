@@ -121,4 +121,10 @@ class JSONArrayTest {
         }
     }
 
+    @Test fun `should return JSONArray from subList`() {
+        val array = JSONArray.of(JSONInt(111), JSONInt(222), JSONInt(333), JSONInt(444), JSONInt(555))
+        val subList = array.subList(2, 4)
+        expect("[333,444]") { subList.toJSON() }
+    }
+
 }

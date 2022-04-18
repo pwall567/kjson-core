@@ -2,7 +2,7 @@
  * @(#) JSONBoolean.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2021, 2022 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ package io.kjson
  *
  * @author  Peter Wall
  */
-enum class JSONBoolean(val value: Boolean) : JSONValue {
+enum class JSONBoolean(override val value: Boolean) : JSONPrimitive<Boolean> {
 
     TRUE(true),
     FALSE(false);

@@ -2,7 +2,7 @@
  * @(#) JSONArray.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2021, 2022 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ import net.pwall.util.ImmutableList
  *
  * @author  Peter Wall
  */
-class JSONArray internal constructor (array: Array<out JSONValue?>, override val size: Int) : JSONValue,
+class JSONArray internal constructor (array: Array<out JSONValue?>, override val size: Int) : JSONStructure,
         List<JSONValue?> {
 
     private val immutableList = ImmutableList<JSONValue?>(array, size)
@@ -44,10 +44,10 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
     override fun appendTo(a: Appendable) {
         a.append('[')
         if (isNotEmpty()) {
-            val iterator = iterator()
+            var i = 0
             while (true) {
-                iterator.next().appendTo(a)
-                if (!iterator.hasNext())
+                immutableList[i].appendTo(a)
+                if (++i >= size)
                     break
                 a.append(',')
             }
@@ -55,7 +55,7 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
         a.append(']')
     }
 
-    override fun isEmpty(): Boolean = immutableList.isEmpty
+    override fun isEmpty(): Boolean = size == 0
 
     override fun contains(element: JSONValue?): Boolean = immutableList.contains(element)
 
@@ -73,7 +73,14 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
 
     override fun listIterator(index: Int): ListIterator<JSONValue?> = immutableList.listIterator(index)
 
-    override fun subList(fromIndex: Int, toIndex: Int): List<JSONValue?> = immutableList.subList(fromIndex, toIndex)
+    override fun subList(fromIndex: Int, toIndex: Int): JSONArray {
+        if (fromIndex == toIndex)
+            return EMPTY
+        val oldArray = immutableList.toArray(EMPTY_ARRAY)
+        if (fromIndex == 0)
+            return JSONArray(oldArray, toIndex)
+        return JSONArray(oldArray.copyOfRange(fromIndex, toIndex), toIndex - fromIndex)
+    }
 
     override fun equals(other: Any?): Boolean = this === other || other is List<*> && immutableList == other
 
@@ -83,7 +90,9 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
 
     companion object {
 
-        val EMPTY = JSONArray(emptyArray(), 0)
+        private val EMPTY_ARRAY = emptyArray<JSONValue?>()
+
+        val EMPTY = JSONArray(EMPTY_ARRAY, 0)
 
         fun of(vararg items: JSONValue?): JSONArray = if (items.isEmpty()) EMPTY else JSONArray(items, items.size)
 
