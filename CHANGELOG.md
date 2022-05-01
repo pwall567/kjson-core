@@ -2,6 +2,11 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [2.4] - 2022-05-01
+### Changed
+- `Parser`: minor improvement
+- `pom.xml`: bumped dependency versions
+
 ## [2.3] - 2022-04-18
 ### Added
 - `JSONStructure`, `JSONPrimitive`: additional interfaces
