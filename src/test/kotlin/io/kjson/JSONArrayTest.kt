@@ -2,7 +2,7 @@
  * @(#) JSONArrayTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2021, 2022 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.expect
+import kotlinx.coroutines.runBlocking
 
 import java.math.BigDecimal
+
+import io.kjson.util.CoOutputCapture
+import io.kjson.util.OutputCapture
 
 class JSONArrayTest {
 
@@ -125,6 +129,20 @@ class JSONArrayTest {
         val array = JSONArray.of(JSONInt(111), JSONInt(222), JSONInt(333), JSONInt(444), JSONInt(555))
         val subList = array.subList(2, 4)
         expect("[333,444]") { subList.toJSON() }
+    }
+
+    @Test fun `should format JSONArray using output`() {
+        val capture = OutputCapture(64)
+        JSONArray.from(listOf(JSONString("Hello"), JSONInt(123), JSONBoolean.TRUE,
+                JSONDecimal(BigDecimal("1.5")), null, JSONLong(0))).output(capture)
+        expect("[\"Hello\",123,true,1.5,null,0]") { capture.toString() }
+    }
+
+    @Test fun `should format JSONArray using coOutput`() = runBlocking {
+        val capture = CoOutputCapture(64)
+        JSONArray.from(listOf(JSONString("Hello"), JSONInt(123), JSONBoolean.TRUE,
+                JSONDecimal(BigDecimal("1.5")), null, JSONLong(0))).coOutput(capture)
+        expect("[\"Hello\",123,true,1.5,null,0]") { capture.toString() }
     }
 
 }

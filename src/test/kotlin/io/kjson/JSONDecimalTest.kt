@@ -27,10 +27,15 @@ package io.kjson
 
 import kotlin.test.Test
 import kotlin.test.assertFalse
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.test.expect
+import kotlinx.coroutines.runBlocking
 
 import java.math.BigDecimal
+
+import io.kjson.util.CoOutputCapture
+import io.kjson.util.OutputCapture
 
 class JSONDecimalTest {
 
@@ -62,9 +67,33 @@ class JSONDecimalTest {
 
     @Test fun `should create JSONDecimal using of`() {
         JSONDecimal.of(BigDecimal.ZERO).let {
+            assertSame(JSONDecimal.ZERO, it)
             expect(BigDecimal.ZERO) { it.value }
             expect("0") { it.toJSON() }
             expect(JSONDecimal("0.00")) { it }
+        }
+        JSONDecimal.of(BigDecimal.ONE).let {
+            expect(BigDecimal.ONE) { it.value }
+            expect("1") { it.toJSON() }
+            expect(JSONDecimal("1.00")) { it }
+        }
+        assertSame(JSONDecimal.ZERO, JSONDecimal.of(0))
+        JSONDecimal.of(23456).let {
+            expect(BigDecimal("23456")) { it.value }
+            expect("23456") { it.toJSON() }
+            expect(JSONDecimal("23456")) { it }
+        }
+        assertSame(JSONDecimal.ZERO, JSONDecimal.of(0L))
+        JSONDecimal.of(9876543210).let {
+            expect(BigDecimal("9876543210")) { it.value }
+            expect("9876543210") { it.toJSON() }
+            expect(JSONDecimal("9876543210")) { it }
+        }
+        assertSame(JSONDecimal.ZERO, JSONDecimal.of("0"))
+        JSONDecimal.of("333.5").let {
+            expect(BigDecimal("333.5")) { it.value }
+            expect("333.5") { it.toJSON() }
+            expect(JSONDecimal("333.5")) { it }
         }
     }
 
@@ -253,6 +282,30 @@ class JSONDecimalTest {
     @Test fun `should implement toUByte`() {
         expect(0U) { JSONDecimal.ZERO.toUByte() }
         expect(129U) { JSONDecimal(129).toUByte() }
+    }
+
+    @Test fun `should format JSONDecimal using output`() {
+        val capture = OutputCapture(16)
+        JSONDecimal.ZERO.output(capture)
+        expect("0") { capture.toString() }
+        capture.reset()
+        JSONDecimal(12345).output(capture)
+        expect("12345") { capture.toString() }
+        capture.reset()
+        JSONDecimal("-527.5").output(capture)
+        expect("-527.5") { capture.toString() }
+    }
+
+    @Test fun `should format JSONDecimal using coOutput`() = runBlocking {
+        val capture = CoOutputCapture(16)
+        JSONDecimal.ZERO.coOutput(capture)
+        expect("0") { capture.toString() }
+        capture.reset()
+        JSONDecimal(12345).coOutput(capture)
+        expect("12345") { capture.toString() }
+        capture.reset()
+        JSONDecimal("-527.5").coOutput(capture)
+        expect("-527.5") { capture.toString() }
     }
 
 }

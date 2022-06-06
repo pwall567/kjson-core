@@ -25,6 +25,12 @@
 
 package io.kjson
 
+import java.util.function.IntConsumer
+
+import io.kjson.JSON.accept
+import net.pwall.util.CoOutput
+import net.pwall.util.output
+
 /**
  * Interface to represent a JSON value.
  *
@@ -35,5 +41,9 @@ sealed interface JSONValue {
     fun appendTo(a: Appendable)
 
     fun toJSON(): String = StringBuilder().also { appendTo(it) }.toString()
+
+    fun output(out: IntConsumer) = out.accept(toJSON())
+
+    suspend fun coOutput(out: CoOutput) = out.output(toJSON())
 
 }

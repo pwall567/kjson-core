@@ -26,13 +26,17 @@
 package io.kjson
 
 import java.math.BigDecimal
+import java.util.function.IntConsumer
 
 import io.kjson.JSON.appendTo
+import io.kjson.JSON.coOutput
+import io.kjson.JSON.output
+import net.pwall.json.JSONCoFunctions.outputString
 import net.pwall.json.JSONFunctions
+import net.pwall.util.CoOutput
 import net.pwall.util.ImmutableMap
-import net.pwall.util.ImmutableMap.createArray
-import net.pwall.util.ImmutableMap.entry
 import net.pwall.util.ImmutableMapEntry
+import net.pwall.util.output
 
 /**
  * A JSON object.
@@ -60,6 +64,42 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
             }
         }
         a.append('}')
+    }
+
+    override fun output(out: IntConsumer) {
+        out.accept('{'.code)
+        if (isNotEmpty()) {
+            val entrySet = immutableMap.entries
+            var i = 0
+            while (true) {
+                val entry = entrySet.get(i)
+                JSONFunctions.outputString(entry.key, false, out)
+                out.accept(':'.code)
+                entry.value.output(out)
+                if (++i >= size)
+                    break
+                out.accept(','.code)
+            }
+        }
+        out.accept('}'.code)
+    }
+
+    override suspend fun coOutput(out: CoOutput) {
+        out.output('{')
+        if (isNotEmpty()) {
+            val entrySet = immutableMap.entries
+            var i = 0
+            while (true) {
+                val entry = entrySet.get(i)
+                out.outputString(entry.key, false)
+                out.output(':')
+                entry.value.coOutput(out)
+                if (++i >= size)
+                    break
+                out.output(',')
+            }
+        }
+        out.output('}')
     }
 
     override fun isEmpty(): Boolean = size == 0
@@ -91,17 +131,17 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
 
         fun of(vararg items: Pair<String, JSONValue?>): JSONObject =
             if (items.isEmpty()) EMPTY else Array<ImmutableMapEntry<String, JSONValue?>>(items.size) { i ->
-                items[i].let { entry(it.first, it.second) }
+                items[i].let { ImmutableMap.entry(it.first, it.second) }
             }.let { JSONObject(it, it.size) }
 
         fun from(map: Map<String, JSONValue?>): JSONObject =
-            if (map.isEmpty()) EMPTY else map.entries.map { entry(it.key, it.value) }.toTypedArray().let {
+            if (map.isEmpty()) EMPTY else map.entries.map { ImmutableMap.entry(it.key, it.value) }.toTypedArray().let {
                 JSONObject(it, it.size)
             }
 
         fun from(list: List<Pair<String, JSONValue?>>): JSONObject =
             if (list.isEmpty()) EMPTY else Array<ImmutableMapEntry<String, JSONValue?>>(list.size) { i ->
-                list[i].let { entry(it.first, it.second) }
+                list[i].let { ImmutableMap.entry(it.first, it.second) }
             }.let { JSONObject(it, it.size) }
 
         fun build(block: Builder.() -> Unit): JSONObject = Builder(block = block).build()
@@ -110,7 +150,7 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
 
     class Builder(size: Int = 8, block: Builder.() -> Unit = {}) {
 
-        private var array: Array<ImmutableMapEntry<String, JSONValue?>>? = createArray(size)
+        private var array: Array<ImmutableMapEntry<String, JSONValue?>>? = ImmutableMap.createArray(size)
         private var count: Int = 0
 
         init {
@@ -141,13 +181,13 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
                 val len = validArray.size
                 if (count >= len) {
                     val newArray: Array<ImmutableMapEntry<String, JSONValue?>> =
-                            createArray(len + len.coerceAtMost(4096))
+                            ImmutableMap.createArray(len + len.coerceAtMost(4096))
                     System.arraycopy(validArray, 0, newArray, 0, len)
-                    newArray[count++] = entry(name, value)
+                    newArray[count++] = ImmutableMap.entry(name, value)
                     array = newArray
                 }
                 else
-                    validArray[count++] = entry(name, value)
+                    validArray[count++] = ImmutableMap.entry(name, value)
             }
         }
 

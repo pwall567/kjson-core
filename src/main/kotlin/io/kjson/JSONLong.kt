@@ -26,8 +26,11 @@
 package io.kjson
 
 import java.math.BigDecimal
+import java.util.function.IntConsumer
 
-import net.pwall.util.IntOutput.appendLong
+import net.pwall.util.CoIntOutput.outputLong
+import net.pwall.util.CoOutput
+import net.pwall.util.IntOutput
 
 /**
  * A JSON long integer value (more than 32 bits but not more than 64 bits).
@@ -36,9 +39,11 @@ import net.pwall.util.IntOutput.appendLong
  */
 class JSONLong(override val value: Long) : JSONNumberValue(), JSONPrimitive<Long> {
 
-    override fun appendTo(a: Appendable) {
-        appendLong(a, value)
-    }
+    override fun appendTo(a: Appendable) = IntOutput.appendLong(a, value)
+
+    override fun output(out: IntConsumer) = IntOutput.outputLong(value, out)
+
+    override suspend fun coOutput(out: CoOutput) = out.outputLong(value)
 
     override fun isIntegral(): Boolean = true
 

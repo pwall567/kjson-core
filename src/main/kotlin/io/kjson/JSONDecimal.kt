@@ -136,6 +136,12 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumberValue(), JSONPrimi
 
         fun of(d: BigDecimal): JSONDecimal = if (d == BigDecimal.ZERO) ZERO else JSONDecimal(d)
 
+        fun of(i: Int): JSONDecimal = if (i == 0) ZERO else JSONDecimal(i)
+
+        fun of(i: Long): JSONDecimal = if (i == 0L) ZERO else JSONDecimal(i)
+
+        fun of(s: String): JSONDecimal = if (s == "0") ZERO else JSONDecimal(s)
+
     }
 
 }

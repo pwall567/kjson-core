@@ -26,8 +26,11 @@
 package io.kjson
 
 import java.math.BigDecimal
+import java.util.function.IntConsumer
 
-import net.pwall.util.IntOutput.appendInt
+import net.pwall.util.CoIntOutput.outputInt
+import net.pwall.util.CoOutput
+import net.pwall.util.IntOutput
 
 /**
  * A JSON integer value (up to 32 bits).
@@ -36,9 +39,11 @@ import net.pwall.util.IntOutput.appendInt
  */
 class JSONInt(override val value: Int) : JSONNumberValue(), JSONPrimitive<Int> {
 
-    override fun appendTo(a: Appendable) {
-        appendInt(a, value)
-    }
+    override fun appendTo(a: Appendable) = IntOutput.appendInt(a, value)
+
+    override fun output(out: IntConsumer) = IntOutput.outputInt(value, out)
+
+    override suspend fun coOutput(out: CoOutput) = out.outputInt(value)
 
     override fun isIntegral(): Boolean = true
 

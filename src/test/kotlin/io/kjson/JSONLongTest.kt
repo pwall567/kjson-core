@@ -30,7 +30,12 @@ import kotlin.test.assertFalse
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.test.expect
+import kotlinx.coroutines.runBlocking
+
 import java.math.BigDecimal
+
+import io.kjson.util.CoOutputCapture
+import io.kjson.util.OutputCapture
 
 class JSONLongTest {
 
@@ -200,6 +205,30 @@ class JSONLongTest {
     @Test fun `should implement toUByte`() {
         expect(0U) { JSONLong.ZERO.toUByte() }
         expect(129U) { JSONLong(129).toUByte() }
+    }
+
+    @Test fun `should format JSONLong using output`() {
+        val capture = OutputCapture(32)
+        JSONLong.ZERO.output(capture)
+        expect("0") { capture.toString() }
+        capture.reset()
+        JSONLong(1234567890123456789).output(capture)
+        expect("1234567890123456789") { capture.toString() }
+        capture.reset()
+        JSONLong(-998877665544332211).output(capture)
+        expect("-998877665544332211") { capture.toString() }
+    }
+
+    @Test fun `should format JSONLong using coOutput`() = runBlocking {
+        val capture = CoOutputCapture(32)
+        JSONLong.ZERO.coOutput(capture)
+        expect("0") { capture.toString() }
+        capture.reset()
+        JSONLong(1234567890123456789).coOutput(capture)
+        expect("1234567890123456789") { capture.toString() }
+        capture.reset()
+        JSONLong(-998877665544332211).coOutput(capture)
+        expect("-998877665544332211") { capture.toString() }
     }
 
 }

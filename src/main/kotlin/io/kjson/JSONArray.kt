@@ -26,9 +26,14 @@
 package io.kjson
 
 import java.math.BigDecimal
+import java.util.function.IntConsumer
 
 import io.kjson.JSON.appendTo
+import io.kjson.JSON.coOutput
+import io.kjson.JSON.output
+import net.pwall.util.CoOutput
 import net.pwall.util.ImmutableList
+import net.pwall.util.output
 
 /**
  * A JSON array.  As allowed by the JSON specification, array members may be primitive types, objects, other arrays or
@@ -53,6 +58,34 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
             }
         }
         a.append(']')
+    }
+
+    override fun output(out: IntConsumer) {
+        out.accept('['.code)
+        if (isNotEmpty()) {
+            var i = 0
+            while (true) {
+                immutableList[i].output(out)
+                if (++i >= size)
+                    break
+                out.accept(','.code)
+            }
+        }
+        out.accept(']'.code)
+    }
+
+    override suspend fun coOutput(out: CoOutput) {
+        out.output('[')
+        if (isNotEmpty()) {
+            var i = 0
+            while (true) {
+                immutableList[i].coOutput(out)
+                if (++i >= size)
+                    break
+                out.output(',')
+            }
+        }
+        out.output(']')
     }
 
     override fun isEmpty(): Boolean = size == 0

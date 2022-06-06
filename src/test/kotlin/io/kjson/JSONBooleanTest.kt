@@ -29,6 +29,10 @@ import kotlin.test.Test
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.test.expect
+import kotlinx.coroutines.runBlocking
+
+import io.kjson.util.CoOutputCapture
+import io.kjson.util.OutputCapture
 
 class JSONBooleanTest {
 
@@ -60,6 +64,24 @@ class JSONBooleanTest {
         expect(2) { test1.size }
         expect(JSONBoolean.TRUE) { test1["a"] }
         expect(JSONBoolean.FALSE) { test1["b"] }
+    }
+
+    @Test fun `should format JSONBoolean using output`() {
+        val capture = OutputCapture(8)
+        JSONBoolean.TRUE.output(capture)
+        expect("true") { capture.toString() }
+        capture.reset()
+        JSONBoolean.FALSE.output(capture)
+        expect("false") { capture.toString() }
+    }
+
+    @Test fun `should format JSONBoolean using coOutput`() = runBlocking {
+        val capture = CoOutputCapture(8)
+        JSONBoolean.TRUE.coOutput(capture)
+        expect("true") { capture.toString() }
+        capture.reset()
+        JSONBoolean.FALSE.coOutput(capture)
+        expect("false") { capture.toString() }
     }
 
 }

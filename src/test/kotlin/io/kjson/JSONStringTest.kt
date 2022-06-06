@@ -28,8 +28,11 @@ package io.kjson
 import kotlin.test.Test
 import kotlin.test.assertSame
 import kotlin.test.expect
+import kotlinx.coroutines.runBlocking
 
 import io.kjson.JSON.asString
+import io.kjson.util.CoOutputCapture
+import io.kjson.util.OutputCapture
 
 class JSONStringTest {
 
@@ -62,6 +65,24 @@ class JSONStringTest {
         val json = JSONString.of("irrational")
         val substring = json.subSequence(2, 7)
         expect("\"ratio\"") { substring.toJSON() }
+    }
+
+    @Test fun `should format JSONString using output`() {
+        val capture = OutputCapture(16)
+        JSONString.EMPTY.output(capture)
+        expect("\"\"") { capture.toString() }
+        capture.reset()
+        JSONString("Kia ora").output(capture)
+        expect("\"Kia ora\"") { capture.toString() }
+    }
+
+    @Test fun `should format JSONString using coOutput`() = runBlocking {
+        val capture = CoOutputCapture(16)
+        JSONString.EMPTY.coOutput(capture)
+        expect("\"\"") { capture.toString() }
+        capture.reset()
+        JSONString("Kia ora").coOutput(capture)
+        expect("\"Kia ora\"") { capture.toString() }
     }
 
 }

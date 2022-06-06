@@ -30,8 +30,12 @@ import kotlin.test.assertFalse
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.test.expect
+import kotlinx.coroutines.runBlocking
 
 import java.math.BigDecimal
+
+import io.kjson.util.CoOutputCapture
+import io.kjson.util.OutputCapture
 
 class JSONIntTest {
 
@@ -175,6 +179,30 @@ class JSONIntTest {
     @Test fun `should implement toUByte`() {
         expect(0U) { JSONInt.ZERO.toUByte() }
         expect(129U) { JSONInt(129).toUByte() }
+    }
+
+    @Test fun `should format JSONInt using output`() {
+        val capture = OutputCapture(16)
+        JSONInt.ZERO.output(capture)
+        expect("0") { capture.toString() }
+        capture.reset()
+        JSONInt(1234567).output(capture)
+        expect("1234567") { capture.toString() }
+        capture.reset()
+        JSONInt(-888).output(capture)
+        expect("-888") { capture.toString() }
+    }
+
+    @Test fun `should format JSONInt using coOutput`() = runBlocking {
+        val capture = CoOutputCapture(16)
+        JSONInt.ZERO.coOutput(capture)
+        expect("0") { capture.toString() }
+        capture.reset()
+        JSONInt(1234567).coOutput(capture)
+        expect("1234567") { capture.toString() }
+        capture.reset()
+        JSONInt(-888).coOutput(capture)
+        expect("-888") { capture.toString() }
     }
 
 }

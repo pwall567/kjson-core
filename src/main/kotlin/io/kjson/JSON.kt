@@ -26,9 +26,12 @@
 package io.kjson
 
 import java.math.BigDecimal
+import java.util.function.IntConsumer
 
 import io.kjson.parser.Parser
 import net.pwall.json.JSONFunctions.displayString
+import net.pwall.util.CoOutput
+import net.pwall.util.output
 
 /**
  * JSON core library - a set of functions to assist with the creation and output of JSON data.
@@ -64,6 +67,20 @@ object JSON {
             a.append("null")
         else
             appendTo(a)
+    }
+
+    fun JSONValue?.output(out: IntConsumer) {
+        if (this == null)
+            out.accept("null")
+        else
+            output(out)
+    }
+
+    suspend fun JSONValue?.coOutput(out: CoOutput) {
+        if (this == null)
+            out.output("null")
+        else
+            coOutput(out)
     }
 
     fun Appendable.appendJSONValue(json: JSONValue?): Appendable = apply {
@@ -166,5 +183,10 @@ object JSON {
 
     val JSONValue?.asObjectOrNull: JSONObject?
         get() = (this as? JSONObject)
+
+    fun IntConsumer.accept(cs: CharSequence) {
+        for (i in cs.indices)
+            accept(cs[i].code)
+    }
 
 }

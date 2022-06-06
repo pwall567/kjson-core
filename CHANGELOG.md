@@ -2,6 +2,12 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [3.0] - 2022-06-06
+### Changed
+- `JSON`, `JSONArray`, `JSONBoolean`, `JSONDecimal`, `JSONInt`, `JSONLong`, `JSONObject`, `JSONString`, `JSONValue`:
+  added `output` functions and non-blocking `coOutput` functions
+- `pom.xml`: bumped dependency versions
+
 ## [2.5] - 2022-05-29
 ### Changed
 - `pom.xml`: bumped dependency versions

@@ -34,11 +34,15 @@ classes that implement the `JSONValue` interface, or in the case of the JSON "`n
 
 ### `JSONValue`
 
-The `JSONValue` interface specifies two functions:
-- `appendJSON()` &ndash; this appends the JSON text form of the object to a specified `Appendable` (when outputting
+The `JSONValue` interface specifies four functions:
+- `appendTo()` &ndash; this appends the JSON text form of the object to a specified `Appendable` (when outputting
   JSON, it is more efficient to append to a single `Appendable`, as opposed to creating strings for each element)
 - `toJSON()` &ndash; this outputs the value in syntactically-correct JSON (a default implementation makes use of the
-  above `appendJSON()` function)
+  above `appendTo()` function)
+- `output()` &ndash; this outputs the JSON text form of the object using an `IntConsumer` (similar to `appendTo()`, but
+  allowing a greater choice of output mechanism)
+- `coOutput()` (suspend function) &ndash; non-blocking version of `output()`, suitable for use in a coroutine-based
+  environment
 
 `JSONValue` is a sealed interface and the implementing classes are limited to:
 - [`JSONString`](#jsonstring) &ndash; a string value
@@ -248,25 +252,25 @@ The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram
 
 ## Dependency Specification
 
-The latest version of the library is 2.5, and it may be obtained from the Maven Central repository.
+The latest version of the library is 3.0, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>2.5</version>
+      <version>3.0</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:2.5"
+    implementation "io.kjson:kjson-core:3.0"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:2.5")
+    implementation("io.kjson:kjson-core:3.0")
 ```
 
 Peter Wall
 
-2022-05-29
+2022-06-06

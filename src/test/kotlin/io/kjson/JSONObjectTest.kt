@@ -31,8 +31,11 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.test.expect
+import kotlinx.coroutines.runBlocking
 
 import java.math.BigDecimal
+import io.kjson.util.CoOutputCapture
+import io.kjson.util.OutputCapture
 
 class JSONObjectTest {
 
@@ -141,6 +144,24 @@ class JSONObjectTest {
             if (a == "def")
                 expect(JSONString("X")) { b }
         }
+    }
+
+    @Test fun `should format JSONObject using output`() {
+        val capture = OutputCapture(64)
+        JSONObject.EMPTY.output(capture)
+        expect("{}") { capture.toString() }
+        capture.reset()
+        JSONObject.of("abc" to JSONInt(12345), "def" to JSONString("X")).output(capture)
+        expect("""{"abc":12345,"def":"X"}""") { capture.toString() }
+    }
+
+    @Test fun `should format JSONObject using coOutput`() = runBlocking {
+        val capture = CoOutputCapture(64)
+        JSONObject.EMPTY.coOutput(capture)
+        expect("{}") { capture.toString() }
+        capture.reset()
+        JSONObject.of("abc" to JSONInt(12345), "def" to JSONString("X")).coOutput(capture)
+        expect("""{"abc":12345,"def":"X"}""") { capture.toString() }
     }
 
 }

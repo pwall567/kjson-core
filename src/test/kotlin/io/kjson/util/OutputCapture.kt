@@ -1,8 +1,8 @@
 /*
- * @(#) JSONString.kt
+ * @(#) OutputCapture.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022 Peter Wall
+ * Copyright (c) 2022 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,45 +23,28 @@
  * SOFTWARE.
  */
 
-package io.kjson
+package io.kjson.util
 
 import java.util.function.IntConsumer
 
-import net.pwall.json.JSONCoFunctions.outputString
-import net.pwall.json.JSONFunctions
-import net.pwall.util.CoOutput
-
 /**
- * A JSON string value.
+ * Class to capture output for testing purposes.
  *
  * @author  Peter Wall
  */
-class JSONString(override val value: String) : JSONPrimitive<String>, CharSequence {
+class OutputCapture(size: Int = 256) : IntConsumer {
 
-    override val length = value.length
+    private val array = CharArray(size)
+    private var index = 0
 
-    override fun get(index: Int): Char = value[index]
+    override fun accept(ch: Int) {
+        array[index++] = ch.toChar()
+    }
 
-    override fun subSequence(startIndex: Int, endIndex: Int) = JSONString(value.substring(startIndex, endIndex))
+    override fun toString() = String(array, 0, index)
 
-    override fun appendTo(a: Appendable) = JSONFunctions.appendString(a, value, false)
-
-    override fun output(out: IntConsumer) = JSONFunctions.outputString(value, false, out)
-
-    override suspend fun coOutput(out: CoOutput) = out.outputString(value, false)
-
-    override fun equals(other: Any?): Boolean = this === other || other is JSONString && value == other.value
-
-    override fun hashCode(): Int = value.hashCode()
-
-    override fun toString(): String = value
-
-    companion object {
-
-        val EMPTY = JSONString("")
-
-        fun of(s: CharSequence): JSONString = if (s.isEmpty()) EMPTY else JSONString(s.toString())
-
+    fun reset() {
+        index = 0
     }
 
 }
