@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [Unreleased]
+### Changed
+- `JSON`: added `parseNonNull()` function
+
 ## [3.0] - 2022-06-06
 ### Changed
 - `JSON`, `JSONArray`, `JSONBoolean`, `JSONDecimal`, `JSONInt`, `JSONLong`, `JSONObject`, `JSONString`, `JSONValue`:

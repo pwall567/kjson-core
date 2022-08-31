@@ -56,6 +56,8 @@ object JSON {
 
     fun parse(json: String): JSONValue? = Parser.parse(json)
 
+    fun parseNonNull(json: String): JSONValue = parse(json) ?: throw JSONException("JSON must not be \"null\"")
+
     fun parseArray(json: String): JSONArray = parse(json).asArray
 
     fun parseObject(json: String): JSONObject = parse(json).asObject

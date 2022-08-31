@@ -48,7 +48,7 @@ The `JSONValue` interface specifies four functions:
 - [`JSONString`](#jsonstring) &ndash; a string value
 - [`JSONInt`](#jsonint) &ndash; a number value that fits in a 32-bit signed integer
 - [`JSONLong`](#jsonlong) &ndash; a number value that fits in a 64-bit signed integer
-- [`JSONDecimal`](#jsondecimal) &ndash; all other number values
+- [`JSONDecimal`](#jsondecimal) &ndash; any number value, including non-integer
 - [`JSONBoolean`](#jsonboolean) &ndash; a boolean value
 - [`JSONArray`](#jsonarray) &ndash; an array
 - [`JSONObject`](#jsonobject) &ndash; an object
@@ -70,33 +70,33 @@ In addition to implementing [`JSONPrimitive`](#jsonprimitive), the number value 
 `JSONNumberValue`, which itself derives from the system class `Number`.
 That class provides a set of `toInt()`, `toLong()` _etc._ functions, to which `JSONNumberValue` adds the following:
 
-Function      | Converts the value to...
---------------|-------------------------
-`toDecimal()` | `BigDecimal`
-`toUlong()`   | `ULong`
-`toUInt()`    | `UInt`
-`toUShort()`  | `UShort`
-`toUByte()`   | `UByte`
+| Function      | Converts the value to... |
+|---------------|--------------------------|
+| `toDecimal()` | `BigDecimal`             |
+| `toUlong()`   | `ULong`                  |
+| `toUInt()`    | `UInt`                   |
+| `toUShort()`  | `UShort`                 |
+| `toUByte()`   | `UByte`                  |
 
 `JSONNumberValue` also provides the following boolean functions:
 
-Function          | Returns `true` iff...
-------------------|-----------------------------------------------------------------
-`isIntegral()`    | the value has no fractional part, or the fractional part is zero
-`isLong()`        | the value may be converted to `Long` with no loss of precision
-`isInt()`         | the value may be converted to `Int` with no loss of precision
-`isShort()`       | the value may be converted to `Short` with no loss of precision
-`isByte()`        | the value may be converted to `Byte` with no loss of precision
-`isULong()`       | the value may be converted to `ULong` with no loss of precision
-`isUInt()`        | the value may be converted to `UInt` with no loss of precision
-`isUShort()`      | the value may be converted to `UShort` with no loss of precision
-`isUByte()`       | the value may be converted to `UByte` with no loss of precision
-`isZero()`        | the value is equal to 0
-`isNegative()`    | the value is less than 0
-`isPositive()`    | the value is greater than 0
-`isNotZero()`     | the value is not equal to 0
-`isNotNegative()` | the value is greater than or equal to 0
-`isNotPositive()` | the value is less than or equal to 0
+| Function          | Returns `true` iff...                                            |
+|-------------------|------------------------------------------------------------------|
+| `isIntegral()`    | the value has no fractional part, or the fractional part is zero |
+| `isLong()`        | the value may be converted to `Long` with no loss of precision   |
+| `isInt()`         | the value may be converted to `Int` with no loss of precision    |
+| `isShort()`       | the value may be converted to `Short` with no loss of precision  |
+| `isByte()`        | the value may be converted to `Byte` with no loss of precision   |
+| `isULong()`       | the value may be converted to `ULong` with no loss of precision  |
+| `isUInt()`        | the value may be converted to `UInt` with no loss of precision   |
+| `isUShort()`      | the value may be converted to `UShort` with no loss of precision |
+| `isUByte()`       | the value may be converted to `UByte` with no loss of precision  |
+| `isZero()`        | the value is equal to 0                                          |
+| `isNegative()`    | the value is less than 0                                         |
+| `isPositive()`    | the value is greater than 0                                      |
+| `isNotZero()`     | the value is not equal to 0                                      |
+| `isNotNegative()` | the value is greater than or equal to 0                          |
+| `isNotPositive()` | the value is less than or equal to 0                             |
 
 ### `JSONInt`
 
@@ -116,8 +116,7 @@ The `Long` value may be accessed by the property `value`.
 
 ### `JSONDecimal`
 
-The `JSONDecimal` class holds all other JSON number values &ndash; integers that are too big for 64 bits, or numbers in
-floating point representation.
+The `JSONDecimal` class holds any JSON number values, including non-integer values.
 The class derives from [`JSONNumberValue`](#jsonnumbervalue), providing implementations for all the abstract functions
 of that class, and it also implements [`JSONPrimitive`](#jsonprimitive) with the parameter type `BigDecimal`.
 
@@ -184,6 +183,13 @@ The simplest way to parse JSON text is:
 The result will be of type `JSONValue?` &ndash; it will be `null` if the text consists of just the string "`null`" (with
 possible leading and trailing whitespace).
 
+If only non-null JSON values are expected:
+```kotlin
+        val json = JSON.parseNonNull(text)
+```
+The result of this function will be of type `JSONValue` (no question mark) and an exception will be thrown if the JSON
+was "`null`".
+
 If the JSON is expected to be an object (and it is an error if it is not):
 ```kotlin
         val json = JSON.parseObject(text)
@@ -198,46 +204,46 @@ The result type will be `JSONArray`, and again, an exception will be thrown if t
 
 The `JSON` object also provides a number of shortcut functions to create `JSONValue`s:
 
-Function                                   | Creates
------------------------------------------- | --------
-`JSON.of(Int)`                             | `JSONInt`
-`JSON.of(Long)`                            | `JSONLong`
-`JSON.of(BigDecimal)`                      | `JSONDecimal`
-`JSON.of(String)`                          | `JSONString`
-`JSON.of(Boolean)`                         | `JSONBoolean`
-`JSON.of(vararg JSONValue?)`               | `JSONArray`
-`JSON.of(vararg Pair<String, JSONValue?>)` | `JSONObject`
+| Function                                   | Creates       |
+|--------------------------------------------|---------------|
+| `JSON.of(Int)`                             | `JSONInt`     |
+| `JSON.of(Long)`                            | `JSONLong`    |
+| `JSON.of(BigDecimal)`                      | `JSONDecimal` |
+| `JSON.of(String)`                          | `JSONString`  |
+| `JSON.of(Boolean)`                         | `JSONBoolean` |
+| `JSON.of(vararg JSONValue?)`               | `JSONArray`   |
+| `JSON.of(vararg Pair<String, JSONValue?>)` | `JSONObject`  |
 
 To simplify casting a `JSONValue` to the expected type, the `JSON` object provides extension functions on `JSONValue?`:
 
-Function                     | Result type   | If the value is not of that type...
----------------------------- | ------------- | -----------------------------------
-`JSONValue?.asString`        | `String`      | throw exception
-`JSONValue?.asStringOrNull`  | `String?`     | return `null`
-`JSONValue?.asLong`          | `Long`        | throw exception
-`JSONValue?.asLongOrNull`    | `Long?`       | return `null`
-`JSONValue?.asInt`           | `Int`         | throw exception
-`JSONValue?.asIntOrNull`     | `Int?`        | return `null`
-`JSONValue?.asShort`         | `Short`       | throw exception
-`JSONValue?.asShortOrNull`   | `Short?`      | return `null`
-`JSONValue?.asByte`          | `Byte`        | throw exception
-`JSONValue?.asByteOrNull`    | `Byte?`       | return `null`
-`JSONValue?.asULong`         | `ULong`       | throw exception
-`JSONValue?.asULongOrNull`   | `ULong?`      | return `null`
-`JSONValue?.asUInt`          | `UInt`        | throw exception
-`JSONValue?.asUIntOrNull`    | `UInt?`       | return `null`
-`JSONValue?.asUShort`        | `UShort`      | throw exception
-`JSONValue?.asUShortOrNull`  | `UShort?`     | return `null`
-`JSONValue?.asUByte`         | `UByte`       | throw exception
-`JSONValue?.asUByteOrNull`   | `UByte?`      | return `null`
-`JSONValue?.asDecimal`       | `BigDecimal`  | throw exception
-`JSONValue?.asDecimalOrNull` | `BigDecimal?` | return `null`
-`JSONValue?.asBoolean`       | `Boolean`     | throw exception
-`JSONValue?.asBooleanOrNull` | `Boolean?`    | return `null`
-`JSONValue?.asArray`         | `JSONArray`   | throw exception
-`JSONValue?.asArrayOrNull`   | `JSONArray?`  | return `null`
-`JSONValue?.asObject`        | `JSONObject`  | throw exception
-`JSONValue?.asObjectOrNull`  | `JSONObject?` | return `null`
+| Function                     | Result type   | If the value is not of that type... |
+|------------------------------|---------------|-------------------------------------|
+| `JSONValue?.asString`        | `String`      | throw exception                     |
+| `JSONValue?.asStringOrNull`  | `String?`     | return `null`                       |
+| `JSONValue?.asLong`          | `Long`        | throw exception                     |
+| `JSONValue?.asLongOrNull`    | `Long?`       | return `null`                       |
+| `JSONValue?.asInt`           | `Int`         | throw exception                     |
+| `JSONValue?.asIntOrNull`     | `Int?`        | return `null`                       |
+| `JSONValue?.asShort`         | `Short`       | throw exception                     |
+| `JSONValue?.asShortOrNull`   | `Short?`      | return `null`                       |
+| `JSONValue?.asByte`          | `Byte`        | throw exception                     |
+| `JSONValue?.asByteOrNull`    | `Byte?`       | return `null`                       |
+| `JSONValue?.asULong`         | `ULong`       | throw exception                     |
+| `JSONValue?.asULongOrNull`   | `ULong?`      | return `null`                       |
+| `JSONValue?.asUInt`          | `UInt`        | throw exception                     |
+| `JSONValue?.asUIntOrNull`    | `UInt?`       | return `null`                       |
+| `JSONValue?.asUShort`        | `UShort`      | throw exception                     |
+| `JSONValue?.asUShortOrNull`  | `UShort?`     | return `null`                       |
+| `JSONValue?.asUByte`         | `UByte`       | throw exception                     |
+| `JSONValue?.asUByteOrNull`   | `UByte?`      | return `null`                       |
+| `JSONValue?.asDecimal`       | `BigDecimal`  | throw exception                     |
+| `JSONValue?.asDecimalOrNull` | `BigDecimal?` | return `null`                       |
+| `JSONValue?.asBoolean`       | `Boolean`     | throw exception                     |
+| `JSONValue?.asBooleanOrNull` | `Boolean?`    | return `null`                       |
+| `JSONValue?.asArray`         | `JSONArray`   | throw exception                     |
+| `JSONValue?.asArrayOrNull`   | `JSONArray?`  | return `null`                       |
+| `JSONValue?.asObject`        | `JSONObject`  | throw exception                     |
+| `JSONValue?.asObjectOrNull`  | `JSONObject?` | return `null`                       |
 
 Lastly, to simplify error reporting, the `JSON` object provides a `displayValue()` extension function on `JSONValue?` to
 create an abbreviated form of the value suitable for error messages.
@@ -252,25 +258,25 @@ The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram
 
 ## Dependency Specification
 
-The latest version of the library is 3.0, and it may be obtained from the Maven Central repository.
+The latest version of the library is 3.1, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>3.0</version>
+      <version>3.1</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:3.0"
+    implementation "io.kjson:kjson-core:3.1"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:3.0")
+    implementation("io.kjson:kjson-core:3.1")
 ```
 
 Peter Wall
 
-2022-06-06
+2022-08-31

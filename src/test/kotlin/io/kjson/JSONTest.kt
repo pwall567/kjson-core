@@ -86,6 +86,20 @@ class JSONTest {
         expect(JSONInt(2)) { json["two"] }
     }
 
+    @Test fun `should parse and test for null using JSON object`() {
+        val json = JSON.parseNonNull("""{"one":1,"two":2}""")
+        assertTrue(json is JSONObject)
+        expect(2) { json.size }
+        expect(JSONInt(1)) { json["one"] }
+        expect(JSONInt(2)) { json["two"] }
+    }
+
+    @Test fun `should fail when parsing non null using JSON object`() {
+        assertFailsWith<JSONException> { JSON.parseNonNull("null") }.let {
+            expect("JSON must not be \"null\"") { it.message }
+        }
+    }
+
     @Test fun `should parse using JSON object parseObject`() {
         val json = JSON.parseObject("""{"one":1,"two":2}""")
         expect(2) { json.size }
