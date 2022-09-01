@@ -3,8 +3,12 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+### Added
+- `ParseOptions`: options to control lenient parsing
 ### Changed
 - `JSON`: added `parseNonNull()` function
+- `Parser`: added lenient parsing of duplicate keys
+- `JSONObject`: added ability to modify `Builder`
 
 ## [3.0] - 2022-06-06
 ### Changed

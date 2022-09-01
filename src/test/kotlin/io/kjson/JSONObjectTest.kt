@@ -29,6 +29,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.test.expect
 import kotlinx.coroutines.runBlocking
@@ -52,6 +53,8 @@ class JSONObjectTest {
         val json = JSONObject.Builder {
             add("first", JSONInt(123))
             add("second", JSONString("dummy"))
+            assertTrue(containsKey("first"))
+            assertTrue(containsKey("second"))
         }.build()
         expect(2) { json.size }
         expect(JSONInt(123)) { json["first"] }
@@ -162,6 +165,37 @@ class JSONObjectTest {
         capture.reset()
         JSONObject.of("abc" to JSONInt(12345), "def" to JSONString("X")).coOutput(capture)
         expect("""{"abc":12345,"def":"X"}""") { capture.toString() }
+    }
+
+    @Test fun `should get existing Builder entries`() {
+        val builder = JSONObject.Builder()
+        builder.add("first", JSONInt(123))
+        builder.add("second", JSONString("dummy"))
+        expect(JSONInt(123)) { builder.get("first") }
+        expect(JSONString("dummy")) { builder.get("second") }
+        assertNull(builder.get("third"))
+    }
+
+    @Test fun `should remove existing Builder entries`() {
+        val builder = JSONObject.Builder()
+        builder.add("first", JSONInt(123))
+        builder.add("second", JSONString("dummy"))
+        expect(JSONInt(123)) { builder.get("first") }
+        expect(JSONString("dummy")) { builder.get("second") }
+        builder.remove("first")
+        assertNull(builder.get("first"))
+        val result = builder.build()
+        expect(1) { result.size }
+        expect(JSONString("dummy")) { result["second"] }
+    }
+
+    @Test fun `should fail on incorrect remove of existing Builder entries`() {
+        val builder = JSONObject.Builder()
+        builder.add("first", JSONInt(123))
+        builder.add("second", JSONString("dummy"))
+        assertFailsWith<JSONException> { builder.remove("third") }.let {
+            expect("Key not found - third") { it.message }
+        }
     }
 
 }

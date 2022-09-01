@@ -165,14 +165,7 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
 
         private fun checkArray() = array ?: throw JSONException("Builder is closed")
 
-        fun containsKey(name: String): Boolean {
-            checkArray().let { validArray ->
-                for (i in 0 until count)
-                    if (validArray[i].key == name)
-                        return true
-            }
-            return false
-        }
+        fun containsKey(name: String): Boolean = ImmutableMap.containsKey(checkArray(), count, name)
 
         fun add(name: String, value: JSONValue?) {
             if (containsKey(name))
@@ -209,6 +202,21 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
 
         fun add(name: String, value: Boolean) {
             add(name, JSONBoolean.of(value))
+        }
+
+        fun remove(name: String) {
+            checkArray().let {
+                val index = ImmutableMap.findKey(it, count, name)
+                if (index < 0)
+                    throw JSONException("Key not found - $name")
+                System.arraycopy(it, index + 1, it, index, count - index)
+                count--
+            }
+        }
+
+        fun get(name: String): JSONValue? = checkArray().let {
+            val index = ImmutableMap.findKey(it, count, name)
+            if (index >= 0) it[index].value else null
         }
 
         fun build(): JSONObject = checkArray().let {

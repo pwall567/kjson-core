@@ -44,6 +44,7 @@ object Parser {
     const val rootPointer = ""
 
     private const val MAX_INTEGER_DIGITS_LENGTH = 10
+    private const val BOM = '\uFEFF'
 
     const val EXCESS_CHARS = "Excess characters following JSON"
     const val ILLEGAL_NUMBER = "Illegal JSON number"
@@ -54,16 +55,19 @@ object Parser {
     const val MISSING_CLOSING_BRACE = "Missing closing brace in JSON object"
     const val MISSING_CLOSING_BRACKET = "Missing closing bracket in JSON array"
 
-    fun parse(json: String): JSONValue? {
+    private val defaultOptions = ParseOptions()
+
+    fun parse(json: String, options: ParseOptions = defaultOptions): JSONValue? {
         val tm = TextMatcher(json)
-        val result = parse(tm, rootPointer)
+        tm.match(BOM) // skip BOM if present (not required, but may help interoperability)
+        val result = parse(tm, options, rootPointer)
         tm.skip(JSONFunctions::isSpaceCharacter)
         if (!tm.isAtEnd)
             throw ParseException(EXCESS_CHARS)
         return result
     }
 
-    private fun parse(tm: TextMatcher, pointer: String): JSONValue? {
+    private fun parse(tm: TextMatcher, options: ParseOptions, pointer: String): JSONValue? {
         tm.skip(JSONFunctions::isSpaceCharacter)
 
         if (tm.match('{')) {
@@ -74,12 +78,26 @@ object Parser {
                     if (!tm.match('"'))
                         throw ParseException(ILLEGAL_KEY, pointer)
                     val key = parseString(tm, pointer)
-                    if (builder.containsKey(key))
-                        throw ParseException(DUPLICATE_KEY, pointer)
                     tm.skip(JSONFunctions::isSpaceCharacter)
                     if (!tm.match(':'))
                         throw ParseException(MISSING_COLON, pointer)
-                    builder.add(key, parse(tm, "$pointer/$key"))
+                    val value = parse(tm, options, "$pointer/$key")
+                    if (builder.containsKey(key)) {
+                        when (options.objectKeyDuplicate) {
+                            ParseOptions.DuplicateKeyOption.ERROR -> duplicateKeyError(key, pointer)
+                            ParseOptions.DuplicateKeyOption.TAKE_FIRST -> {}
+                            ParseOptions.DuplicateKeyOption.TAKE_LAST -> {
+                                builder.remove(key)
+                                builder.add(key, value)
+                            }
+                            ParseOptions.DuplicateKeyOption.CHECK_IDENTICAL -> {
+                                if (value != builder.get(key))
+                                    duplicateKeyError(key, pointer)
+                            }
+                        }
+                    }
+                    else
+                        builder.add(key, value)
                     tm.skip(JSONFunctions::isSpaceCharacter)
                     if (!tm.match(','))
                         break
@@ -96,7 +114,7 @@ object Parser {
             tm.skip(JSONFunctions::isSpaceCharacter)
             if (!tm.match(']')) {
                 while (true) {
-                    builder.add(parse(tm, "$pointer/${builder.size}"))
+                    builder.add(parse(tm, options, "$pointer/${builder.size}"))
                     tm.skip(JSONFunctions::isSpaceCharacter)
                     if (!tm.match(','))
                         break
@@ -131,7 +149,7 @@ object Parser {
                 if (!tm.matchDec(0, 1))
                     throw ParseException(ILLEGAL_NUMBER, pointer)
             }
-            if (tm.match('e') ||tm.match('E')) {
+            if (tm.match('e') || tm.match('E')) {
                 floating = true
                 tm.matchAny("-+") // ignore the result, just step the index
                 if (!tm.matchDec(0, 1))
@@ -162,5 +180,9 @@ object Parser {
         catch (iae: IllegalArgumentException) {
             throw ParseException(iae.message ?: "Error parsing JSON string", pointer)
         }
+
+    private fun duplicateKeyError(key: String, pointer: String): Nothing {
+        throw ParseException("$DUPLICATE_KEY \"$key\"", pointer)
+    }
 
 }

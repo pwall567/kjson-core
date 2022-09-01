@@ -2,7 +2,7 @@
  * @(#) ParserObjectTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2021, 2022 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,8 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 import kotlin.test.expect
 
+import io.kjson.JSON.asInt
+import io.kjson.JSON.asObject
 import io.kjson.JSONArray
 import io.kjson.JSONInt
 import io.kjson.JSONObject
@@ -39,6 +41,12 @@ class ParserObjectTest {
 
     @Test fun `should parse empty object`() {
         val result = Parser.parse("{}")
+        assertTrue(result is JSONObject)
+        expect(0) { result.size }
+    }
+
+    @Test fun `should ignore BOM if present`() {
+        val result = Parser.parse("\uFEFF{}")
         assertTrue(result is JSONObject)
         expect(0) { result.size }
     }
@@ -77,7 +85,7 @@ class ParserObjectTest {
     }
 
     @Test fun `should throw exception on missing closing brace`() {
-        assertFailsWith<ParseException> { Parser.parse("""{"first":123""")}.let {
+        assertFailsWith<ParseException> { Parser.parse("""{"first":123""") }.let {
             expect(Parser.MISSING_CLOSING_BRACE) { it.text }
             expect(Parser.MISSING_CLOSING_BRACE) { it.message }
             expect(Parser.rootPointer) { it.pointer }
@@ -85,7 +93,7 @@ class ParserObjectTest {
     }
 
     @Test fun `should throw exception on missing colon`() {
-        assertFailsWith<ParseException> { Parser.parse("""{"first"123}""")}.let {
+        assertFailsWith<ParseException> { Parser.parse("""{"first"123}""") }.let {
             expect(Parser.MISSING_COLON) { it.text }
             expect(Parser.MISSING_COLON) { it.message }
             expect(Parser.rootPointer) { it.pointer }
@@ -93,7 +101,7 @@ class ParserObjectTest {
     }
 
     @Test fun `should throw exception on missing quotes`() {
-        assertFailsWith<ParseException> { Parser.parse("""{first:123}""")}.let {
+        assertFailsWith<ParseException> { Parser.parse("""{first:123}""") }.let {
             expect(Parser.ILLEGAL_KEY) { it.text }
             expect(Parser.ILLEGAL_KEY) { it.message }
             expect(Parser.rootPointer) { it.pointer }
@@ -101,10 +109,52 @@ class ParserObjectTest {
     }
 
     @Test fun `should throw exception on duplicate keys`() {
-        assertFailsWith<ParseException> { Parser.parse("""{"first":123,"first":456}""")}.let {
-            expect(Parser.DUPLICATE_KEY) { it.text }
-            expect(Parser.DUPLICATE_KEY) { it.message }
+        assertFailsWith<ParseException> { Parser.parse("""{"first":123,"first":456}""") }.let {
+            expect("${Parser.DUPLICATE_KEY} \"first\"") { it.text }
+            expect("${Parser.DUPLICATE_KEY} \"first\"") { it.message }
             expect(Parser.rootPointer) { it.pointer }
+        }
+    }
+
+    @Test fun `should throw exception on duplicate keys with option ERROR`() {
+        val options = ParseOptions(ParseOptions.DuplicateKeyOption.ERROR)
+        assertFailsWith<ParseException> { Parser.parse("""{"first":123,"first":456}""", options) }.let {
+            expect("${Parser.DUPLICATE_KEY} \"first\"") { it.text }
+            expect("${Parser.DUPLICATE_KEY} \"first\"") { it.message }
+            expect(Parser.rootPointer) { it.pointer }
+        }
+    }
+
+    @Test fun `should throw exception on duplicate keys with option CHECK_IDENTICAL and different values`() {
+        val options = ParseOptions(ParseOptions.DuplicateKeyOption.CHECK_IDENTICAL)
+        assertFailsWith<ParseException> { Parser.parse("""{"first":123,"first":456}""", options) }.let {
+            expect("${Parser.DUPLICATE_KEY} \"first\"") { it.text }
+            expect("${Parser.DUPLICATE_KEY} \"first\"") { it.message }
+            expect(Parser.rootPointer) { it.pointer }
+        }
+    }
+
+    @Test fun `should take first on duplicate keys with option CHECK_IDENTICAL and same values`() {
+        val options = ParseOptions(ParseOptions.DuplicateKeyOption.CHECK_IDENTICAL)
+        Parser.parse("""{"first":123,"first":123}""", options).asObject.let {
+            expect(1) { it.size }
+            expect(123) { it["first"].asInt }
+        }
+    }
+
+    @Test fun `should take first on duplicate keys with option TAKE_FIRST`() {
+        val options = ParseOptions(ParseOptions.DuplicateKeyOption.TAKE_FIRST)
+        Parser.parse("""{"first":123,"first":456}""", options).asObject.let {
+            expect(1) { it.size }
+            expect(123) { it["first"].asInt }
+        }
+    }
+
+    @Test fun `should take last on duplicate keys with option TAKE_LAST`() {
+        val options = ParseOptions(ParseOptions.DuplicateKeyOption.TAKE_LAST)
+        Parser.parse("""{"first":123,"first":456}""", options).asObject.let {
+            expect(1) { it.size }
+            expect(456) { it["first"].asInt }
         }
     }
 

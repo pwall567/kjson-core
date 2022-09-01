@@ -248,6 +248,53 @@ To simplify casting a `JSONValue` to the expected type, the `JSON` object provid
 Lastly, to simplify error reporting, the `JSON` object provides a `displayValue()` extension function on `JSONValue?` to
 create an abbreviated form of the value suitable for error messages.
 
+## Lenient Parsing
+
+The parser will by default apply strict validation to the JSON input, and in some cases this may be unhelpful.
+There is occasionally a need to parse JSON that is not correctly formatted according to the specification, and to
+accommodate this requirement, the parser may be supplied with a `ParseOptions` object containing option settings for
+parser leniency.
+For example:
+```kotlin
+    val options = ParseOptions(
+        objectKeyDuplicate = ParseOptions.DuplicateKeyOption.ERROR,
+        objectKeyUnquoted = false,
+        objectTrailingComma = false,
+        arrayTrailingComma = false,
+    )
+    val jsonValue = Parser.parse(jsonString, options)
+```
+
+Note that in order to use this functionality, the `Parser` must be called directly;
+the helper functions in the `JSON` object do not include this capability.
+
+### `objectKeyDuplicate`
+
+The JSON specification states that a given key **SHOULD** appear only once in an object, but some software may output
+objects with the same key repeated multiple times.
+Under normal circumstances, the parser will throw an exception when it encounters a second occurrence of the same key,
+but if such data is required to be accepted, the `objectKeyDuplicate` options setting may be used to specify the desired
+behaviour.
+
+The field is an `enum` (`DuplicateKeyOption`), and the possible values are:
+
+- `ERROR`: treat the duplicate key as an error (this is the default)
+- `TAKE_FIRST`: take the value of the first occurrence and ignore duplicates
+- `TAKE_LAST`: take only the last occurrence and ignore any preceding occurrences
+- `CHECK_IDENTICAL`: ignore duplicates only if they are identical to the original value, otherwise report an error
+
+### `objectKeyUnquoted`
+
+**NOT YET IMPLEMENTED**
+
+### `objectTrailingComma`
+
+**NOT YET IMPLEMENTED**
+
+### `arrayTrailingComma`
+
+**NOT YET IMPLEMENTED**
+
 ## Class Diagram
 
 This class diagram may help to explain the main classes and interfaces and the relationships between them.
