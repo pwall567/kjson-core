@@ -297,11 +297,14 @@ When using this option, the keys must follow this pattern:
 
 ### `objectTrailingComma`
 
-**NOT YET IMPLEMENTED**
+When outputting the members of an object, it can be simpler to add a comma after each member, regardless of whether it
+is the last one.
+To allow trailing commas in objects, the option `objectTrailingComma` can be used.
 
 ### `arrayTrailingComma`
 
-**NOT YET IMPLEMENTED**
+Similarly, when outputting the items of an array, it can be simpler to add a comma after each item.
+To allow trailing commas in arrays, the option `arrayTrailingComma` can be used.
 
 ## Class Diagram
 
@@ -334,4 +337,4 @@ The latest version of the library is 3.1, and it may be obtained from the Maven 
 
 Peter Wall
 
-2022-08-31
+2022-09-04

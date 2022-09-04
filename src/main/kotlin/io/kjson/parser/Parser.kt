@@ -104,6 +104,10 @@ object Parser {
                     if (!tm.match(','))
                         break
                     tm.skip(JSONFunctions::isSpaceCharacter)
+                    if (options.objectTrailingComma && tm.match('}')) {
+                        tm.revert()
+                        break
+                    }
                 }
                 if (!tm.match('}'))
                     throw ParseException(MISSING_CLOSING_BRACE, pointer)
@@ -120,6 +124,11 @@ object Parser {
                     tm.skip(JSONFunctions::isSpaceCharacter)
                     if (!tm.match(','))
                         break
+                    tm.skip(JSONFunctions::isSpaceCharacter)
+                    if (options.arrayTrailingComma && tm.match(']')) {
+                        tm.revert()
+                        break
+                    }
                 }
                 if (!tm.match(']'))
                     throw ParseException(MISSING_CLOSING_BRACKET, pointer)

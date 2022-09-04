@@ -68,6 +68,22 @@ class ParserArrayTest {
         expect(JSONString("universe")) { inner[1] }
     }
 
+    @Test fun `should throw exception on trailing comma`() {
+        assertFailsWith<ParseException> { Parser.parse("""["simple",]""") }.let {
+            expect(Parser.ILLEGAL_SYNTAX) { it.text }
+            expect("${Parser.ILLEGAL_SYNTAX} at /1") { it.message }
+            expect("/1") { it.pointer }
+        }
+    }
+
+    @Test fun `should allow trailing comma with option arrayTrailingComma`() {
+        val options = ParseOptions(arrayTrailingComma = true)
+        val result = Parser.parse("""["simple",]""", options)
+        assertTrue(result is JSONArray)
+        expect(1) { result.size }
+        expect(JSONString("simple")) { result[0] }
+    }
+
     @Test fun `should throw exception on missing closing bracket`() {
         assertFailsWith<ParseException> { Parser.parse("""["simple"""") }.let {
             expect(Parser.MISSING_CLOSING_BRACKET) { it.text }

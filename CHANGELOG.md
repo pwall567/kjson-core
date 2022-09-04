@@ -2,7 +2,7 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## [Unreleased]
+## [3.1] - 2022-09-04
 ### Added
 - `ParseOptions`: options to control lenient parsing
 ### Changed
@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Parser`: added lenient parsing of duplicate keys
 - `JSONObject`: added ability to modify `Builder`
 - `Parser`: added lenient parsing of quotes around object keys
+- `Parser`: added lenient parsing of trailing commas
 
 ## [3.0] - 2022-06-06
 ### Changed
