@@ -100,12 +100,22 @@ class ParserObjectTest {
         }
     }
 
-    @Test fun `should throw exception on missing quotes`() {
-        assertFailsWith<ParseException> { Parser.parse("""{first:123}""") }.let {
+    @Test fun `should throw exception on missing quotes around key`() {
+        assertFailsWith<ParseException> { Parser.parse("{first:123}") }.let {
             expect(Parser.ILLEGAL_KEY) { it.text }
             expect(Parser.ILLEGAL_KEY) { it.message }
             expect(Parser.rootPointer) { it.pointer }
         }
+    }
+
+    @Test fun `should allow missing quotes around key with option objectKeyUnquoted`() {
+        val options = ParseOptions(objectKeyUnquoted = true)
+        val result = Parser.parse("{first:123}", options)
+        assertTrue(result is JSONObject)
+        expect(1) { result.size }
+        val first = result["first"]
+        assertTrue(first is JSONInt)
+        expect(123) { first.value }
     }
 
     @Test fun `should throw exception on duplicate keys`() {

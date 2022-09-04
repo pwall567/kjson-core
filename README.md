@@ -285,7 +285,15 @@ The field is an `enum` (`DuplicateKeyOption`), and the possible values are:
 
 ### `objectKeyUnquoted`
 
-**NOT YET IMPLEMENTED**
+Unlike JavaScript, on which it is based, JSON requires that object keys be enclosed in quotes.
+Sometimes, particularly when parsing human-edited JSON, it can be a helpful to allow keys to be conventional computer
+language identifiers, and this can be selected by the `objectKeyUnquoted` option.
+
+Setting this flag to `true` will cause the parser to allow object keys to be specified without quotes.
+When using this option, the keys must follow this pattern:
+
+- the first character must be ASCII alphabetic (upper or lower case) or underscore
+- subsequent characters must be ASCII alphabetic (upper or lower case) or numeric or underscore
 
 ### `objectTrailingComma`
 

@@ -75,9 +75,11 @@ object Parser {
             tm.skip(JSONFunctions::isSpaceCharacter)
             if (!tm.match('}')) {
                 while (true) {
-                    if (!tm.match('"'))
-                        throw ParseException(ILLEGAL_KEY, pointer)
-                    val key = parseString(tm, pointer)
+                    val key = when {
+                        tm.match('"') -> parseString(tm, pointer)
+                        options.objectKeyUnquoted && tm.matchIdentifier() -> tm.result
+                        else -> throw ParseException(ILLEGAL_KEY, pointer)
+                    }
                     tm.skip(JSONFunctions::isSpaceCharacter)
                     if (!tm.match(':'))
                         throw ParseException(MISSING_COLON, pointer)
@@ -183,6 +185,15 @@ object Parser {
 
     private fun duplicateKeyError(key: String, pointer: String): Nothing {
         throw ParseException("$DUPLICATE_KEY \"$key\"", pointer)
+    }
+
+    private fun TextMatcher.matchIdentifier(): Boolean {
+        val identifierStart = index
+        if (!match { it in 'A'.code..'Z'.code || it in 'a'.code..'z'.code || it == '_'.code })
+            return false
+        skip { it in 'A'.code..'Z'.code || it in 'a'.code..'z'.code || it in '0'.code..'9'.code || it == '_'.code }
+        start = identifierStart
+        return true
     }
 
 }

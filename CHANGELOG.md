@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `JSON`: added `parseNonNull()` function
 - `Parser`: added lenient parsing of duplicate keys
 - `JSONObject`: added ability to modify `Builder`
+- `Parser`: added lenient parsing of quotes around object keys
 
 ## [3.0] - 2022-06-06
 ### Changed
