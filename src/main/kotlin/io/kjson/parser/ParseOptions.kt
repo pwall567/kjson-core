@@ -32,9 +32,9 @@ package io.kjson.parser
  */
 data class ParseOptions(
     val objectKeyDuplicate: DuplicateKeyOption = DuplicateKeyOption.ERROR,
-    val objectKeyUnquoted: Boolean = false,     // TODO not yet implemented
-    val objectTrailingComma: Boolean = false,   // TODO not yet implemented
-    val arrayTrailingComma: Boolean = false,    // TODO not yet implemented
+    val objectKeyUnquoted: Boolean = false,
+    val objectTrailingComma: Boolean = false,
+    val arrayTrailingComma: Boolean = false,
 ) {
 
     enum class DuplicateKeyOption { ERROR, TAKE_FIRST, TAKE_LAST, CHECK_IDENTICAL }
