@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [3.2] - 2022-09-19
+### Changed
+- `JSON`: added `elidedValue()` function
+
 ## [3.1] - 2022-09-04
 ### Added
 - `ParseOptions`: options to control lenient parsing

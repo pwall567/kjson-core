@@ -29,6 +29,7 @@ import java.math.BigDecimal
 import java.util.function.IntConsumer
 
 import io.kjson.parser.Parser
+import net.pwall.json.JSONFunctions.appendString
 import net.pwall.json.JSONFunctions.displayString
 import net.pwall.util.CoOutput
 import net.pwall.util.output
@@ -106,6 +107,46 @@ object JSON {
             else -> "{...}"
         }
         else -> toString()
+    }
+
+    fun JSONValue?.elidedValue(
+        exclude: Collection<String>? = null,
+        include: Collection<String>? = null,
+        substitute: String = "****",
+    ): String = when (this) {
+        null -> "null"
+        is JSONObject -> StringBuilder().also { appendElided(it, this, exclude, include, substitute) }.toString()
+        else -> toJSON()
+    }
+
+    private fun appendElided(
+        a: Appendable,
+        json: JSONValue?,
+        exclude: Collection<String>?,
+        include: Collection<String>?,
+        substitute: String,
+    ) {
+        if (json is JSONObject) {
+            a.append('{')
+            if (json.isNotEmpty()) {
+                val iterator = json.entries.iterator()
+                while (true) {
+                    val (key, value) = iterator.next()
+                    appendString(a, key, false)
+                    a.append(':')
+                    if ((exclude == null || key !in exclude) && (include == null || key in include))
+                        appendElided(a, value, exclude, include, substitute)
+                    else
+                        appendString(a, substitute, false)
+                    if (!iterator.hasNext())
+                        break
+                    a.append(',')
+                }
+            }
+            a.append('}')
+        }
+        else
+            a.appendJSONValue(json)
     }
 
     val JSONValue?.asString: String

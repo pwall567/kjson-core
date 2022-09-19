@@ -62,6 +62,7 @@ import io.kjson.JSON.asULongOrNull
 import io.kjson.JSON.asUShort
 import io.kjson.JSON.asUShortOrNull
 import io.kjson.JSON.displayValue
+import io.kjson.JSON.elidedValue
 import net.pwall.json.format.Formatter
 import net.pwall.json.format.Formatter.unixLineSeparator
 
@@ -154,6 +155,93 @@ class JSONTest {
         expect("""{"abc":123}""") { JSONObject.of("abc" to JSONInt(123)).displayValue() }
         expect("""{"greeting":"Hello"}""") { JSONObject.of("greeting" to JSONString("Hello")).displayValue() }
         expect("{...}") { JSONObject.of("abc" to JSONInt(123), "def" to JSONInt(456)).displayValue() }
+    }
+
+    @Test fun `should return elidedValue for number types`() {
+        expect("0") { JSONInt(0).elidedValue() }
+        expect("12345") { JSONInt(12345).elidedValue() }
+        expect("1234567812345678") { JSONLong(1234567812345678).elidedValue() }
+        expect("0.123") { JSONDecimal(BigDecimal("0.123")).elidedValue() }
+    }
+
+    @Test fun `should return elidedValue for boolean`() {
+        expect("true") { JSONBoolean.TRUE.elidedValue() }
+        expect("false") { JSONBoolean.FALSE.elidedValue() }
+    }
+
+    @Test fun `should return elidedValue for null`() {
+        expect("null") { JSON.parse("null").elidedValue() }
+    }
+
+    @Test fun `should return elidedValue for string`() {
+        expect("\"abc\"") { JSONString("abc").elidedValue() }
+    }
+
+    @Test fun `should return elidedValue for array`() {
+        expect("[]") { JSONArray.EMPTY.elidedValue() }
+        expect("[123]") { JSONArray.of(JSONInt(123)).elidedValue() }
+        expect("[\"Hello\"]") { JSONArray.of(JSONString("Hello")).elidedValue() }
+        expect("[123,456]") { JSONArray.of(JSONInt(123), JSONInt(456)).elidedValue() }
+    }
+
+    @Test fun `should return elidedValue for object with no exclusions or inclusions`() {
+        expect("{}") { JSONObject.EMPTY.elidedValue() }
+        expect("""{"abc":123}""") { JSONObject.of("abc" to JSONInt(123)).elidedValue() }
+        expect("""{"greeting":"Hello"}""") { JSONObject.of("greeting" to JSONString("Hello")).elidedValue() }
+        expect("""{"abc":123,"def":4}""") { JSONObject.of("abc" to JSONInt(123), "def" to JSONInt(4)).elidedValue() }
+    }
+
+    @Test fun `should return elidedValue for object with exclusions`() {
+        val json = JSONObject.build {
+            add("aaa", 111)
+            add("bbb", 222)
+            add("ccc", 333)
+            add("ddd", 444)
+            add("eee", 555)
+        }
+        expect("""{"aaa":111,"bbb":222,"ccc":333,"ddd":444,"eee":555}""") { json.elidedValue() }
+        expect("""{"aaa":111,"bbb":222,"ccc":333,"ddd":444,"eee":555}""") { json.elidedValue(exclude = emptyList()) }
+        expect("""{"aaa":111,"bbb":222,"ccc":333,"ddd":"****","eee":555}""") {
+            json.elidedValue(exclude = setOf("ddd"))
+        }
+        expect("""{"aaa":111,"bbb":222,"ccc":333,"ddd":"****","eee":"****"}""") {
+            json.elidedValue(exclude = setOf("ddd", "eee"))
+        }
+    }
+
+    @Test fun `should return elidedValue for object with inclusions`() {
+        val json = JSONObject.build {
+            add("aaa", 111)
+            add("bbb", 222)
+            add("ccc", 333)
+            add("ddd", 444)
+            add("eee", 555)
+        }
+        expect("""{"aaa":"****","bbb":"****","ccc":"****","ddd":"****","eee":"****"}""") {
+            json.elidedValue(include = emptyList())
+        }
+        expect("""{"aaa":"****","bbb":"****","ccc":"****","ddd":444,"eee":"****"}""") {
+            json.elidedValue(include = setOf("ddd"))
+        }
+        expect("""{"aaa":"****","bbb":"****","ccc":"****","ddd":444,"eee":555}""") {
+            json.elidedValue(include = setOf("ddd", "eee"))
+        }
+    }
+
+    @Test fun `should return elidedValue for object with custom substitute string`() {
+        val json = JSONObject.build {
+            add("aaa", 111)
+            add("bbb", 222)
+            add("ccc", 333)
+            add("ddd", 444)
+            add("eee", 555)
+        }
+        expect("""{"aaa":111,"bbb":222,"ccc":333,"ddd":"","eee":555}""") {
+            json.elidedValue(exclude = setOf("ddd"), substitute = "")
+        }
+        expect("""{"aaa":111,"bbb":222,"ccc":333,"ddd":"elided\u2020","eee":"elided\u2020"}""") {
+            json.elidedValue(exclude = setOf("ddd", "eee"), substitute = "elided\u2020")
+        }
     }
 
     @Test fun `should return asString for JSONString`() {

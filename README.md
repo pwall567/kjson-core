@@ -175,6 +175,9 @@ The constructor for `JSONObject` is not publicly accessible, but an `of()` funct
 ### `JSON`
 
 The `JSON` object contains a number of functions to assist with parsing and object creation.
+
+#### Parsing Functions
+
 The simplest way to parse JSON text is:
 ```kotlin
         val json = JSON.parse(text)
@@ -202,6 +205,8 @@ Similarly, if the JSON is expected to be an array:
 ```
 The result type will be `JSONArray`, and again, an exception will be thrown if the input is not of the correct type.
 
+#### `JSONValue` Creation Functions
+
 The `JSON` object also provides a number of shortcut functions to create `JSONValue`s:
 
 | Function                                   | Creates       |
@@ -214,9 +219,47 @@ The `JSON` object also provides a number of shortcut functions to create `JSONVa
 | `JSON.of(vararg JSONValue?)`               | `JSONArray`   |
 | `JSON.of(vararg Pair<String, JSONValue?>)` | `JSONObject`  |
 
-To simplify casting a `JSONValue` to the expected type, the `JSON` object provides extension functions on `JSONValue?`:
+#### Display Functions
 
-| Function                     | Result type   | If the value is not of that type... |
+To simplify error reporting, the `JSON` object provides a `displayValue()` extension function on `JSONValue?` to create
+an abbreviated form of the value suitable for error messages.
+Arrays with more than one item are displayed as `[...]`, objects with more than one element are displayed as `{...}`,
+and long strings are shortened with " ... " in the middle.
+
+For example:
+```kotlin
+     JSONString("the quick brown fox jumps over the lazy dog").displayValue()
+```
+will display:
+```
+"the quic ... lazy dog"
+```
+
+There is often a requirement to log JSON inputs for later error diagnosis, with the restriction that logs must not
+contain sensitive information.
+The `elidedValue()` extension function on `JSONValue?` allows JSON values to be converted to the text form with certain
+nominated elements excluded.
+
+For example:
+```kotlin
+    val json = JSON.parse("""{"name":"Adam","accountNo":"12345678"}""")
+    json.elidedValue(exclude = setOf("accountNo"))
+```
+will display:
+```
+{"name":"Adam","accountNo":"****"}
+```
+All elements with the specified name will be elided, wherever they occur in the object tree.
+
+The elements to be elided may be specified as a `Collection` of element names to be excluded as shown above, or (less
+usefully) as a `Collection` of element names to be included (using the `include` parameter).
+The substitute string (default "****") may also be specified using the `substitute` parameter.
+
+#### Extension Values
+
+To simplify casting a `JSONValue` to the expected type, the `JSON` object provides extension values on `JSONValue?`:
+
+| Value                        | Result type   | If the value is not of that type... |
 |------------------------------|---------------|-------------------------------------|
 | `JSONValue?.asString`        | `String`      | throw exception                     |
 | `JSONValue?.asStringOrNull`  | `String?`     | return `null`                       |
@@ -244,9 +287,6 @@ To simplify casting a `JSONValue` to the expected type, the `JSON` object provid
 | `JSONValue?.asArrayOrNull`   | `JSONArray?`  | return `null`                       |
 | `JSONValue?.asObject`        | `JSONObject`  | throw exception                     |
 | `JSONValue?.asObjectOrNull`  | `JSONObject?` | return `null`                       |
-
-Lastly, to simplify error reporting, the `JSON` object provides a `displayValue()` extension function on `JSONValue?` to
-create an abbreviated form of the value suitable for error messages.
 
 ## Lenient Parsing
 
@@ -316,25 +356,25 @@ The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram
 
 ## Dependency Specification
 
-The latest version of the library is 3.1, and it may be obtained from the Maven Central repository.
+The latest version of the library is 3.2, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>3.1</version>
+      <version>3.2</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:3.1"
+    implementation "io.kjson:kjson-core:3.2"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:3.1")
+    implementation("io.kjson:kjson-core:3.2")
 ```
 
 Peter Wall
 
-2022-09-04
+2022-09-19
