@@ -31,7 +31,7 @@ package io.kjson
  * @author  Peter Wall
  * @param   T       the primitive value type
  */
-sealed interface JSONPrimitive<T> : JSONValue {
+sealed interface JSONPrimitive<out T> : JSONValue {
 
     val value: T
 

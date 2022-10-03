@@ -32,7 +32,7 @@ import java.math.BigDecimal
  *
  * @author  Peter Wall
  */
-class JSONDecimal(override val value: BigDecimal) : JSONNumberValue(), JSONPrimitive<BigDecimal> {
+class JSONDecimal(override val value: BigDecimal) : JSONNumber(), JSONPrimitive<BigDecimal> {
 
     constructor(str: String): this(BigDecimal(str))
 
@@ -104,7 +104,7 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumberValue(), JSONPrimi
     override fun equals(other: Any?): Boolean {
         if (this === other)
             return true
-        if (other !is JSONNumberValue)
+        if (other !is JSONNumber)
             return false
         return when (other) {
             is JSONInt -> value.compareTo(BigDecimal(other.value)) == 0
@@ -129,7 +129,7 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumberValue(), JSONPrimi
         private val MAX_SHORT = BigDecimal(Short.MAX_VALUE.toInt())
         private val MIN_BYTE = BigDecimal(Byte.MIN_VALUE.toInt())
         private val MAX_BYTE = BigDecimal(Byte.MAX_VALUE.toInt())
-        private val MAX_ULONG = MAX_LONG * BigDecimal(2) + BigDecimal.ONE
+        private val MAX_ULONG = MAX_LONG + MAX_LONG + BigDecimal.ONE
         private val MAX_UINT = BigDecimal(UInt.MAX_VALUE.toLong())
         private val MAX_USHORT = BigDecimal(UShort.MAX_VALUE.toInt())
         private val MAX_UBYTE = BigDecimal(UByte.MAX_VALUE.toInt())

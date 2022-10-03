@@ -47,6 +47,17 @@ class JSONObjectTest {
         expect(JSONString("X")) { jsonObject["def"] }
         expect("""{"abc":12345,"def":"X"}""") { jsonObject.toJSON() }
         expect("""{"abc":12345,"def":"X"}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should create empty JSONObject using of`() {
+        val jsonObject = JSONObject.of()
+        expect(0) { jsonObject.size }
+        expect("{}") { jsonObject.toJSON() }
+        expect("{}") { jsonObject.toString() }
+        assertTrue(jsonObject.isEmpty())
+        assertFalse(jsonObject.isNotEmpty())
     }
 
     @Test fun `should build JSONObject using Builder`() {

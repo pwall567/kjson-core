@@ -36,4 +36,6 @@ sealed interface JSONStructure : JSONValue {
 
     fun isEmpty(): Boolean
 
+    fun isNotEmpty(): Boolean = !isEmpty()
+
 }

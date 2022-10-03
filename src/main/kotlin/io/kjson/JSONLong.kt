@@ -37,7 +37,7 @@ import net.pwall.util.IntOutput
  *
  * @author  Peter Wall
  */
-class JSONLong(override val value: Long) : JSONNumberValue(), JSONPrimitive<Long> {
+class JSONLong(override val value: Long) : JSONNumber(), JSONPrimitive<Long> {
 
     override fun appendTo(a: Appendable) = IntOutput.appendLong(a, value)
 
@@ -102,7 +102,7 @@ class JSONLong(override val value: Long) : JSONNumberValue(), JSONPrimitive<Long
     override fun equals(other: Any?): Boolean {
         if (this === other)
             return true
-        if (other !is JSONNumberValue)
+        if (other !is JSONNumber)
             return false
         return when (other) {
             is JSONInt -> value == other.value.toLong()

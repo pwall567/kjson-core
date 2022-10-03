@@ -37,7 +37,7 @@ import net.pwall.util.IntOutput
  *
  * @author  Peter Wall
  */
-class JSONInt(override val value: Int) : JSONNumberValue(), JSONPrimitive<Int> {
+class JSONInt(override val value: Int) : JSONNumber(), JSONPrimitive<Int> {
 
     override fun appendTo(a: Appendable) = IntOutput.appendInt(a, value)
 
@@ -102,7 +102,7 @@ class JSONInt(override val value: Int) : JSONNumberValue(), JSONPrimitive<Int> {
     override fun equals(other: Any?): Boolean {
         if (this === other)
             return true
-        if (other !is JSONNumberValue)
+        if (other !is JSONNumber)
             return false
         return when (other) {
             is JSONInt -> value == other.value

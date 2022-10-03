@@ -2,6 +2,13 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [4.0] - 2022-10-03
+### Changed
+- `JSONNumber`: renamed from `JSONNumberValue` (breaking change for some)
+- `JSONNumber`: now also implements `JSONValue`
+- `JSONStructure`: added `isNotEmpty()`
+- `JSON`: added `maxString` parameter to `displayValue()`
+
 ## [3.2] - 2022-09-19
 ### Changed
 - `JSON`: added `elidedValue()` function

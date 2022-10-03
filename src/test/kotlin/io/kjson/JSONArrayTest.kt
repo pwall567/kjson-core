@@ -28,6 +28,8 @@ package io.kjson
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import kotlin.test.expect
 import kotlinx.coroutines.runBlocking
 
@@ -43,7 +45,19 @@ class JSONArrayTest {
         expect(2) { testArray.size }
         expect(JSONInt(123)) { testArray[0] }
         expect(JSONInt(456)) { testArray[1] }
+        expect("[123,456]") { testArray.toString() }
         expect("[123,456]") { testArray.toJSON() }
+        assertFalse(testArray.isEmpty())
+        assertTrue(testArray.isNotEmpty())
+    }
+
+    @Test fun `should create empty JSONArray`() {
+        val testArray = JSONArray(emptyArray(), 0)
+        expect(0) { testArray.size }
+        expect("[]") { testArray.toString() }
+        expect("[]") { testArray.toJSON() }
+        assertTrue(testArray.isEmpty())
+        assertFalse(testArray.isNotEmpty())
     }
 
     @Test fun `should create JSONArray using of`() {

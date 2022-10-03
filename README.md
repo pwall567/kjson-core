@@ -48,7 +48,7 @@ The `JSONValue` interface specifies four functions:
 - [`JSONString`](#jsonstring) &ndash; a string value
 - [`JSONInt`](#jsonint) &ndash; a number value that fits in a 32-bit signed integer
 - [`JSONLong`](#jsonlong) &ndash; a number value that fits in a 64-bit signed integer
-- [`JSONDecimal`](#jsondecimal) &ndash; any number value, including non-integer
+- [`JSONDecimal`](#jsondecimal) &ndash; any number value, including non-integer (uses `BigDecimal` internally)
 - [`JSONBoolean`](#jsonboolean) &ndash; a boolean value
 - [`JSONArray`](#jsonarray) &ndash; an array
 - [`JSONObject`](#jsonobject) &ndash; an object
@@ -64,21 +64,24 @@ It is a parameterised interface, where the parameter is the type of the value.
 The interface specifies a single value (named `value`), of the parameter type.
 The value is never `null`.
 
-### `JSONNumberValue`
+### `JSONNumber`
 
-In addition to implementing [`JSONPrimitive`](#jsonprimitive), the number value classes all derive from the sealed class
-`JSONNumberValue`, which itself derives from the system class `Number`.
-That class provides a set of `toInt()`, `toLong()` _etc._ functions, to which `JSONNumberValue` adds the following:
+In addition to implementing [`JSONPrimitive`](#jsonprimitive), the number value classes [`JSONInt`](#jsonint),
+[`JSONLong`](#jsonlong) and [`JSONDecimal`](#jsondecimal) all derive from the sealed class `JSONNumber`, which itself
+derives from the system class `Number`.
+This means that these classes may be used without conversion anywhere a `Number` is called for.
+
+The `Number` class provides a set of `toInt()`, `toLong()` _etc._ functions, to which `JSONNumber` adds the following:
 
 | Function      | Converts the value to... |
 |---------------|--------------------------|
 | `toDecimal()` | `BigDecimal`             |
-| `toUlong()`   | `ULong`                  |
+| `toULong()`   | `ULong`                  |
 | `toUInt()`    | `UInt`                   |
 | `toUShort()`  | `UShort`                 |
 | `toUByte()`   | `UByte`                  |
 
-`JSONNumberValue` also provides the following boolean functions:
+`JSONNumber` also provides the following boolean functions:
 
 | Function          | Returns `true` iff...                                            |
 |-------------------|------------------------------------------------------------------|
@@ -98,27 +101,32 @@ That class provides a set of `toInt()`, `toLong()` _etc._ functions, to which `J
 | `isNotNegative()` | the value is greater than or equal to 0                          |
 | `isNotPositive()` | the value is less than or equal to 0                             |
 
+The `JSONNumber` classes also override `equals()` (and `hashCode()`) so that instances with the same value but different
+types will be regarded as equal.
+`JSONInt(27)`, `JSONLong(27)` and `JSONDecimal(27)` will all be considered equal, and will all return the same hash
+code.
+
 ### `JSONInt`
 
 The `JSONInt` class holds JSON number values that fit in a 32-bit signed integer.
-The class derives from [`JSONNumberValue`](#jsonnumbervalue), providing implementations for all the abstract functions
-of that class, and it also implements [`JSONPrimitive`](#jsonprimitive) with the parameter type `Int`.
+The class derives from [`JSONNumber`](#jsonnumber), providing implementations for all the abstract functions of that
+class, and it also implements [`JSONPrimitive`](#jsonprimitive) with the parameter type `Int`.
 
 The `Int` value may be accessed by the property `value`.
 
 ### `JSONLong`
 
 The `JSONLong` class holds JSON number values that will fit in a 64-bit signed long integer.
-The class derives from [`JSONNumberValue`](#jsonnumbervalue), providing implementations for all the abstract functions
-of that class, and it also implements [`JSONPrimitive`](#jsonprimitive) with the parameter type `Long`.
+The class derives from [`JSONNumber`](#jsonnumber), providing implementations for all the abstract functions of that
+class, and it also implements [`JSONPrimitive`](#jsonprimitive) with the parameter type `Long`.
 
 The `Long` value may be accessed by the property `value`.
 
 ### `JSONDecimal`
 
 The `JSONDecimal` class holds any JSON number values, including non-integer values.
-The class derives from [`JSONNumberValue`](#jsonnumbervalue), providing implementations for all the abstract functions
-of that class, and it also implements [`JSONPrimitive`](#jsonprimitive) with the parameter type `BigDecimal`.
+The class derives from [`JSONNumber`](#jsonnumber), providing implementations for all the abstract functions of that
+class, and it also implements [`JSONPrimitive`](#jsonprimitive) with the parameter type `BigDecimal`.
 
 The `BigDecimal` value may be accessed by the property `value`.
 
@@ -147,8 +155,8 @@ The `Boolean` value may be accessed by the property `value`.
 
 `JSONStructure` is a sealed interface (another sub-interface of [`JSONValue`](#jsonvalue)) implemented by the classes
 for structured types, that is, arrays and objects.
-It specifies a single value `size` (`Int`) which gives the number of entries in the array or object, and the function
-`isEmpty()` which (unsurprisingly) returns `true` if the structure is empty.
+It specifies a single value `size` (`Int`) which gives the number of entries in the array or object, and the functions
+`isEmpty()` and `isNotEmpty()` which (unsurprisingly) return `true` or `false` respectively if the structure is empty.
 
 ### `JSONArray`
 
@@ -161,6 +169,10 @@ The class also implements the [`JSONStructure`](#jsonstructure) interface.
 The constructor for `JSONArray` is not publicly accessible, but an `of()` function is available in the
 `companion object`, and a `build` function and the `Builder` nested class allow arrays to be constructed dynamically.
 
+`JSONArray` implements the `equals()` and `hashCode()` functions as specified for the Java Collections classes, so that
+an instance of `JSONArray` may be compared safely with an instance of any class correctly implementing
+`List<JSONValue?>`.
+
 ### `JSONObject`
 
 The `JSONObject` class implements the `Map<String, JSONValue?>` interface, and all the functions of that interface are
@@ -171,6 +183,10 @@ The original order of the input is maintained on parsing or on the programmatic 
 
 The constructor for `JSONObject` is not publicly accessible, but an `of()` function is available in the
 `companion object`, and a `build` function and the `Builder` nested class allow objects to be constructed dynamically.
+
+`JSONObject` implements the `equals()` and `hashCode()` functions as specified for the Java Collections classes, so that
+an instance of `JSONObject` may be compared safely with an instance of any class correctly implementing
+`Map<String, JSONValue?>`.
 
 ### `JSON`
 
@@ -219,12 +235,12 @@ The `JSON` object also provides a number of shortcut functions to create `JSONVa
 | `JSON.of(vararg JSONValue?)`               | `JSONArray`   |
 | `JSON.of(vararg Pair<String, JSONValue?>)` | `JSONObject`  |
 
-#### Display Functions
+#### Human-Friendly Output
 
 To simplify error reporting, the `JSON` object provides a `displayValue()` extension function on `JSONValue?` to create
 an abbreviated form of the value suitable for error messages.
-Arrays with more than one item are displayed as `[...]`, objects with more than one element are displayed as `{...}`,
-and long strings are shortened with " ... " in the middle.
+Arrays with more than one item are displayed as `[ ... ]`, objects with more than one element are displayed as
+`{ ... }`, and long strings are shortened with "` ... `" in the middle.
 
 For example:
 ```kotlin
@@ -234,6 +250,11 @@ will display:
 ```
 "the quic ... lazy dog"
 ```
+The maximum number of characters to display in a string defaults to 21, but may be specified as a parameter, _e.g._
+`displayValue(17)` (odd numbers are best, because they result in the same number of characters before and after the
+elision).
+
+#### Security-Aware Output
 
 There is often a requirement to log JSON inputs for later error diagnosis, with the restriction that logs must not
 contain sensitive information.
@@ -253,7 +274,7 @@ All elements with the specified name will be elided, wherever they occur in the 
 
 The elements to be elided may be specified as a `Collection` of element names to be excluded as shown above, or (less
 usefully) as a `Collection` of element names to be included (using the `include` parameter).
-The substitute string (default "****") may also be specified using the `substitute` parameter.
+The substitute string (default "`****`") may also be specified using the `substitute` parameter.
 
 #### Extension Values
 
@@ -339,12 +360,12 @@ When using this option, the keys must follow this pattern:
 
 When outputting the members of an object, it can be simpler to add a comma after each member, regardless of whether it
 is the last one.
-To allow trailing commas in objects, the option `objectTrailingComma` can be used.
+To allow trailing commas in objects, the option `objectTrailingComma` can be set to `true`.
 
 ### `arrayTrailingComma`
 
 Similarly, when outputting the items of an array, it can be simpler to add a comma after each item.
-To allow trailing commas in arrays, the option `arrayTrailingComma` can be used.
+To allow trailing commas in arrays, the option `arrayTrailingComma` can be set to `true`.
 
 ## Class Diagram
 
@@ -356,25 +377,25 @@ The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram
 
 ## Dependency Specification
 
-The latest version of the library is 3.2, and it may be obtained from the Maven Central repository.
+The latest version of the library is 4.0, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>3.2</version>
+      <version>4.0</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:3.2"
+    implementation "io.kjson:kjson-core:4.0"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:3.2")
+    implementation("io.kjson:kjson-core:4.0")
 ```
 
 Peter Wall
 
-2022-09-19
+2022-10-03

@@ -93,18 +93,18 @@ object JSON {
             json.appendTo(this)
     }
 
-    fun JSONValue?.displayValue(): String = when (this) {
+    fun JSONValue?.displayValue(maxString: Int = 21): String = when (this) {
         null -> "null"
-        is JSONString -> displayString(value, 21)
+        is JSONString -> displayString(value, maxString)
         is JSONArray -> when (size) {
             0 -> "[]"
             1 -> "[${this[0].displayValue()}]"
-            else -> "[...]"
+            else -> "[ ... ]"
         }
         is JSONObject -> when (size) {
             0 -> "{}"
-            1 -> entries.iterator().next().let { "{${displayString(it.key, 21)}:${it.value.displayValue()}}" }
-            else -> "{...}"
+            1 -> entries.iterator().next().let { "{${displayString(it.key, maxString)}:${it.value.displayValue()}}" }
+            else -> "{ ... }"
         }
         else -> toString()
     }
@@ -115,7 +115,7 @@ object JSON {
         substitute: String = "****",
     ): String = when (this) {
         null -> "null"
-        is JSONObject -> StringBuilder().also { appendElided(it, this, exclude, include, substitute) }.toString()
+        is JSONObject -> buildString { appendElided(this, this@elidedValue, exclude, include, substitute) }
         else -> toJSON()
     }
 
@@ -159,55 +159,55 @@ object JSON {
         get() = asLongOrNull ?: throw JSONException("Not a long - ${displayValue()}")
 
     val JSONValue?.asLongOrNull: Long?
-        get() = (this as? JSONNumberValue)?.let { if (it.isLong()) it.toLong() else null }
+        get() = (this as? JSONNumber)?.let { if (it.isLong()) it.toLong() else null }
 
     val JSONValue?.asInt: Int
         get() = asIntOrNull ?: throw JSONException("Not an int - ${displayValue()}")
 
     val JSONValue?.asIntOrNull: Int?
-        get() = (this as? JSONNumberValue)?.let { if (it.isInt()) it.toInt() else null }
+        get() = (this as? JSONNumber)?.let { if (it.isInt()) it.toInt() else null }
 
     val JSONValue?.asShort: Short
         get() = asShortOrNull ?: throw JSONException("Not a short - ${displayValue()}")
 
     val JSONValue?.asShortOrNull: Short?
-        get() = (this as? JSONNumberValue)?.let { if (it.isShort()) it.toShort() else null }
+        get() = (this as? JSONNumber)?.let { if (it.isShort()) it.toShort() else null }
 
     val JSONValue?.asByte: Byte
         get() = asByteOrNull ?: throw JSONException("Not a byte - ${displayValue()}")
 
     val JSONValue?.asByteOrNull: Byte?
-        get() = (this as? JSONNumberValue)?.let { if (it.isByte()) it.toByte() else null }
+        get() = (this as? JSONNumber)?.let { if (it.isByte()) it.toByte() else null }
 
     val JSONValue?.asULong: ULong
         get() = asULongOrNull ?: throw JSONException("Not an unsigned long - ${displayValue()}")
 
     val JSONValue?.asULongOrNull: ULong?
-        get() = (this as? JSONNumberValue)?.let { if (it.isULong()) it.toULong() else null }
+        get() = (this as? JSONNumber)?.let { if (it.isULong()) it.toULong() else null }
 
     val JSONValue?.asUInt: UInt
         get() = asUIntOrNull ?: throw JSONException("Not an unsigned int - ${displayValue()}")
 
     val JSONValue?.asUIntOrNull: UInt?
-        get() = (this as? JSONNumberValue)?.let { if (it.isUInt()) it.toUInt() else null }
+        get() = (this as? JSONNumber)?.let { if (it.isUInt()) it.toUInt() else null }
 
     val JSONValue?.asUShort: UShort
         get() = asUShortOrNull ?: throw JSONException("Not an unsigned short - ${displayValue()}")
 
     val JSONValue?.asUShortOrNull: UShort?
-        get() = (this as? JSONNumberValue)?.let { if (it.isUShort()) it.toUShort() else null }
+        get() = (this as? JSONNumber)?.let { if (it.isUShort()) it.toUShort() else null }
 
     val JSONValue?.asUByte: UByte
         get() = asUByteOrNull ?: throw JSONException("Not an unsigned byte - ${displayValue()}")
 
     val JSONValue?.asUByteOrNull: UByte?
-        get() = (this as? JSONNumberValue)?.let { if (it.isUByte()) it.toUByte() else null }
+        get() = (this as? JSONNumber)?.let { if (it.isUByte()) it.toUByte() else null }
 
     val JSONValue?.asDecimal: BigDecimal
         get() = asDecimalOrNull ?: throw JSONException("Not a decimal - ${displayValue()}")
 
     val JSONValue?.asDecimalOrNull: BigDecimal?
-        get() = (this as? JSONNumberValue)?.toDecimal()
+        get() = (this as? JSONNumber)?.toDecimal()
 
     val JSONValue?.asBoolean: Boolean
         get() = asBooleanOrNull ?: throw JSONException("Not a boolean - ${displayValue()}")

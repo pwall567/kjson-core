@@ -40,7 +40,7 @@ sealed interface JSONValue {
 
     fun appendTo(a: Appendable)
 
-    fun toJSON(): String = StringBuilder().also { appendTo(it) }.toString()
+    fun toJSON(): String = buildString { appendTo(this) }
 
     fun output(out: IntConsumer) = out.accept(toJSON())
 

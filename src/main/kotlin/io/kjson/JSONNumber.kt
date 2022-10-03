@@ -1,5 +1,5 @@
 /*
- * @(#) JSONNumberValue.kt
+ * @(#) JSONNumber.kt
  *
  * kjson-core  JSON Kotlin core functionality
  * Copyright (c) 2021, 2022 Peter Wall
@@ -33,7 +33,7 @@ import java.math.BigDecimal
  *
  * @author  Peter Wall
  */
-sealed class JSONNumberValue : Number() {
+sealed class JSONNumber : Number(), JSONValue {
 
     abstract val value: Number
 
@@ -76,5 +76,9 @@ sealed class JSONNumberValue : Number() {
     abstract fun toUShort(): UShort
 
     abstract fun toUByte(): UByte
+
+    abstract override fun equals(other: Any?): Boolean
+
+    abstract override fun hashCode(): Int
 
 }

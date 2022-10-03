@@ -107,7 +107,7 @@ class JSONTest {
         expect(JSONInt(1)) { json["one"] }
         expect(JSONInt(2)) { json["two"] }
         assertFailsWith<JSONException> { JSON.parseObject("[1,2,3]") }.let {
-            expect("Not an object - [...]") { it.message }
+            expect("Not an object - [ ... ]") { it.message }
         }
     }
 
@@ -118,7 +118,7 @@ class JSONTest {
         expect(JSONString("beta")) { json[1] }
         expect(JSONString("gamma")) { json[2] }
         assertFailsWith<JSONException> { JSON.parseArray("""{"abc":0,"def":-1}""") }.let {
-            expect("Not an array - {...}") { it.message }
+            expect("Not an array - { ... }") { it.message }
         }
     }
 
@@ -143,18 +143,23 @@ class JSONTest {
         expect("\"the quic ... lazy dog\"") { JSONString("the quick brown fox jumps over the lazy dog").displayValue() }
     }
 
+    @Test fun `should return displayValue for string with specified maximum`() {
+        expect("\"abc\"") { JSONString("abc").displayValue(17) }
+        expect("\"the qu ... zy dog\"") { JSONString("the quick brown fox jumps over the lazy dog").displayValue(17) }
+    }
+
     @Test fun `should return displayValue for array`() {
         expect("[]") { JSONArray.EMPTY.displayValue() }
         expect("[123]") { JSONArray.of(JSONInt(123)).displayValue() }
         expect("[\"Hello\"]") { JSONArray.of(JSONString("Hello")).displayValue() }
-        expect("[...]") { JSONArray.of(JSONInt(123), JSONInt(456)).displayValue() }
+        expect("[ ... ]") { JSONArray.of(JSONInt(123), JSONInt(456)).displayValue() }
     }
 
     @Test fun `should return displayValue for object`() {
         expect("{}") { JSONObject.EMPTY.displayValue() }
         expect("""{"abc":123}""") { JSONObject.of("abc" to JSONInt(123)).displayValue() }
         expect("""{"greeting":"Hello"}""") { JSONObject.of("greeting" to JSONString("Hello")).displayValue() }
-        expect("{...}") { JSONObject.of("abc" to JSONInt(123), "def" to JSONInt(456)).displayValue() }
+        expect("{ ... }") { JSONObject.of("abc" to JSONInt(123), "def" to JSONInt(456)).displayValue() }
     }
 
     @Test fun `should return elidedValue for number types`() {
@@ -600,9 +605,8 @@ class JSONTest {
         val input = """{"aaa":{"bbb":{"ccc":{"ddd":{},"eee":[1,2,3,4,5]}}}}"""
         val json = JSON.parse(input)
         val formatter = Formatter(unixLineSeparator)
-        val sb = StringBuilder()
-        formatter.formatTo(sb, json)
-        expect(formatted2) { sb.toString() }
+        val formatted = buildString { formatter.formatTo(this, json) }
+        expect(formatted2) { formatted }
         expect(input) { Formatter.output(json) }
     }
 
