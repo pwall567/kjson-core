@@ -2,6 +2,12 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [4.1] - 2022-11-07
+### Changed
+- `JSONArray`: fixed possible bug in object creation
+- `JSONArray`, `JSONObject`: added `@Suppress` for known warnings
+- `pom.xml`: updated dependency versions
+
 ## [4.0] - 2022-10-03
 ### Changed
 - `JSONNumber`: renamed from `JSONNumberValue` (breaking change for some)

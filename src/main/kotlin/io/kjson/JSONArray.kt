@@ -26,6 +26,7 @@
 package io.kjson
 
 import java.math.BigDecimal
+import java.util.Arrays
 import java.util.function.IntConsumer
 
 import io.kjson.JSON.appendTo
@@ -115,6 +116,7 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
         return JSONArray(oldArray.copyOfRange(fromIndex, toIndex), toIndex - fromIndex)
     }
 
+    @Suppress("SuspiciousEqualsCombination")
     override fun equals(other: Any?): Boolean = this === other || other is List<*> && immutableList == other
 
     override fun hashCode(): Int = immutableList.hashCode()
@@ -127,7 +129,9 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
 
         val EMPTY = JSONArray(EMPTY_ARRAY, 0)
 
-        fun of(vararg items: JSONValue?): JSONArray = if (items.isEmpty()) EMPTY else JSONArray(items, items.size)
+        @Suppress("ReplaceJavaStaticMethodWithKotlinAnalog")
+        fun of(vararg items: JSONValue?): JSONArray =
+                if (items.isEmpty()) EMPTY else JSONArray(Arrays.copyOf(items, items.size), items.size)
 
         fun from(list: List<JSONValue?>): JSONArray =
                 if (list.isEmpty()) EMPTY else JSONArray(list.toTypedArray(), list.size)

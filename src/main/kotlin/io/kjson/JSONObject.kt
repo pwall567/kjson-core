@@ -102,6 +102,7 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
         out.output('}')
     }
 
+    @Suppress("ReplaceSizeZeroCheckWithIsEmpty")
     override fun isEmpty(): Boolean = size == 0
 
     override val entries: Set<Map.Entry<String, JSONValue?>>
@@ -119,6 +120,7 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
 
     override fun get(key: String): JSONValue? = immutableMap[key]
 
+    @Suppress("SuspiciousEqualsCombination")
     override fun equals(other: Any?): Boolean = this === other || other is Map<*, *> && immutableMap == other
 
     override fun hashCode(): Int = immutableMap.hashCode()
