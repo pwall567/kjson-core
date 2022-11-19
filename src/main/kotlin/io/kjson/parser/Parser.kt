@@ -150,20 +150,20 @@ object Parser {
 
         val numberStart = tm.index
         val negative = tm.match('-')
-        if (tm.matchDec(0, 1)) {
+        if (tm.matchDec()) {
             val integerLength = tm.resultLength
             if (integerLength > 1 && tm.resultChar == '0')
                 throw ParseException(ILLEGAL_NUMBER, pointer)
             var floating = false
             if (tm.match('.')) {
                 floating = true
-                if (!tm.matchDec(0, 1))
+                if (!tm.matchDec())
                     throw ParseException(ILLEGAL_NUMBER, pointer)
             }
-            if (tm.match('e') || tm.match('E')) {
+            if (tm.match { it == 'e' || it == 'E' }) {
                 floating = true
-                tm.matchAny("-+") // ignore the result, just step the index
-                if (!tm.matchDec(0, 1))
+                tm.match { it == '-' || it == '+' } // ignore the result, just step the index
+                if (!tm.matchDec())
                     throw ParseException(ILLEGAL_NUMBER, pointer)
             }
             if (!floating) {
@@ -196,13 +196,7 @@ object Parser {
         throw ParseException("$DUPLICATE_KEY \"$key\"", pointer)
     }
 
-    private fun TextMatcher.matchIdentifier(): Boolean {
-        val identifierStart = index
-        if (!match { it in 'A'.code..'Z'.code || it in 'a'.code..'z'.code || it == '_'.code })
-            return false
-        skip { it in 'A'.code..'Z'.code || it in 'a'.code..'z'.code || it in '0'.code..'9'.code || it == '_'.code }
-        start = identifierStart
-        return true
-    }
+    private fun TextMatcher.matchIdentifier(): Boolean = match { it in 'A'..'Z' || it in 'a'..'z' || it == '_' } &&
+            matchContinue { it in 'A'..'Z' || it in 'a'..'z' || it in '0'..'9' || it == '_' }
 
 }

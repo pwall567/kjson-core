@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [4.2] - 2022-11-20
+### Changed
+- `pom.xml`: updated dependency versions
+
 ## [4.1] - 2022-11-07
 ### Changed
 - `JSONArray`: fixed possible bug in object creation
