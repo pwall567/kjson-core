@@ -2,6 +2,14 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [5.0] - 2022-11-27
+### Added
+- `JSONIncorrectTypeException`: contains details of incorrect type conversion
+### Changed
+- `JSONStructure`: added parameter for type of key (breaking change for some), added `getXxxx()` functions
+- `JSONArray`, `JSONObject`: changed to use parameter on `JSONStructure`
+- `JSON`: changed `asXxxx` properties to use `JSONIncorrectTypeException`
+
 ## [4.4] - 2022-11-24
 ### Changed
 - `pom.xml`: updated dependency versions

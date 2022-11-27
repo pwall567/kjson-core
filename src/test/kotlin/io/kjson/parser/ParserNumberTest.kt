@@ -27,6 +27,7 @@ package io.kjson.parser
 
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.test.expect
 
@@ -40,8 +41,7 @@ class ParserNumberTest {
 
     @Test fun `should parse zero`() {
         val result = Parser.parse("0")
-        assertTrue(result is JSONInt)
-        expect(0) { result.value }
+        assertSame(JSONInt.ZERO, result)
     }
 
     @Test fun `should reject leading zeros`() {

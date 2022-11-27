@@ -42,7 +42,7 @@ import net.pwall.util.output
  *
  * @author  Peter Wall
  */
-class JSONArray internal constructor (array: Array<out JSONValue?>, override val size: Int) : JSONStructure,
+class JSONArray internal constructor (array: Array<out JSONValue?>, override val size: Int) : JSONStructure<Int>,
         List<JSONValue?> {
 
     private val immutableList = ImmutableList<JSONValue?>(array, size)
@@ -97,6 +97,7 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
 
     override fun containsAll(elements: Collection<JSONValue?>): Boolean = immutableList.containsAll(elements)
 
+    @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
     override fun get(index: Int): JSONValue? = immutableList[index]
 
     override fun indexOf(element: JSONValue?): Int = immutableList.indexOf(element)

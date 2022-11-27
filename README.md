@@ -158,6 +158,28 @@ for structured types, that is, arrays and objects.
 It specifies a single value `size` (`Int`) which gives the number of entries in the array or object, and the functions
 `isEmpty()` and `isNotEmpty()` which (unsurprisingly) return `true` or `false` respectively if the structure is empty.
 
+It also provides convenience functions to both get a member of the structure and convert it to the required type (`K` is
+`Int` for `JSONArray` or `String` for `JSONObject`):
+
+| Function        | Converts the value to... |
+|-----------------|--------------------------|
+| `getString(K)`  | `String`                 |
+| `getLong(K)`    | `Long`                   |
+| `getInt(K)`     | `Int`                    |
+| `getShort(K)`   | `Short`                  |
+| `getByte(K)`    | `Byte`                   |
+| `getULong(K)`   | `ULong`                  |
+| `getUInt(K)`    | `UInt`                   |
+| `getUShort(K)`  | `UShort`                 |
+| `getUByte(K)`   | `UByte`                  |
+| `getDecimal(K)` | `BigDecimal`             |
+| `getBoolean(K)` | `Boolean`                |
+| `getArray(K)`   | `JSONArray`              |
+| `getObject(K)`  | `JSONObject`             |
+
+These have the advantage over, for example, `json["property"].asString`, that the error message in the event of an
+incorrect type includes the key or index used to select the item.
+
 ### `JSONArray`
 
 The `JSONArray` class implements the `List<JSONValue?>` interface, and all the functions of that interface are available
@@ -377,25 +399,25 @@ The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram
 
 ## Dependency Specification
 
-The latest version of the library is 4.4, and it may be obtained from the Maven Central repository.
+The latest version of the library is 5.0, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>4.4</version>
+      <version>5.0</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:4.4"
+    implementation "io.kjson:kjson-core:5.0"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:4.4")
+    implementation("io.kjson:kjson-core:5.0")
 ```
 
 Peter Wall
 
-2022-11-24
+2022-11-27

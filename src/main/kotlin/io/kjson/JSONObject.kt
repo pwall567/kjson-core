@@ -44,7 +44,7 @@ import net.pwall.util.output
  * @author  Peter Wall
  */
 class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSONValue?>>, override val size: Int) :
-        JSONStructure, Map<String, JSONValue?> {
+        JSONStructure<String>, Map<String, JSONValue?> {
 
     private val immutableMap = ImmutableMap<String, JSONValue?>(array, size)
 
