@@ -25,19 +25,35 @@
 
 package io.kjson
 
+import kotlin.reflect.KClass
 import io.kjson.JSON.displayValue
 
-class JSONIncorrectTypeException(val value: JSONValue?, val target: JSON.TargetType, val key: Any?) :
-        JSONException("Incorrect Type") {
+/**
+ * Exception class to represent "incorrect type" errors; thrown when a specific type is requested as a return value and
+ * the actual value was not of that type.
+ *
+ * @author  Peter Wall
+ */
+class JSONIncorrectTypeException(
+    val nodeName: String = "Node",
+    val target: KClass<*>,
+    val value: JSONValue?,
+    val key: Any? = null,
+) : JSONException("Incorrect Type") {
 
     private var lazyMessage: String? = null
 
     override val message: String
         get() = lazyMessage ?: buildString {
-            append("Not ").append(target.text).append(' ')
-            if (key != null)
-                append('(').append(key).append(')').append(' ')
-            append('-').append(' ').append(value.displayValue())
+            append(nodeName)
+            append(" not correct type (")
+            append(target.simpleName)
+            append("), was ")
+            append(value.displayValue())
+            key?.toString()?.takeIf { it.isNotEmpty() }?.let {
+                append(", at ")
+                append(it)
+            }
         }.also { lazyMessage = it }
 
 }

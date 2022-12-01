@@ -2,6 +2,11 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [5.1] - 2022-12-02
+### Changed
+- `JSON`: made `typeError()` function public (for use from `kjson-pointer`)
+- `JSONIncorrectTypeException`: clarified and standardised error message
+
 ## [5.0] - 2022-11-27
 ### Added
 - `JSONIncorrectTypeException`: contains details of incorrect type conversion

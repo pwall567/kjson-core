@@ -25,6 +25,8 @@
 
 package io.kjson
 
+import kotlin.reflect.KClass
+
 import java.math.BigDecimal
 import java.util.function.IntConsumer
 
@@ -150,108 +152,99 @@ object JSON {
     }
 
     val JSONValue?.asString: String
-        get() = asStringOrNull ?: notType(TargetType.STRING)
+        get() = asStringOrNull ?: typeError(String::class)
 
     val JSONValue?.asStringOrNull: String?
         get() = (this as? JSONString)?.value
 
     val JSONValue?.asLong: Long
-        get() = asLongOrNull ?: notType(TargetType.LONG)
+        get() = asLongOrNull ?: typeError(Long::class)
 
     val JSONValue?.asLongOrNull: Long?
         get() = (this as? JSONNumber)?.takeIf { it.isLong() }?.toLong()
 
     val JSONValue?.asInt: Int
-        get() = asIntOrNull ?: notType(TargetType.INT)
+        get() = asIntOrNull ?: typeError(Int::class)
 
     val JSONValue?.asIntOrNull: Int?
         get() = (this as? JSONNumber)?.takeIf { it.isInt() }?.toInt()
 
     val JSONValue?.asShort: Short
-        get() = asShortOrNull ?: notType(TargetType.SHORT)
+        get() = asShortOrNull ?: typeError(Short::class)
 
     val JSONValue?.asShortOrNull: Short?
         get() = (this as? JSONNumber)?.takeIf { it.isShort() }?.toShort()
 
     val JSONValue?.asByte: Byte
-        get() = asByteOrNull ?: notType(TargetType.BYTE)
+        get() = asByteOrNull ?: typeError(Byte::class)
 
     val JSONValue?.asByteOrNull: Byte?
         get() = (this as? JSONNumber)?.takeIf { it.isByte() }?.toByte()
 
     val JSONValue?.asULong: ULong
-        get() = asULongOrNull ?: notType(TargetType.ULONG)
+        get() = asULongOrNull ?: typeError(ULong::class)
 
     val JSONValue?.asULongOrNull: ULong?
         get() = (this as? JSONNumber)?.takeIf { it.isULong() }?.toULong()
 
     val JSONValue?.asUInt: UInt
-        get() = asUIntOrNull ?: notType(TargetType.UINT)
+        get() = asUIntOrNull ?: typeError(UInt::class)
 
     val JSONValue?.asUIntOrNull: UInt?
         get() = (this as? JSONNumber)?.takeIf { it.isUInt() }?.toUInt()
 
     val JSONValue?.asUShort: UShort
-        get() = asUShortOrNull ?: notType(TargetType.USHORT)
+        get() = asUShortOrNull ?: typeError(UShort::class)
 
     val JSONValue?.asUShortOrNull: UShort?
         get() = (this as? JSONNumber)?.takeIf { it.isUShort() }?.toUShort()
 
     val JSONValue?.asUByte: UByte
-        get() = asUByteOrNull ?: notType(TargetType.UBYTE)
+        get() = asUByteOrNull ?: typeError(UByte::class)
 
     val JSONValue?.asUByteOrNull: UByte?
         get() = (this as? JSONNumber)?.takeIf { it.isUByte() }?.toUByte()
 
     val JSONValue?.asDecimal: BigDecimal
-        get() = asDecimalOrNull ?: notType(TargetType.DECIMAL)
+        get() = asDecimalOrNull ?: typeError(BigDecimal::class)
 
     val JSONValue?.asDecimalOrNull: BigDecimal?
         get() = (this as? JSONNumber)?.toDecimal()
 
     val JSONValue?.asBoolean: Boolean
-        get() = asBooleanOrNull ?: notType(TargetType.BOOLEAN)
+        get() = asBooleanOrNull ?: typeError(Boolean::class)
 
     val JSONValue?.asBooleanOrNull: Boolean?
         get() = (this as? JSONBoolean)?.value
 
     val JSONValue?.asArray: JSONArray
-        get() = asArrayOrNull ?: notType(TargetType.ARRAY)
+        get() = asArrayOrNull ?: typeError(JSONArray::class)
 
     val JSONValue?.asArrayOrNull: JSONArray?
         get() = (this as? JSONArray)
 
     val JSONValue?.asObject: JSONObject
-        get() = asObjectOrNull ?: notType(TargetType.OBJECT)
+        get() = asObjectOrNull ?: typeError(JSONObject::class)
 
     val JSONValue?.asObjectOrNull: JSONObject?
         get() = (this as? JSONObject)
 
-    internal fun JSONValue?.notType(target: TargetType, key: Any? = null): Nothing {
-        throw JSONIncorrectTypeException(this, target, key)
+    fun JSONValue?.typeError(
+        target: KClass<*>,
+        key: Any? = null,
+        nodeName: String = "Node",
+    ): Nothing {
+        throw JSONIncorrectTypeException(
+            nodeName = nodeName,
+            target = target,
+            value = this,
+            key = key,
+        )
     }
 
     fun IntConsumer.accept(cs: CharSequence) {
         for (i in cs.indices)
             accept(cs[i].code)
-    }
-
-    enum class TargetType(val text: String) {
-
-        STRING("a string"),
-        LONG("a long"),
-        INT("an int"),
-        SHORT("a short"),
-        BYTE("a byte"),
-        ULONG("an unsigned long"),
-        UINT("an unsigned int"),
-        USHORT("an unsigned short"),
-        UBYTE("an unsigned byte"),
-        DECIMAL("a decimal"),
-        BOOLEAN("a boolean"),
-        ARRAY("an array"),
-        OBJECT("an object");
-
     }
 
 }
