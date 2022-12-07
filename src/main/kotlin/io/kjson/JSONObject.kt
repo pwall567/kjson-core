@@ -127,6 +127,14 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
 
     override fun toString(): String = toJSON()
 
+    @Deprecated("Unnecessary (value is known to be JSONObject)", ReplaceWith("this"))
+    val asObject: JSONObject
+        get() = this
+
+    @Deprecated("Unnecessary (value is known to be JSONObject)", ReplaceWith("this"))
+    val asObjectOrNull: JSONObject
+        get() = this
+
     companion object {
 
         val EMPTY = JSONObject(emptyArray(), 0)

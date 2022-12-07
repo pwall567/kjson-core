@@ -124,6 +124,14 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
 
     override fun toString(): String = toJSON()
 
+    @Deprecated("Unnecessary (value is known to be JSONArray)", ReplaceWith("this"))
+    val asArray: JSONArray
+        get() = this
+
+    @Deprecated("Unnecessary (value is known to be JSONArray)", ReplaceWith("this"))
+    val asArrayOrNull: JSONArray
+        get() = this
+
     companion object {
 
         private val EMPTY_ARRAY = emptyArray<JSONValue?>()

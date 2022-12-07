@@ -2,6 +2,11 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [Unreleased]
+### Changed
+- `JSONObject`, `JSONArray`: added deprecations for `JSONObject.asObject` and `JSONArray.asArray`
+- `JSONBoolean`, `JSONDecimal`, `JSONInt`, `JSONLong`, `JSONString`: added optimisations for `asXxxx`
+
 ## [5.1] - 2022-12-02
 ### Changed
 - `JSON`: made `typeError()` function public (for use from `kjson-pointer`)

@@ -43,6 +43,12 @@ enum class JSONBoolean(override val value: Boolean) : JSONPrimitive<Boolean> {
 
     override fun toString(): String = toJSON()
 
+    val asBoolean: Boolean
+        get() = value
+
+    val asBooleanOrNull: Boolean
+        get() = value
+
     companion object {
 
         fun of(b: Boolean): JSONBoolean = if (b) TRUE else FALSE

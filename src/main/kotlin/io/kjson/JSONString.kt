@@ -56,6 +56,12 @@ class JSONString(override val value: String) : JSONPrimitive<String>, CharSequen
 
     override fun toString(): String = value
 
+    val asString: String
+        get() = value
+
+    val asStringOrNull: String
+        get() = value
+
     companion object {
 
         val EMPTY = JSONString("")

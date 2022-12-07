@@ -115,6 +115,24 @@ class JSONInt(override val value: Int) : JSONNumber(), JSONPrimitive<Int> {
 
     override fun toString(): String = value.toString()
 
+    val asInt: Int
+        get() = value
+
+    val asIntOrNull: Int
+        get() = value
+
+    val asLong: Long
+        get() = value.toLong()
+
+    val asLongOrNull: Long
+        get() = value.toLong()
+
+    val asDecimal: BigDecimal
+        get() = BigDecimal(value)
+
+    val asDecimalOrNull: BigDecimal
+        get() = BigDecimal(value)
+
     companion object {
 
         val ZERO = JSONInt(0)

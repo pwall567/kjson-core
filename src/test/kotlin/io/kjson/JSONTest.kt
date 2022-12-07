@@ -686,7 +686,9 @@ class JSONTest {
 
     @Test fun `should return asBoolean for JSONBoolean`() {
         assertTrue(JSONBoolean.TRUE.asBoolean)
+        assertTrue(JSONBoolean.TRUE.asBooleanOrNull)
         assertFalse(JSONBoolean.FALSE.asBoolean)
+        assertFalse(JSONBoolean.FALSE.asBooleanOrNull)
     }
 
     @Test fun `should fail on attempt to get asBoolean of other types`() {
@@ -701,6 +703,7 @@ class JSONTest {
         }
     }
 
+    @Suppress("DEPRECATION")
     @Test fun `should return asArray for JSONArray`() {
         val jsonArray = JSONArray.of(JSONInt(123), JSONInt(456))
         assertSame(jsonArray, jsonArray.asArray)
@@ -719,6 +722,7 @@ class JSONTest {
         }
     }
 
+    @Suppress("DEPRECATION")
     @Test fun `should return asObject for JSONObject`() {
         val jsonObject = JSONObject.of("name" to JSONString("value"))
         assertSame(jsonObject, jsonObject.asObject)

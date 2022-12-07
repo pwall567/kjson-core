@@ -115,6 +115,18 @@ class JSONLong(override val value: Long) : JSONNumber(), JSONPrimitive<Long> {
 
     override fun toString(): String = value.toString()
 
+    val asLong: Long
+        get() = value
+
+    val asLongOrNull: Long
+        get() = value
+
+    val asDecimal: BigDecimal
+        get() = BigDecimal(value)
+
+    val asDecimalOrNull: BigDecimal
+        get() = BigDecimal(value)
+
     companion object {
 
         val ZERO = JSONLong(0)

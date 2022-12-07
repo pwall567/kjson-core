@@ -117,6 +117,12 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumber(), JSONPrimitive<
 
     override fun toString(): String = toJSON()
 
+    val asDecimal: BigDecimal
+        get() = value
+
+    val asDecimalOrNull: BigDecimal
+        get() = value
+
     companion object {
 
         val ZERO = JSONDecimal(BigDecimal.ZERO)
