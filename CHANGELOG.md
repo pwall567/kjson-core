@@ -2,7 +2,7 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## [Unreleased]
+## [5.2] - 2022-12-16
 ### Changed
 - `JSONObject`, `JSONArray`: added deprecations for `JSONObject.asObject` and `JSONArray.asArray`
 - `JSONBoolean`, `JSONDecimal`, `JSONInt`, `JSONLong`, `JSONString`: added optimisations for `asXxxx`
