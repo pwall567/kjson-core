@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 - `JSONObject`, `JSONArray`: added deprecations for `JSONObject.asObject` and `JSONArray.asArray`
 - `JSONBoolean`, `JSONDecimal`, `JSONInt`, `JSONLong`, `JSONString`: added optimisations for `asXxxx`
+- `JSONIncorrectTypeException`, `JSON`, `JSONStructure`: generalised exception to be more usable from other packages
 
 ## [5.1] - 2022-12-02
 ### Changed

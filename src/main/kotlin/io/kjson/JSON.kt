@@ -25,8 +25,6 @@
 
 package io.kjson
 
-import kotlin.reflect.KClass
-
 import java.math.BigDecimal
 import java.util.function.IntConsumer
 
@@ -152,85 +150,85 @@ object JSON {
     }
 
     val JSONValue?.asString: String
-        get() = asStringOrNull ?: typeError(String::class)
+        get() = asStringOrNull ?: typeError("String")
 
     val JSONValue?.asStringOrNull: String?
         get() = (this as? JSONString)?.value
 
     val JSONValue?.asLong: Long
-        get() = asLongOrNull ?: typeError(Long::class)
+        get() = asLongOrNull ?: typeError("Long")
 
     val JSONValue?.asLongOrNull: Long?
         get() = (this as? JSONNumber)?.takeIf { it.isLong() }?.toLong()
 
     val JSONValue?.asInt: Int
-        get() = asIntOrNull ?: typeError(Int::class)
+        get() = asIntOrNull ?: typeError("Int")
 
     val JSONValue?.asIntOrNull: Int?
         get() = (this as? JSONNumber)?.takeIf { it.isInt() }?.toInt()
 
     val JSONValue?.asShort: Short
-        get() = asShortOrNull ?: typeError(Short::class)
+        get() = asShortOrNull ?: typeError("Short")
 
     val JSONValue?.asShortOrNull: Short?
         get() = (this as? JSONNumber)?.takeIf { it.isShort() }?.toShort()
 
     val JSONValue?.asByte: Byte
-        get() = asByteOrNull ?: typeError(Byte::class)
+        get() = asByteOrNull ?: typeError("Byte")
 
     val JSONValue?.asByteOrNull: Byte?
         get() = (this as? JSONNumber)?.takeIf { it.isByte() }?.toByte()
 
     val JSONValue?.asULong: ULong
-        get() = asULongOrNull ?: typeError(ULong::class)
+        get() = asULongOrNull ?: typeError("ULong")
 
     val JSONValue?.asULongOrNull: ULong?
         get() = (this as? JSONNumber)?.takeIf { it.isULong() }?.toULong()
 
     val JSONValue?.asUInt: UInt
-        get() = asUIntOrNull ?: typeError(UInt::class)
+        get() = asUIntOrNull ?: typeError("UInt")
 
     val JSONValue?.asUIntOrNull: UInt?
         get() = (this as? JSONNumber)?.takeIf { it.isUInt() }?.toUInt()
 
     val JSONValue?.asUShort: UShort
-        get() = asUShortOrNull ?: typeError(UShort::class)
+        get() = asUShortOrNull ?: typeError("UShort")
 
     val JSONValue?.asUShortOrNull: UShort?
         get() = (this as? JSONNumber)?.takeIf { it.isUShort() }?.toUShort()
 
     val JSONValue?.asUByte: UByte
-        get() = asUByteOrNull ?: typeError(UByte::class)
+        get() = asUByteOrNull ?: typeError("UByte")
 
     val JSONValue?.asUByteOrNull: UByte?
         get() = (this as? JSONNumber)?.takeIf { it.isUByte() }?.toUByte()
 
     val JSONValue?.asDecimal: BigDecimal
-        get() = asDecimalOrNull ?: typeError(BigDecimal::class)
+        get() = asDecimalOrNull ?: typeError("BigDecimal")
 
     val JSONValue?.asDecimalOrNull: BigDecimal?
         get() = (this as? JSONNumber)?.toDecimal()
 
     val JSONValue?.asBoolean: Boolean
-        get() = asBooleanOrNull ?: typeError(Boolean::class)
+        get() = asBooleanOrNull ?: typeError("Boolean")
 
     val JSONValue?.asBooleanOrNull: Boolean?
         get() = (this as? JSONBoolean)?.value
 
     val JSONValue?.asArray: JSONArray
-        get() = asArrayOrNull ?: typeError(JSONArray::class)
+        get() = asArrayOrNull ?: typeError("JSONArray")
 
     val JSONValue?.asArrayOrNull: JSONArray?
         get() = (this as? JSONArray)
 
     val JSONValue?.asObject: JSONObject
-        get() = asObjectOrNull ?: typeError(JSONObject::class)
+        get() = asObjectOrNull ?: typeError("JSONObject")
 
     val JSONValue?.asObjectOrNull: JSONObject?
         get() = (this as? JSONObject)
 
     fun JSONValue?.typeError(
-        target: KClass<*>,
+        target: String,
         key: Any? = null,
         nodeName: String = "Node",
     ): Nothing {

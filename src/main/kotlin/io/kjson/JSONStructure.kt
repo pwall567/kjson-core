@@ -48,55 +48,55 @@ sealed interface JSONStructure<K: Any> : JSONValue {
     fun isNotEmpty(): Boolean = !isEmpty()
 
     fun getString(key: K): String = get(key).let {
-        if (it is JSONString) it.value else it.typeError(String::class, key)
+        if (it is JSONString) it.value else it.typeError("String", key)
     }
 
     fun getLong(key: K): Long = get(key).let {
-        if (it is JSONNumber && it.isLong()) it.toLong() else it.typeError(Long::class, key)
+        if (it is JSONNumber && it.isLong()) it.toLong() else it.typeError("Long", key)
     }
 
     fun getInt(key: K): Int = get(key).let {
-        if (it is JSONNumber && it.isInt()) it.toInt() else it.typeError(Int::class, key)
+        if (it is JSONNumber && it.isInt()) it.toInt() else it.typeError("Int", key)
     }
 
     fun getShort(key: K): Short = get(key).let {
-        if (it is JSONNumber && it.isShort()) it.toShort() else it.typeError(Short::class, key)
+        if (it is JSONNumber && it.isShort()) it.toShort() else it.typeError("Short", key)
     }
 
     fun getByte(key: K): Byte = get(key).let {
-        if (it is JSONNumber && it.isByte()) it.toByte() else it.typeError(Byte::class, key)
+        if (it is JSONNumber && it.isByte()) it.toByte() else it.typeError("Byte", key)
     }
 
     fun getULong(key: K): ULong = get(key).let {
-        if (it is JSONNumber && it.isULong()) it.toULong() else it.typeError(ULong::class, key)
+        if (it is JSONNumber && it.isULong()) it.toULong() else it.typeError("ULong", key)
     }
 
     fun getUInt(key: K): UInt = get(key).let {
-        if (it is JSONNumber && it.isUInt()) it.toUInt() else it.typeError(UInt::class, key)
+        if (it is JSONNumber && it.isUInt()) it.toUInt() else it.typeError("UInt", key)
     }
 
     fun getUShort(key: K): UShort = get(key).let {
-        if (it is JSONNumber && it.isUShort()) it.toUShort() else it.typeError(UShort::class, key)
+        if (it is JSONNumber && it.isUShort()) it.toUShort() else it.typeError("UShort", key)
     }
 
     fun getUByte(key: K): UByte = get(key).let {
-        if (it is JSONNumber && it.isUByte()) it.toUByte() else it.typeError(UByte::class, key)
+        if (it is JSONNumber && it.isUByte()) it.toUByte() else it.typeError("UByte", key)
     }
 
     fun getDecimal(key: K): BigDecimal = get(key).let {
-        if (it is JSONNumber) it.toDecimal() else it.typeError(BigDecimal::class, key)
+        if (it is JSONNumber) it.toDecimal() else it.typeError("BigDecimal", key)
     }
 
     fun getBoolean(key: K): Boolean = get(key).let {
-        if (it is JSONBoolean) it.value else it.typeError(Boolean::class, key)
+        if (it is JSONBoolean) it.value else it.typeError("Boolean", key)
     }
 
     fun getArray(key: K): JSONArray = get(key).let {
-        it.asArrayOrNull ?: it.typeError(JSONArray::class, key)
+        it.asArrayOrNull ?: it.typeError("JSONArray", key)
     }
 
     fun getObject(key: K): JSONObject = get(key).let {
-        it.asObjectOrNull ?: it.typeError(JSONObject::class, key)
+        it.asObjectOrNull ?: it.typeError("JSONObject", key)
     }
 
 }

@@ -50,7 +50,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getString("data") }.let {
             expect("Node") { it.nodeName }
-            expect(String::class) { it.target }
+            expect("String") { it.target }
             expect("data") { it.key }
             expect(JSONBoolean.TRUE) { it.value }
             expect("Node not correct type (String), was true, at data") { it.message }
@@ -70,7 +70,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getString(0) }.let {
             expect("Node") { it.nodeName }
-            expect(String::class) { it.target }
+            expect("String") { it.target }
             expect(0) { it.key }
             expect(JSONInt(42)) { it.value }
             expect("Node not correct type (String), was 42, at 0") { it.message }
@@ -90,7 +90,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getLong("lots") }.let {
             expect("Node") { it.nodeName }
-            expect(Long::class) { it.target }
+            expect("Long") { it.target }
             expect("lots") { it.key }
             expect(JSONString("millions")) { it.value }
             expect("Node not correct type (Long), was \"millions\", at lots") { it.message }
@@ -110,7 +110,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getLong(0) }.let {
             expect("Node") { it.nodeName }
-            expect(Long::class) { it.target }
+            expect("Long") { it.target }
             expect(0) { it.key }
             expect(JSONDecimal("1.555")) { it.value }
             expect("Node not correct type (Long), was 1.555, at 0") { it.message }
@@ -130,7 +130,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getInt("number") }.let {
             expect("Node") { it.nodeName }
-            expect(Int::class) { it.target }
+            expect("Int") { it.target }
             expect("number") { it.key }
             expect(JSONString("trouble")) { it.value }
             expect("Node not correct type (Int), was \"trouble\", at number") { it.message }
@@ -150,7 +150,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getInt(0) }.let {
             expect("Node") { it.nodeName }
-            expect(Int::class) { it.target }
+            expect("Int") { it.target }
             expect(0) { it.key }
             expect(JSONDecimal("1.5")) { it.value }
             expect("Node not correct type (Int), was 1.5, at 0") { it.message }
@@ -170,7 +170,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getShort("mini") }.let {
             expect("Node") { it.nodeName }
-            expect(Short::class) { it.target }
+            expect("Short") { it.target }
             expect("mini") { it.key }
             expect(JSONInt(123456)) { it.value }
             expect("Node not correct type (Short), was 123456, at mini") { it.message }
@@ -190,7 +190,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getShort(0) }.let {
             expect("Node") { it.nodeName }
-            expect(Short::class) { it.target }
+            expect("Short") { it.target }
             expect(0) { it.key }
             expect(JSONBoolean.FALSE) { it.value }
             expect("Node not correct type (Short), was false, at 0") { it.message }
@@ -210,7 +210,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getByte("little") }.let {
             expect("Node") { it.nodeName }
-            expect(Byte::class) { it.target }
+            expect("Byte") { it.target }
             expect("little") { it.key }
             expect(JSONString("why?")) { it.value }
             expect("Node not correct type (Byte), was \"why?\", at little") { it.message }
@@ -230,7 +230,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getByte(0) }.let {
             expect("Node") { it.nodeName }
-            expect(Byte::class) { it.target }
+            expect("Byte") { it.target }
             expect(0) { it.key }
             expect(JSONString("mushroom")) { it.value }
             expect("Node not correct type (Byte), was \"mushroom\", at 0") { it.message }
@@ -250,7 +250,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getULong("big") }.let {
             expect("Node") { it.nodeName }
-            expect(ULong::class) { it.target }
+            expect("ULong") { it.target }
             expect("big") { it.key }
             expect(JSONBoolean.TRUE) { it.value }
             expect("Node not correct type (ULong), was true, at big") { it.message }
@@ -270,7 +270,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getULong(0) }.let {
             expect("Node") { it.nodeName }
-            expect(ULong::class) { it.target }
+            expect("ULong") { it.target }
             expect(0) { it.key }
             expect(JSONDecimal("1.1")) { it.value }
             expect("Node not correct type (ULong), was 1.1, at 0") { it.message }
@@ -290,7 +290,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getUInt("number") }.let {
             expect("Node") { it.nodeName }
-            expect(UInt::class) { it.target }
+            expect("UInt") { it.target }
             expect("number") { it.key }
             expect(JSONInt(-123456)) { it.value }
             expect("Node not correct type (UInt), was -123456, at number") { it.message }
@@ -310,7 +310,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getUInt(0) }.let {
             expect("Node") { it.nodeName }
-            expect(UInt::class) { it.target }
+            expect("UInt") { it.target }
             expect(0) { it.key }
             expect(JSONString("incorrect")) { it.value }
             expect("Node not correct type (UInt), was \"incorrect\", at 0") { it.message }
@@ -330,7 +330,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getUShort("unit") }.let {
             expect("Node") { it.nodeName }
-            expect(UShort::class) { it.target }
+            expect("UShort") { it.target }
             expect("unit") { it.key }
             expect(JSONInt(-1)) { it.value }
             expect("Node not correct type (UShort), was -1, at unit") { it.message }
@@ -350,7 +350,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getUShort(0) }.let {
             expect("Node") { it.nodeName }
-            expect(UShort::class) { it.target }
+            expect("UShort") { it.target }
             expect(0) { it.key }
             expect(JSONInt(123456)) { it.value }
             expect("Node not correct type (UShort), was 123456, at 0") { it.message }
@@ -370,7 +370,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getUByte("unit") }.let {
             expect("Node") { it.nodeName }
-            expect(UByte::class) { it.target }
+            expect("UByte") { it.target }
             expect("unit") { it.key }
             expect(JSONInt(-200)) { it.value }
             expect("Node not correct type (UByte), was -200, at unit") { it.message }
@@ -390,7 +390,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getUByte(0) }.let {
             expect("Node") { it.nodeName }
-            expect(UByte::class) { it.target }
+            expect("UByte") { it.target }
             expect(0) { it.key }
             expect(JSONInt(300)) { it.value }
             expect("Node not correct type (UByte), was 300, at 0") { it.message }
@@ -410,7 +410,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getDecimal("money") }.let {
             expect("Node") { it.nodeName }
-            expect(BigDecimal::class) { it.target }
+            expect("BigDecimal") { it.target }
             expect("money") { it.key }
             expect(JSONString("bad")) { it.value }
             expect("Node not correct type (BigDecimal), was \"bad\", at money") { it.message }
@@ -430,7 +430,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getDecimal(0) }.let {
             expect("Node") { it.nodeName }
-            expect(BigDecimal::class) { it.target }
+            expect("BigDecimal") { it.target }
             expect(0) { it.key }
             expect(JSONString("sideboard")) { it.value }
             expect("Node not correct type (BigDecimal), was \"sideboard\", at 0") { it.message }
@@ -452,7 +452,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getBoolean("bool1") }.let {
             expect("Node") { it.nodeName }
-            expect(Boolean::class) { it.target }
+            expect("Boolean") { it.target }
             expect("bool1") { it.key }
             expect(JSONInt(27)) { it.value }
             expect("Node not correct type (Boolean), was 27, at bool1") { it.message }
@@ -474,7 +474,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getBoolean(0) }.let {
             expect("Node") { it.nodeName }
-            expect(Boolean::class) { it.target }
+            expect("Boolean") { it.target }
             expect(0) { it.key }
             expect(JSONString("wrong")) { it.value }
             expect("Node not correct type (Boolean), was \"wrong\", at 0") { it.message }
@@ -497,7 +497,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getArray("inner") }.let {
             expect("Node") { it.nodeName }
-            expect(JSONArray::class) { it.target }
+            expect("JSONArray") { it.target }
             expect("inner") { it.key }
             expect(JSONInt(123)) { it.value }
             expect("Node not correct type (JSONArray), was 123, at inner") { it.message }
@@ -520,7 +520,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getArray(0) }.let {
             expect("Node") { it.nodeName }
-            expect(JSONArray::class) { it.target }
+            expect("JSONArray") { it.target }
             expect(0) { it.key }
             expect(JSONBoolean.FALSE) { it.value }
             expect("Node not correct type (JSONArray), was false, at 0") { it.message }
@@ -543,7 +543,7 @@ class JSONStructureTest {
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getObject("inner") }.let {
             expect("Node") { it.nodeName }
-            expect(JSONObject::class) { it.target }
+            expect("JSONObject") { it.target }
             expect("inner") { it.key }
             expect(JSONInt(42)) { it.value }
             expect("Node not correct type (JSONObject), was 42, at inner") { it.message }
@@ -565,7 +565,7 @@ class JSONStructureTest {
             add("wrong")
         }
         assertFailsWith<JSONIncorrectTypeException> { outer.getObject(0) }.let {
-            expect(JSONObject::class) { it.target }
+            expect("JSONObject") { it.target }
             expect(0) { it.key }
             expect(JSONString("wrong")) { it.value }
             expect("Node not correct type (JSONObject), was \"wrong\", at 0") { it.message }

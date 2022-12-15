@@ -36,7 +36,7 @@ import io.kjson.JSON.displayValue
  */
 class JSONIncorrectTypeException(
     val nodeName: String = "Node",
-    val target: KClass<*>,
+    val target: String,
     val value: JSONValue?,
     val key: Any? = null,
 ) : JSONException("Incorrect Type") {
@@ -47,7 +47,7 @@ class JSONIncorrectTypeException(
         get() = lazyMessage ?: buildString {
             append(nodeName)
             append(" not correct type (")
-            append(target.simpleName)
+            append(target)
             append("), was ")
             append(value.displayValue())
             key?.toString()?.takeIf { it.isNotEmpty() }?.let {

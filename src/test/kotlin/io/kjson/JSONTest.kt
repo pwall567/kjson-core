@@ -108,7 +108,7 @@ class JSONTest {
         expect(JSONInt(2)) { json["two"] }
         assertFailsWith<JSONIncorrectTypeException> { JSON.parseObject("[1,2,3]") }.let {
             expect("Node") { it.nodeName }
-            expect(JSONObject::class) { it.target }
+            expect("JSONObject") { it.target }
             assertNull(it.key)
             expect("Node not correct type (JSONObject), was [ ... ]") { it.message }
         }
@@ -122,7 +122,7 @@ class JSONTest {
         expect(JSONString("gamma")) { json[2] }
         assertFailsWith<JSONIncorrectTypeException> { JSON.parseArray("""{"abc":0,"def":-1}""") }.let {
             expect("Node") { it.nodeName }
-            expect(JSONArray::class) { it.target }
+            expect("JSONArray") { it.target }
             assertNull(it.key)
             expect("Node not correct type (JSONArray), was { ... }") { it.message }
         }
@@ -266,7 +266,7 @@ class JSONTest {
         assertNull(jsonInt.asStringOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonInt.asString }.let {
             expect("Node") { it.nodeName }
-            expect(String::class) { it.target }
+            expect("String") { it.target }
             assertNull(it.key)
             expect(jsonInt) { it.value }
             expect("Node not correct type (String), was 8") { it.message }
@@ -274,7 +274,7 @@ class JSONTest {
         val jsonArray = JSONArray.of(JSONString("Testing"))
         assertFailsWith<JSONIncorrectTypeException> { jsonArray.asString }.let {
             expect("Node") { it.nodeName }
-            expect(String::class) { it.target }
+            expect("String") { it.target }
             assertNull(it.key)
             expect(jsonArray) { it.value }
             expect("Node not correct type (String), was [\"Testing\"]") { it.message }
@@ -298,7 +298,7 @@ class JSONTest {
         assertNull(jsonString.asIntOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonString.asInt }.let {
             expect("Node") { it.nodeName }
-            expect(Int::class) { it.target }
+            expect("Int") { it.target }
             assertNull(it.key)
             expect(jsonString) { it.value }
             expect("Node not correct type (Int), was \"not a number\"") { it.message }
@@ -307,7 +307,7 @@ class JSONTest {
         assertNull(jsonArray.asIntOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonArray.asInt }.let {
             expect("Node") { it.nodeName }
-            expect(Int::class) { it.target }
+            expect("Int") { it.target }
             assertNull(it.key)
             expect(jsonArray) { it.value }
             expect("Node not correct type (Int), was [\"Testing\"]") { it.message }
@@ -316,7 +316,7 @@ class JSONTest {
         assertNull(jsonDecimal.asIntOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonDecimal.asInt }.let {
             expect("Node") { it.nodeName }
-            expect(Int::class) { it.target }
+            expect("Int") { it.target }
             assertNull(it.key)
             expect(jsonDecimal) { it.value }
             expect("Node not correct type (Int), was 123.5000") { it.message }
@@ -340,7 +340,7 @@ class JSONTest {
         assertNull(jsonString.asLongOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonString.asLong }.let {
             expect("Node") { it.nodeName }
-            expect(Long::class) { it.target }
+            expect("Long") { it.target }
             assertNull(it.key)
             expect(jsonString) { it.value }
             expect("Node not correct type (Long), was \"not a number\"") { it.message }
@@ -348,7 +348,7 @@ class JSONTest {
         val jsonObject = JSONObject.of("name" to JSONString("value"))
         assertFailsWith<JSONIncorrectTypeException> { jsonObject.asLong }.let {
             expect("Node") { it.nodeName }
-            expect(Long::class) { it.target }
+            expect("Long") { it.target }
             assertNull(it.key)
             expect(jsonObject) { it.value }
             expect("Node not correct type (Long), was {\"name\":\"value\"}") { it.message }
@@ -357,7 +357,7 @@ class JSONTest {
         assertNull(jsonDecimal.asLongOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonDecimal.asLong }.let {
             expect("Node") { it.nodeName }
-            expect(Long::class) { it.target }
+            expect("Long") { it.target }
             assertNull(it.key)
             expect(jsonDecimal) { it.value }
             expect("Node not correct type (Long), was 123.5000") { it.message }
@@ -381,7 +381,7 @@ class JSONTest {
         assertNull(jsonString.asShortOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonString.asShort }.let {
             expect("Node") { it.nodeName }
-            expect(Short::class) { it.target }
+            expect("Short") { it.target }
             assertNull(it.key)
             expect(jsonString) { it.value }
             expect("Node not correct type (Short), was \"not a number\"") { it.message }
@@ -390,7 +390,7 @@ class JSONTest {
         assertNull(jsonArray.asShortOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonArray.asShort }.let {
             expect("Node") { it.nodeName }
-            expect(Short::class) { it.target }
+            expect("Short") { it.target }
             assertNull(it.key)
             expect(jsonArray) { it.value }
             expect("Node not correct type (Short), was [\"Testing\"]") { it.message }
@@ -399,7 +399,7 @@ class JSONTest {
         assertNull(jsonDecimal.asShortOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonDecimal.asShort }.let {
             expect("Node") { it.nodeName }
-            expect(Short::class) { it.target }
+            expect("Short") { it.target }
             assertNull(it.key)
             expect(jsonDecimal) { it.value }
             expect("Node not correct type (Short), was 123.5000") { it.message }
@@ -423,7 +423,7 @@ class JSONTest {
         assertNull(jsonString.asByteOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonString.asByte }.let {
             expect("Node") { it.nodeName }
-            expect(Byte::class) { it.target }
+            expect("Byte") { it.target }
             assertNull(it.key)
             expect(jsonString) { it.value }
             expect("Node not correct type (Byte), was \"not a number\"") { it.message }
@@ -432,7 +432,7 @@ class JSONTest {
         assertNull(jsonArray.asByteOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonArray.asByte }.let {
             expect("Node") { it.nodeName }
-            expect(Byte::class) { it.target }
+            expect("Byte") { it.target }
             assertNull(it.key)
             expect(jsonArray) { it.value }
             expect("Node not correct type (Byte), was [\"Testing\"]") { it.message }
@@ -441,7 +441,7 @@ class JSONTest {
         assertNull(jsonDecimal.asByteOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonDecimal.asByte }.let {
             expect("Node") { it.nodeName }
-            expect(Byte::class) { it.target }
+            expect("Byte") { it.target }
             assertNull(it.key)
             expect(jsonDecimal) { it.value }
             expect("Node not correct type (Byte), was 123.5000") { it.message }
@@ -465,7 +465,7 @@ class JSONTest {
         assertNull(jsonString.asULongOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonString.asULong }.let {
             expect("Node") { it.nodeName }
-            expect(ULong::class) { it.target }
+            expect("ULong") { it.target }
             assertNull(it.key)
             expect(jsonString) { it.value }
             expect("Node not correct type (ULong), was \"not a number\"") { it.message }
@@ -474,7 +474,7 @@ class JSONTest {
         assertNull(jsonArray.asULongOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonArray.asULong }.let {
             expect("Node") { it.nodeName }
-            expect(ULong::class) { it.target }
+            expect("ULong") { it.target }
             assertNull(it.key)
             expect(jsonArray) { it.value }
             expect("Node not correct type (ULong), was [\"Testing\"]") { it.message }
@@ -483,7 +483,7 @@ class JSONTest {
         assertNull(jsonDecimal.asULongOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonDecimal.asULong }.let {
             expect("Node") { it.nodeName }
-            expect(ULong::class) { it.target }
+            expect("ULong") { it.target }
             assertNull(it.key)
             expect(jsonDecimal) { it.value }
             expect("Node not correct type (ULong), was 123.5000") { it.message }
@@ -492,7 +492,7 @@ class JSONTest {
         assertNull(jsonInt.asULongOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonInt.asULong }.let {
             expect("Node") { it.nodeName }
-            expect(ULong::class) { it.target }
+            expect("ULong") { it.target }
             assertNull(it.key)
             expect(jsonInt) { it.value }
             expect("Node not correct type (ULong), was -1") { it.message }
@@ -516,7 +516,7 @@ class JSONTest {
         assertNull(jsonString.asUIntOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonString.asUInt }.let {
             expect("Node") { it.nodeName }
-            expect(UInt::class) { it.target }
+            expect("UInt") { it.target }
             assertNull(it.key)
             expect(jsonString) { it.value }
             expect("Node not correct type (UInt), was \"not a number\"") { it.message }
@@ -525,7 +525,7 @@ class JSONTest {
         assertNull(jsonArray.asUIntOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonArray.asUInt }.let {
             expect("Node") { it.nodeName }
-            expect(UInt::class) { it.target }
+            expect("UInt") { it.target }
             assertNull(it.key)
             expect(jsonArray) { it.value }
             expect("Node not correct type (UInt), was [\"Testing\"]") { it.message }
@@ -534,7 +534,7 @@ class JSONTest {
         assertNull(jsonDecimal.asUIntOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonDecimal.asUInt }.let {
             expect("Node") { it.nodeName }
-            expect(UInt::class) { it.target }
+            expect("UInt") { it.target }
             assertNull(it.key)
             expect(jsonDecimal) { it.value }
             expect("Node not correct type (UInt), was 123.5000") { it.message }
@@ -543,7 +543,7 @@ class JSONTest {
         assertNull(jsonInt.asUIntOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonInt.asUInt }.let {
             expect("Node") { it.nodeName }
-            expect(UInt::class) { it.target }
+            expect("UInt") { it.target }
             assertNull(it.key)
             expect(jsonInt) { it.value }
             expect("Node not correct type (UInt), was -1") { it.message }
@@ -567,7 +567,7 @@ class JSONTest {
         assertNull(jsonString.asUShortOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonString.asUShort }.let {
             expect("Node") { it.nodeName }
-            expect(UShort::class) { it.target }
+            expect("UShort") { it.target }
             assertNull(it.key)
             expect(jsonString) { it.value }
             expect("Node not correct type (UShort), was \"not a number\"") { it.message }
@@ -576,7 +576,7 @@ class JSONTest {
         assertNull(jsonArray.asUShortOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonArray.asUShort }.let {
             expect("Node") { it.nodeName }
-            expect(UShort::class) { it.target }
+            expect("UShort") { it.target }
             assertNull(it.key)
             expect(jsonArray) { it.value }
             expect("Node not correct type (UShort), was [\"Testing\"]") { it.message }
@@ -585,7 +585,7 @@ class JSONTest {
         assertNull(jsonDecimal.asUShortOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonDecimal.asUShort }.let {
             expect("Node") { it.nodeName }
-            expect(UShort::class) { it.target }
+            expect("UShort") { it.target }
             assertNull(it.key)
             expect(jsonDecimal) { it.value }
             expect("Node not correct type (UShort), was 123.5000") { it.message }
@@ -594,7 +594,7 @@ class JSONTest {
         assertNull(jsonInt.asUShortOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonInt.asUShort }.let {
             expect("Node") { it.nodeName }
-            expect(UShort::class) { it.target }
+            expect("UShort") { it.target }
             assertNull(it.key)
             expect(jsonInt) { it.value }
             expect("Node not correct type (UShort), was -1") { it.message }
@@ -618,7 +618,7 @@ class JSONTest {
         assertNull(jsonString.asUByteOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonString.asUByte }.let {
             expect("Node") { it.nodeName }
-            expect(UByte::class) { it.target }
+            expect("UByte") { it.target }
             assertNull(it.key)
             expect(jsonString) { it.value }
             expect("Node not correct type (UByte), was \"not a number\"") { it.message }
@@ -627,7 +627,7 @@ class JSONTest {
         assertNull(jsonArray.asUByteOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonArray.asUByte }.let {
             expect("Node") { it.nodeName }
-            expect(UByte::class) { it.target }
+            expect("UByte") { it.target }
             assertNull(it.key)
             expect(jsonArray) { it.value }
             expect("Node not correct type (UByte), was [\"Testing\"]") { it.message }
@@ -636,7 +636,7 @@ class JSONTest {
         assertNull(jsonDecimal.asUByteOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonDecimal.asUByte }.let {
             expect("Node") { it.nodeName }
-            expect(UByte::class) { it.target }
+            expect("UByte") { it.target }
             assertNull(it.key)
             expect(jsonDecimal) { it.value }
             expect("Node not correct type (UByte), was 123.5000") { it.message }
@@ -645,7 +645,7 @@ class JSONTest {
         assertNull(jsonInt.asUByteOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonInt.asUByte }.let {
             expect("Node") { it.nodeName }
-            expect(UByte::class) { it.target }
+            expect("UByte") { it.target }
             assertNull(it.key)
             expect(jsonInt) { it.value }
             expect("Node not correct type (UByte), was -1") { it.message }
@@ -669,7 +669,7 @@ class JSONTest {
         assertNull(jsonString.asDecimalOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonString.asDecimal }.let {
             expect("Node") { it.nodeName }
-            expect(BigDecimal::class) { it.target }
+            expect("BigDecimal") { it.target }
             assertNull(it.key)
             expect(jsonString) { it.value }
             expect("Node not correct type (BigDecimal), was \"not a number\"") { it.message }
@@ -677,7 +677,7 @@ class JSONTest {
         val jsonObject = JSONObject.of("name" to JSONString("value"))
         assertFailsWith<JSONIncorrectTypeException> { jsonObject.asDecimal }.let {
             expect("Node") { it.nodeName }
-            expect(BigDecimal::class) { it.target }
+            expect("BigDecimal") { it.target }
             assertNull(it.key)
             expect(jsonObject) { it.value }
             expect("Node not correct type (BigDecimal), was {\"name\":\"value\"}") { it.message }
@@ -696,7 +696,7 @@ class JSONTest {
         assertNull(jsonString.asBooleanOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonString.asBoolean }.let {
             expect("Node") { it.nodeName }
-            expect(Boolean::class) { it.target }
+            expect("Boolean") { it.target }
             assertNull(it.key)
             expect(jsonString) { it.value }
             expect("Node not correct type (Boolean), was \"not a boolean\"") { it.message }
@@ -715,7 +715,7 @@ class JSONTest {
         assertNull(jsonString.asArrayOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonString.asArray }.let {
             expect("Node") { it.nodeName }
-            expect(JSONArray::class) { it.target }
+            expect("JSONArray") { it.target }
             assertNull(it.key)
             expect(jsonString) { it.value }
             expect("Node not correct type (JSONArray), was \"not an array\"") { it.message }
@@ -734,7 +734,7 @@ class JSONTest {
         assertNull(jsonString.asObjectOrNull)
         assertFailsWith<JSONIncorrectTypeException> { jsonString.asObject }.let {
             expect("Node") { it.nodeName }
-            expect(JSONObject::class) { it.target }
+            expect("JSONObject") { it.target }
             assertNull(it.key)
             expect(jsonString) { it.value }
             expect("Node not correct type (JSONObject), was \"not an object\"") { it.message }
