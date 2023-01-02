@@ -115,7 +115,7 @@ object JSON {
         substitute: String = "****",
     ): String = when (this) {
         null -> "null"
-        is JSONObject -> buildString { appendElided(this, this@elidedValue, exclude, include, substitute) }
+        is JSONStructure<*> -> buildString { appendElided(this, this@elidedValue, exclude, include, substitute) }
         else -> toJSON()
     }
 
@@ -126,27 +126,41 @@ object JSON {
         include: Collection<String>?,
         substitute: String,
     ) {
-        if (json is JSONObject) {
-            a.append('{')
-            if (json.isNotEmpty()) {
-                val iterator = json.entries.iterator()
-                while (true) {
-                    val (key, value) = iterator.next()
-                    appendString(a, key, false)
-                    a.append(':')
-                    if ((exclude == null || key !in exclude) && (include == null || key in include))
-                        appendElided(a, value, exclude, include, substitute)
-                    else
-                        appendString(a, substitute, false)
-                    if (!iterator.hasNext())
-                        break
-                    a.append(',')
+        when (json) {
+            is JSONObject -> {
+                a.append('{')
+                if (json.isNotEmpty()) {
+                    val iterator = json.entries.iterator()
+                    while (true) {
+                        val (key, value) = iterator.next()
+                        appendString(a, key, false)
+                        a.append(':')
+                        if ((exclude == null || key !in exclude) && (include == null || key in include))
+                            appendElided(a, value, exclude, include, substitute)
+                        else
+                            appendString(a, substitute, false)
+                        if (!iterator.hasNext())
+                            break
+                        a.append(',')
+                    }
                 }
+                a.append('}')
             }
-            a.append('}')
+            is JSONArray -> {
+                a.append('[')
+                if (json.isNotEmpty()) {
+                    val iterator = json.iterator()
+                    while (true) {
+                        appendElided(a, iterator.next(), exclude, include, substitute)
+                        if (!iterator.hasNext())
+                            break
+                        a.append(',')
+                    }
+                }
+                a.append(']')
+            }
+            else -> a.appendJSONValue(json)
         }
-        else
-            a.appendJSONValue(json)
     }
 
     val JSONValue?.asString: String

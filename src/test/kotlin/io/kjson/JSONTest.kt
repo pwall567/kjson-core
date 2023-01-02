@@ -255,6 +255,34 @@ class JSONTest {
         }
     }
 
+    @Test fun `should return elidedValue for array of object with no exclusions or inclusions`() {
+        val obj1 = JSONObject.build {
+            add("aaa", 111)
+            add("bbb", 222)
+            add("ccc", 333)
+        }
+        val obj2 = JSONObject.build {
+            add("ddd", 444)
+            add("eee", 555)
+        }
+        expect("""[{"aaa":111,"bbb":222,"ccc":333},{"ddd":444,"eee":555}]""") { JSONArray.of(obj1, obj2).elidedValue() }
+    }
+
+    @Test fun `should return elidedValue for array of object with exclusions`() {
+        val obj1 = JSONObject.build {
+            add("aaa", 111)
+            add("bbb", 222)
+            add("ccc", 333)
+        }
+        val obj2 = JSONObject.build {
+            add("ddd", 444)
+            add("eee", 555)
+        }
+        expect("""[{"aaa":111,"bbb":222,"ccc":"****"},{"ddd":444,"eee":555}]""") {
+            JSONArray.of(obj1, obj2).elidedValue(exclude = setOf("ccc"))
+        }
+    }
+
     @Test fun `should return asString for JSONString`() {
         val json = JSONString("boring")
         expect("boring") { json.asString }
