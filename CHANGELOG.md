@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [5.3] - 2023-01-13
+### Changed
+- `JSON`: added array handling to `elidedValue()`
+
 ## [5.2] - 2022-12-16
 ### Changed
 - `JSONObject`, `JSONArray`: added deprecations for `JSONObject.asObject` and `JSONArray.asArray`
