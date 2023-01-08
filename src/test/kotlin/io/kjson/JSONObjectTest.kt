@@ -2,7 +2,7 @@
  * @(#) JSONObjectTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022 Peter Wall
+ * Copyright (c) 2021, 2022, 2023 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -207,6 +207,84 @@ class JSONObjectTest {
         assertFailsWith<JSONException> { builder.remove("third") }.let {
             expect("Key not found - third") { it.message }
         }
+    }
+
+    @Test fun `should iterate over object entries`() {
+        val json = JSONObject.build {
+            add("first", 123)
+            add("second", "dummy")
+            add("third", 123456789123456789)
+            add("fourth", BigDecimal("0.123"))
+            add("fifth", true)
+        }
+        var count = 0
+        json.forEachEntry { k, v ->
+            when (count++) {
+                0 -> {
+                    expect("first") { k }
+                    expect(JSONInt(123)) { v }
+                }
+                1 -> {
+                    expect("second") { k }
+                    expect(JSONString("dummy")) { v }
+                }
+                2 -> {
+                    expect("third") { k }
+                    expect(JSONLong(123456789123456789)) { v }
+                }
+                3 -> {
+                    expect("fourth") { k }
+                    expect(JSONDecimal("0.123")) { v }
+                }
+                4 -> {
+                    expect("fifth") { k }
+                    expect(JSONBoolean.TRUE) { v }
+                }
+            }
+        }
+        expect(5) { count }
+    }
+
+    @Test fun `should iterate over object keys`() {
+        val json = JSONObject.build {
+            add("first", 123)
+            add("second", "dummy")
+            add("third", 123456789123456789)
+            add("fourth", BigDecimal("0.123"))
+            add("fifth", true)
+        }
+        var count = 0
+        json.forEachKey {
+            when (count++) {
+                0 -> expect("first") { it }
+                1 -> expect("second") { it }
+                2 -> expect("third") { it }
+                3 -> expect("fourth") { it }
+                4 -> expect("fifth") { it }
+            }
+        }
+        expect(5) { count }
+    }
+
+    @Test fun `should iterate over object values`() {
+        val json = JSONObject.build {
+            add("first", 123)
+            add("second", "dummy")
+            add("third", 123456789123456789)
+            add("fourth", BigDecimal("0.123"))
+            add("fifth", true)
+        }
+        var count = 0
+        json.forEachValue {
+            when (count++) {
+                0 -> expect(JSONInt(123)) { it }
+                1 -> expect(JSONString("dummy")) { it }
+                2 -> expect(JSONLong(123456789123456789)) { it }
+                3 -> expect(JSONDecimal("0.123")) { it }
+                4 -> expect(JSONBoolean.TRUE) { it }
+            }
+        }
+        expect(5) { count }
     }
 
 }

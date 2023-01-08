@@ -195,6 +195,18 @@ The constructor for `JSONArray` is not publicly accessible, but an `of()` functi
 an instance of `JSONArray` may be compared safely with an instance of any class correctly implementing
 `List<JSONValue?>`.
 
+The `JSONArray` class also provides optimised iteration functions to iterate over the items of an array.
+Because the class implements the `List` interface, there are iteration functions available from the standard library,
+but the additional functions are optimised for the specific implementation details of the `JSONArray` class.
+```kotlin
+    jsonArray.forEachItem {
+        println("Item = $it")
+    }
+    jsonArray.forEachItemIndexed { index, item ->
+        println("Item #$index = $item")
+    }
+```
+
 ### `JSONObject`
 
 The `JSONObject` class implements the `Map<String, JSONValue?>` interface, and all the functions of that interface are
@@ -209,6 +221,22 @@ The constructor for `JSONObject` is not publicly accessible, but an `of()` funct
 `JSONObject` implements the `equals()` and `hashCode()` functions as specified for the Java Collections classes, so that
 an instance of `JSONObject` may be compared safely with an instance of any class correctly implementing
 `Map<String, JSONValue?>`.
+
+The `JSONObject` class also provides optimised iteration functions to iterate over the entries, the keys (property
+names) or the values of an object.
+Because the class implements the `Map` interface, there are iteration functions available from the standard library, but
+the additional functions are optimised for the specific implementation details of the `JSONObject` class.
+```kotlin
+    jsonObject.forEachEntry { name, value ->
+        println("Property $name = $value")
+    }
+    jsonObject.forEachKey {
+        println("Property name = $it")
+    }
+    jsonObject.forEachValue {
+        println("Property value = $it")
+    }
+```
 
 ### `JSON`
 
@@ -399,25 +427,25 @@ The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram
 
 ## Dependency Specification
 
-The latest version of the library is 5.3, and it may be obtained from the Maven Central repository.
+The latest version of the library is 5.4, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>5.3</version>
+      <version>5.4</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:5.3"
+    implementation "io.kjson:kjson-core:5.4"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:5.3")
+    implementation("io.kjson:kjson-core:5.4")
 ```
 
 Peter Wall
 
-2023-01-03
+2023-01-08

@@ -2,7 +2,7 @@
  * @(#) JSONArrayTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022 Peter Wall
+ * Copyright (c) 2021, 2022, 2023 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -157,6 +157,49 @@ class JSONArrayTest {
         JSONArray.from(listOf(JSONString("Hello"), JSONInt(123), JSONBoolean.TRUE,
                 JSONDecimal(BigDecimal("1.5")), null, JSONLong(0))).coOutput(capture)
         expect("[\"Hello\",123,true,1.5,null,0]") { capture.toString() }
+    }
+
+    @Test fun `should iterate over array`() {
+        val json = JSONArray.build {
+            add(123)
+            add("abc")
+            add(112233445566778899)
+            add(BigDecimal("1.456"))
+            add(true)
+        }
+        var count = 0
+        json.forEachItem {
+            when (count++) {
+                0 -> expect(JSONInt(123)) { it }
+                1 -> expect(JSONString("abc")) { it }
+                2 -> expect(JSONLong(112233445566778899)) { it }
+                3 -> expect(JSONDecimal("1.456")) { it }
+                4 -> expect(JSONBoolean.TRUE) { it }
+            }
+        }
+        expect(5) { count }
+    }
+
+    @Test fun `should iterate over array including index`() {
+        val json = JSONArray.build {
+            add(123)
+            add("abc")
+            add(112233445566778899)
+            add(BigDecimal("1.456"))
+            add(true)
+        }
+        var count = 0
+        json.forEachItemIndexed { index, item ->
+            expect(count) { index }
+            when (count++) {
+                0 -> expect(JSONInt(123)) { item }
+                1 -> expect(JSONString("abc")) { item }
+                2 -> expect(JSONLong(112233445566778899)) { item }
+                3 -> expect(JSONDecimal("1.456")) { item }
+                4 -> expect(JSONBoolean.TRUE) { item }
+            }
+        }
+        expect(5) { count }
     }
 
 }

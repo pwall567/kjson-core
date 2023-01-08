@@ -2,7 +2,14 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## [5.3] - 2023-01-13
+## [5.4] - 2023-01-08
+### Changed
+- `JSONArray`, `JSONObject`: added optimisations
+- `JSONArray`: added `forEachItem()`
+- `JSONObject`: added `forEachEntry()`, `forEachKey()`, `forEachValue()`
+- `pom.xml`: updated dependency versions
+
+## [5.3] - 2023-01-03
 ### Changed
 - `JSON`: added array handling to `elidedValue()`
 

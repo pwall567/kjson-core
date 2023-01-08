@@ -2,7 +2,7 @@
  * @(#) JSONObject.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022 Peter Wall
+ * Copyright (c) 2021, 2022, 2023 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,15 +46,14 @@ import net.pwall.util.output
 class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSONValue?>>, override val size: Int) :
         JSONStructure<String>, Map<String, JSONValue?> {
 
-    private val immutableMap = ImmutableMap<String, JSONValue?>(array, size)
+    internal val immutableMap = ImmutableMap<String, JSONValue?>(array, size)
 
     override fun appendTo(a: Appendable) {
         a.append('{')
         if (isNotEmpty()) {
-            val entrySet = immutableMap.entries
             var i = 0
             while (true) {
-                val entry = entrySet.get(i)
+                val entry = immutableMap.getEntry(i)
                 JSONFunctions.appendString(a, entry.key, false)
                 a.append(':')
                 entry.value.appendTo(a)
@@ -66,13 +65,14 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
         a.append('}')
     }
 
+    override fun toJSON(): String = if (isEmpty()) "{}" else buildString { appendTo(this) }
+
     override fun output(out: IntConsumer) {
         out.accept('{'.code)
         if (isNotEmpty()) {
-            val entrySet = immutableMap.entries
             var i = 0
             while (true) {
-                val entry = entrySet.get(i)
+                val entry = immutableMap.getEntry(i)
                 JSONFunctions.outputString(entry.key, false, out)
                 out.accept(':'.code)
                 entry.value.output(out)
@@ -87,10 +87,9 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
     override suspend fun coOutput(out: CoOutput) {
         out.output('{')
         if (isNotEmpty()) {
-            val entrySet = immutableMap.entries
             var i = 0
             while (true) {
-                val entry = entrySet.get(i)
+                val entry = immutableMap.getEntry(i)
                 out.outputString(entry.key, false)
                 out.output(':')
                 entry.value.coOutput(out)
@@ -119,6 +118,21 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
     override fun containsValue(value: JSONValue?): Boolean = immutableMap.containsValue(value)
 
     override fun get(key: String): JSONValue? = immutableMap[key]
+
+    fun forEachEntry(func: (String, JSONValue?) -> Unit) {
+        repeat(size) {
+            val entry = immutableMap.getEntry(it)
+            func(entry.key, entry.value)
+        }
+    }
+
+    fun forEachKey(func: (String) -> Unit) {
+        repeat(size) { func(immutableMap.getKey(it)) }
+    }
+
+    fun forEachValue(func: (JSONValue?) -> Unit) {
+        repeat(size) { func(immutableMap.getValue(it)) }
+    }
 
     @Suppress("SuspiciousEqualsCombination")
     override fun equals(other: Any?): Boolean = this === other || other is Map<*, *> && immutableMap == other
