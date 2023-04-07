@@ -2,7 +2,7 @@
  * @(#) JSONTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022 Peter Wall
+ * Copyright (c) 2021, 2022, 2023 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,33 +36,47 @@ import kotlin.test.expect
 import java.math.BigDecimal
 
 import io.kjson.JSON.asArray
+import io.kjson.JSON.asArrayOrError
 import io.kjson.JSON.asArrayOrNull
 import io.kjson.JSON.asBoolean
+import io.kjson.JSON.asBooleanOrError
 import io.kjson.JSON.asBooleanOrNull
 import io.kjson.JSON.asByte
+import io.kjson.JSON.asByteOrError
 import io.kjson.JSON.asByteOrNull
 import io.kjson.JSON.asDecimal
+import io.kjson.JSON.asDecimalOrError
 import io.kjson.JSON.asDecimalOrNull
 import io.kjson.JSON.asInt
+import io.kjson.JSON.asIntOrError
 import io.kjson.JSON.asIntOrNull
 import io.kjson.JSON.asLong
+import io.kjson.JSON.asLongOrError
 import io.kjson.JSON.asLongOrNull
 import io.kjson.JSON.asObject
+import io.kjson.JSON.asObjectOrError
 import io.kjson.JSON.asObjectOrNull
 import io.kjson.JSON.asShort
+import io.kjson.JSON.asShortOrError
 import io.kjson.JSON.asShortOrNull
 import io.kjson.JSON.asString
+import io.kjson.JSON.asStringOrError
 import io.kjson.JSON.asStringOrNull
 import io.kjson.JSON.asUByte
+import io.kjson.JSON.asUByteOrError
 import io.kjson.JSON.asUByteOrNull
 import io.kjson.JSON.asUInt
+import io.kjson.JSON.asUIntOrError
 import io.kjson.JSON.asUIntOrNull
 import io.kjson.JSON.asULong
+import io.kjson.JSON.asULongOrError
 import io.kjson.JSON.asULongOrNull
 import io.kjson.JSON.asUShort
+import io.kjson.JSON.asUShortOrError
 import io.kjson.JSON.asUShortOrNull
 import io.kjson.JSON.displayValue
 import io.kjson.JSON.elidedValue
+import io.kjson.JSON.typeError
 import net.pwall.json.format.Formatter
 import net.pwall.json.format.Formatter.unixLineSeparator
 
@@ -287,6 +301,7 @@ class JSONTest {
         val json = JSONString("boring")
         expect("boring") { json.asString }
         expect("boring") { json.asStringOrNull }
+        expect("boring") { json.asStringOrError("string", 333, "Item") }
     }
 
     @Test fun `should fail on attempt to get asString of other types`() {
@@ -309,16 +324,32 @@ class JSONTest {
         }
     }
 
+    @Test fun `should throw custom error on attempt to get asStringOrError of other types`() {
+        val jsonInt = JSONInt(8)
+        assertFailsWith<JSONIncorrectTypeException> {
+            jsonInt.asStringOrError("string", "test1", "Value")
+        }.let {
+            expect("Value") { it.nodeName }
+            expect("string") { it.target }
+            expect("test1") { it.key }
+            expect(jsonInt) { it.value }
+            expect("Value not correct type (string), was 8, at test1") { it.message }
+        }
+    }
+
     @Test fun `should return asInt for number types`() {
         val jsonInt = JSONInt(8)
         expect(8) { jsonInt.asInt }
         expect(8) { jsonInt.asIntOrNull }
+        expect(8) { jsonInt.asIntOrError("xxx", "yyy", "zzz") }
         val jsonLong = JSONLong(12345)
         expect(12345) { jsonLong.asInt }
         expect(12345) { jsonLong.asIntOrNull }
+        expect(12345) { jsonLong.asIntOrError(key = 27) }
         val jsonDecimal = JSONDecimal(BigDecimal("123.0000"))
         expect(123) { jsonDecimal.asInt }
         expect(123) { jsonDecimal.asIntOrNull }
+        expect(123) { jsonDecimal.asIntOrError("aaa") }
     }
 
     @Test fun `should fail on attempt to get asInt of other types`() {
@@ -351,6 +382,19 @@ class JSONTest {
         }
     }
 
+    @Test fun `should throw custom error on attempt to get asIntOrError of other types`() {
+        val jsonString = JSONString("not a number")
+        assertFailsWith<JSONIncorrectTypeException> {
+            jsonString.asIntOrError("integer", "test", "Value")
+        }.let {
+            expect("Value") { it.nodeName }
+            expect("integer") { it.target }
+            expect("test") { it.key }
+            expect(jsonString) { it.value }
+            expect("Value not correct type (integer), was \"not a number\", at test") { it.message }
+        }
+    }
+
     @Test fun `should return asLong for number types`() {
         val jsonInt = JSONInt(8)
         expect(8) { jsonInt.asLong }
@@ -358,9 +402,11 @@ class JSONTest {
         val jsonLong = JSONLong(1234567812345678)
         expect(1234567812345678) { jsonLong.asLong }
         expect(1234567812345678) { jsonLong.asLongOrNull }
+        expect(1234567812345678) { jsonLong.asLongOrError("long integer", 999) }
         val jsonDecimal = JSONDecimal(BigDecimal("9876543219876543.0000"))
         expect(9876543219876543) { jsonDecimal.asLong }
         expect(9876543219876543) { jsonDecimal.asLongOrNull }
+        expect(9876543219876543) { jsonDecimal.asLongOrError(key = 6, nodeName = "Property") }
     }
 
     @Test fun `should fail on attempt to get asLong of other types`() {
@@ -392,16 +438,32 @@ class JSONTest {
         }
     }
 
+    @Test fun `should throw custom error on attempt to get asLongOrError of other types`() {
+        val jsonString = JSONString("not a number")
+        assertFailsWith<JSONIncorrectTypeException> {
+            jsonString.asLongOrError("long", "test", "Value")
+        }.let {
+            expect("Value") { it.nodeName }
+            expect("long") { it.target }
+            expect("test") { it.key }
+            expect(jsonString) { it.value }
+            expect("Value not correct type (long), was \"not a number\", at test") { it.message }
+        }
+    }
+
     @Test fun `should return asShort for number types`() {
         val jsonInt = JSONInt(8)
         expect(8) { jsonInt.asShort }
         expect(8) { jsonInt.asShortOrNull }
+        expect(8) { jsonInt.asShortOrError("short") }
         val jsonLong = JSONLong(12345)
         expect(12345) { jsonLong.asShort }
         expect(12345) { jsonLong.asShortOrNull }
+        expect(12345) { jsonLong.asShortOrError(key = "key") }
         val jsonDecimal = JSONDecimal(BigDecimal("123.0000"))
         expect(123) { jsonDecimal.asShort }
         expect(123) { jsonDecimal.asShortOrNull }
+        expect(123) { jsonDecimal.asShortOrError("short", 1) }
     }
 
     @Test fun `should fail on attempt to get asShort of other types`() {
@@ -434,16 +496,32 @@ class JSONTest {
         }
     }
 
+    @Test fun `should throw custom error on attempt to get asShortOrError of other types`() {
+        val jsonString = JSONString("not a number")
+        assertFailsWith<JSONIncorrectTypeException> {
+            jsonString.asShortOrError("short", "test99", "Value")
+        }.let {
+            expect("Value") { it.nodeName }
+            expect("short") { it.target }
+            expect("test99") { it.key }
+            expect(jsonString) { it.value }
+            expect("Value not correct type (short), was \"not a number\", at test99") { it.message }
+        }
+    }
+
     @Test fun `should return asByte for number types`() {
         val jsonInt = JSONInt(8)
         expect(8) { jsonInt.asByte }
         expect(8) { jsonInt.asByteOrNull }
+        expect(8) { jsonInt.asByteOrError() }
         val jsonLong = JSONLong(123)
         expect(123) { jsonLong.asByte }
         expect(123) { jsonLong.asByteOrNull }
+        expect(123) { jsonLong.asByteOrError("b", "c", "d") }
         val jsonDecimal = JSONDecimal(BigDecimal("123.0000"))
         expect(123) { jsonDecimal.asByte }
         expect(123) { jsonDecimal.asByteOrNull }
+        expect(123) { jsonDecimal.asByteOrError("byte", "test4") }
     }
 
     @Test fun `should fail on attempt to get asByte of other types`() {
@@ -476,16 +554,32 @@ class JSONTest {
         }
     }
 
+    @Test fun `should throw custom error on attempt to get asByteOrError of other types`() {
+        val jsonString = JSONString("not a number")
+        assertFailsWith<JSONIncorrectTypeException> {
+            jsonString.asByteOrError("byte", "test123", "Item")
+        }.let {
+            expect("Item") { it.nodeName }
+            expect("byte") { it.target }
+            expect("test123") { it.key }
+            expect(jsonString) { it.value }
+            expect("Item not correct type (byte), was \"not a number\", at test123") { it.message }
+        }
+    }
+
     @Test fun `should return asULong for number types`() {
         val jsonInt = JSONInt(8)
         expect(8.toULong()) { jsonInt.asULong }
         expect(8.toULong()) { jsonInt.asULongOrNull }
+        expect(8.toULong()) { jsonInt.asULongOrError() }
         val jsonLong = JSONLong(12345)
         expect(12345.toULong()) { jsonLong.asULong }
         expect(12345.toULong()) { jsonLong.asULongOrNull }
+        expect(12345.toULong()) { jsonLong.asULongOrError(key = 27) }
         val jsonDecimal = JSONDecimal(BigDecimal("123.0000"))
         expect(123.toULong()) { jsonDecimal.asULong }
         expect(123.toULong()) { jsonDecimal.asULongOrNull }
+        expect(123.toULong()) { jsonDecimal.asULongOrError("whatever") }
     }
 
     @Test fun `should fail on attempt to get asULong of other types`() {
@@ -527,16 +621,32 @@ class JSONTest {
         }
     }
 
+    @Test fun `should throw custom error on attempt to get asULongOrError of other types`() {
+        val jsonString = JSONString("not a number")
+        assertFailsWith<JSONIncorrectTypeException> {
+            jsonString.asULongOrError("unsigned long", "test2", "Item")
+        }.let {
+            expect("Item") { it.nodeName }
+            expect("unsigned long") { it.target }
+            expect("test2") { it.key }
+            expect(jsonString) { it.value }
+            expect("Item not correct type (unsigned long), was \"not a number\", at test2") { it.message }
+        }
+    }
+
     @Test fun `should return asUInt for number types`() {
         val jsonInt = JSONInt(8)
         expect(8U) { jsonInt.asUInt }
         expect(8U) { jsonInt.asUIntOrNull }
+        expect(8U) { jsonInt.asUIntOrError("stuff", 15, "Thing") }
         val jsonLong = JSONLong(12345)
         expect(12345U) { jsonLong.asUInt }
         expect(12345U) { jsonLong.asUIntOrNull }
+        expect(12345U) { jsonLong.asUIntOrError() }
         val jsonDecimal = JSONDecimal(BigDecimal("123.0000"))
         expect(123U) { jsonDecimal.asUInt }
         expect(123U) { jsonDecimal.asUIntOrNull }
+        expect(123U) { jsonDecimal.asUIntOrError("unsigned int", "property", "Property") }
     }
 
     @Test fun `should fail on attempt to get asUInt of other types`() {
@@ -578,16 +688,32 @@ class JSONTest {
         }
     }
 
+    @Test fun `should throw custom error on attempt to get asUIntOrError of other types`() {
+        val jsonString = JSONString("not a number")
+        assertFailsWith<JSONIncorrectTypeException> {
+            jsonString.asUIntOrError("unsigned int", "test1234", "Item")
+        }.let {
+            expect("Item") { it.nodeName }
+            expect("unsigned int") { it.target }
+            expect("test1234") { it.key }
+            expect(jsonString) { it.value }
+            expect("Item not correct type (unsigned int), was \"not a number\", at test1234") { it.message }
+        }
+    }
+
     @Test fun `should return asUShort for number types`() {
         val jsonInt = JSONInt(8)
         expect(8U) { jsonInt.asUShort }
         expect(8U) { jsonInt.asUShortOrNull }
+        expect(8U) { jsonInt.asUShortOrError("a", "b", "c") }
         val jsonLong = JSONLong(45678)
         expect(45678U) { jsonLong.asUShort }
         expect(45678U) { jsonLong.asUShortOrNull }
+        expect(45678U) { jsonLong.asUShortOrError() }
         val jsonDecimal = JSONDecimal(BigDecimal("1234.0000"))
         expect(1234U) { jsonDecimal.asUShort }
         expect(1234U) { jsonDecimal.asUShortOrNull }
+        expect(1234U) { jsonDecimal.asUShortOrError(key = "it") }
     }
 
     @Test fun `should fail on attempt to get asUShort of other types`() {
@@ -629,16 +755,32 @@ class JSONTest {
         }
     }
 
+    @Test fun `should throw custom error on attempt to get asUShortOrError of other types`() {
+        val jsonString = JSONString("not a number")
+        assertFailsWith<JSONIncorrectTypeException> {
+            jsonString.asUShortOrError("unsigned short", "testtest", "Item")
+        }.let {
+            expect("Item") { it.nodeName }
+            expect("unsigned short") { it.target }
+            expect("testtest") { it.key }
+            expect(jsonString) { it.value }
+            expect("Item not correct type (unsigned short), was \"not a number\", at testtest") { it.message }
+        }
+    }
+
     @Test fun `should return asUByte for number types`() {
         val jsonInt = JSONInt(8)
         expect(8U) { jsonInt.asUByte }
         expect(8U) { jsonInt.asUByteOrNull }
+        expect(8U) { jsonInt.asUByteOrError("unsigned byte", nodeName = "Item") }
         val jsonLong = JSONLong(234)
         expect(234U) { jsonLong.asUByte }
         expect(234U) { jsonLong.asUByteOrNull }
+        expect(234U) { jsonLong.asUByteOrError() }
         val jsonDecimal = JSONDecimal(BigDecimal("123.0000"))
         expect(123U) { jsonDecimal.asUByte }
         expect(123U) { jsonDecimal.asUByteOrNull }
+        expect(123U) { jsonDecimal.asUByteOrError("type", "key", "name") }
     }
 
     @Test fun `should fail on attempt to get asUByte of other types`() {
@@ -680,16 +822,32 @@ class JSONTest {
         }
     }
 
+    @Test fun `should throw custom error on attempt to get asUByteOrError of other types`() {
+        val jsonString = JSONString("not a number")
+        assertFailsWith<JSONIncorrectTypeException> {
+            jsonString.asUByteOrError("unsigned byte", "test333")
+        }.let {
+            expect("Node") { it.nodeName }
+            expect("unsigned byte") { it.target }
+            expect("test333") { it.key }
+            expect(jsonString) { it.value }
+            expect("Node not correct type (unsigned byte), was \"not a number\", at test333") { it.message }
+        }
+    }
+
     @Test fun `should return asDecimal for number types`() {
         val jsonInt = JSONInt(8)
         expect(BigDecimal(8)) { jsonInt.asDecimal }
         expect(BigDecimal(8)) { jsonInt.asDecimalOrNull }
+        expect(BigDecimal(8)) { jsonInt.asDecimalOrError("a", "b", "c") }
         val jsonLong = JSONLong(1234567812345678)
         expect(BigDecimal(1234567812345678)) { jsonLong.asDecimal }
         expect(BigDecimal(1234567812345678)) { jsonLong.asDecimalOrNull }
+        expect(BigDecimal(1234567812345678)) { jsonLong.asDecimalOrError(key = 9) }
         val jsonDecimal = JSONDecimal(BigDecimal("123.45678"))
         expect(BigDecimal("123.45678")) { jsonDecimal.asDecimal }
         expect(BigDecimal("123.45678")) { jsonDecimal.asDecimalOrNull }
+        expect(BigDecimal("123.45678")) { jsonDecimal.asDecimalOrError() }
     }
 
     @Test fun `should fail on attempt to get asDecimal of other types`() {
@@ -712,11 +870,26 @@ class JSONTest {
         }
     }
 
+    @Test fun `should throw custom error on attempt to get asDecimalOrError of other types`() {
+        val jsonString = JSONString("not a number")
+        assertFailsWith<JSONIncorrectTypeException> {
+            jsonString.asDecimalOrError("decimal number", 1000, "Property")
+        }.let {
+            expect("Property") { it.nodeName }
+            expect("decimal number") { it.target }
+            expect(1000) { it.key }
+            expect(jsonString) { it.value }
+            expect("Property not correct type (decimal number), was \"not a number\", at 1000") { it.message }
+        }
+    }
+
     @Test fun `should return asBoolean for JSONBoolean`() {
         assertTrue(JSONBoolean.TRUE.asBoolean)
         assertTrue(JSONBoolean.TRUE.asBooleanOrNull)
+        assertTrue(JSONBoolean.TRUE.asBooleanOrError("boolean"))
         assertFalse(JSONBoolean.FALSE.asBoolean)
         assertFalse(JSONBoolean.FALSE.asBooleanOrNull)
+        assertFalse(JSONBoolean.FALSE.asBooleanOrError(key = 0))
     }
 
     @Test fun `should fail on attempt to get asBoolean of other types`() {
@@ -731,11 +904,25 @@ class JSONTest {
         }
     }
 
+    @Test fun `should throw custom error on attempt to get asBoolean of other types`() {
+        val jsonString = JSONString("not a boolean")
+        assertFailsWith<JSONIncorrectTypeException> {
+            jsonString.asBooleanOrError("boolean", "aaa", "Flag")
+        }.let {
+            expect("Flag") { it.nodeName }
+            expect("boolean") { it.target }
+            expect("aaa") { it.key }
+            expect(jsonString) { it.value }
+            expect("Flag not correct type (boolean), was \"not a boolean\", at aaa") { it.message }
+        }
+    }
+
     @Suppress("DEPRECATION")
     @Test fun `should return asArray for JSONArray`() {
         val jsonArray = JSONArray.of(JSONInt(123), JSONInt(456))
         assertSame(jsonArray, jsonArray.asArray)
         assertSame(jsonArray, jsonArray.asArrayOrNull)
+        assertSame(jsonArray, jsonArray.asArrayOrError("array"))
     }
 
     @Test fun `should fail on attempt to get asArray of other types`() {
@@ -750,11 +937,25 @@ class JSONTest {
         }
     }
 
+    @Test fun `should throw custom error on attempt to get asArray of other types`() {
+        val jsonString = JSONString("not an array")
+        assertFailsWith<JSONIncorrectTypeException> {
+            jsonString.asArrayOrError("array")
+        }.let {
+            expect("Node") { it.nodeName }
+            expect("array") { it.target }
+            assertNull(it.key)
+            expect(jsonString) { it.value }
+            expect("Node not correct type (array), was \"not an array\"") { it.message }
+        }
+    }
+
     @Suppress("DEPRECATION")
     @Test fun `should return asObject for JSONObject`() {
         val jsonObject = JSONObject.of("name" to JSONString("value"))
         assertSame(jsonObject, jsonObject.asObject)
         assertSame(jsonObject, jsonObject.asObjectOrNull)
+        assertSame(jsonObject, jsonObject.asObjectOrError("object"))
     }
 
     @Test fun `should fail on attempt to get asObject of other types`() {
@@ -766,6 +967,30 @@ class JSONTest {
             assertNull(it.key)
             expect(jsonString) { it.value }
             expect("Node not correct type (JSONObject), was \"not an object\"") { it.message }
+        }
+    }
+
+    @Test fun `should throw custom error on attempt to get asObject of other types`() {
+        val jsonString = JSONString("not an object")
+        assertFailsWith<JSONIncorrectTypeException> {
+            jsonString.asObjectOrError("object", nodeName = "Array")
+        }.let {
+            expect("Array") { it.nodeName }
+            expect("object") { it.target }
+            assertNull(it.key)
+            expect(jsonString) { it.value }
+            expect("Array not correct type (object), was \"not an object\"") { it.message }
+        }
+    }
+
+    @Test fun `should throw general type error`() {
+        val json = JSONString("this is a string")
+        assertFailsWith<JSONIncorrectTypeException> { json.typeError("integer") }.let {
+            expect("Node") { it.nodeName }
+            expect("integer") { it.target }
+            assertNull(it.key)
+            expect(json) { it.value }
+            expect("Node not correct type (integer), was \"this is a string\"") { it.message }
         }
     }
 

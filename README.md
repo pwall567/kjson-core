@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/pwall567/kjson-core.svg?branch=main)](https://app.travis-ci.com/github/pwall567/kjson-core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Kotlin](https://img.shields.io/static/v1?label=Kotlin&message=v1.6.10&color=7f52ff&logo=kotlin&logoColor=7f52ff)](https://github.com/JetBrains/kotlin/releases/tag/v1.6.10)
+[![Kotlin](https://img.shields.io/static/v1?label=Kotlin&message=v1.7.21&color=7f52ff&logo=kotlin&logoColor=7f52ff)](https://github.com/JetBrains/kotlin/releases/tag/v1.7.21)
 [![Maven Central](https://img.shields.io/maven-central/v/io.kjson/kjson-core?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.kjson%22%20AND%20a:%kjson-core%22)
 
 JSON Kotlin core library
@@ -24,8 +24,8 @@ The `kjson-core` library provides the basic functionality required to represent 
 - classes to hold the internal forms of the values
 - output functions to create valid JSON representations from the internal form
 
-The library is an evolution of the [jsonutil](https://github.com/pwall567/jsonutil) Java library; it makes better use of
-Kotlin-specific functionality like controlled nullability.
+The library is an evolution of the [`jsonutil`](https://github.com/pwall567/jsonutil) Java library; it makes better use
+of Kotlin-specific functionality like controlled nullability.
 
 ## User Guide
 
@@ -177,8 +177,9 @@ It also provides convenience functions to both get a member of the structure and
 | `getArray(K)`   | `JSONArray`              |
 | `getObject(K)`  | `JSONObject`             |
 
-These have the advantage over, for example, `json["property"].asString`, that the error message in the event of an
-incorrect type includes the key or index used to select the item.
+These have the advantage over, for example, `json["property"].asString`, that the
+[`JSONIncorrectTypeException`](#jsonincorrecttypeexception) thrown when the type is incorrect includes the key or index
+used to select the item.
 
 ### `JSONArray`
 
@@ -237,6 +238,43 @@ the additional functions are optimised for the specific implementation details o
         println("Property value = $it")
     }
 ```
+
+### `JSONException`
+
+Error conditions will usually result in a `JSONException` being thrown.
+This is a derived class of `RuntimeException`, and the `message` property will contain a text description of the error.
+
+### `JSONIncorrectTypeException`
+
+A common error case arises when a `JSONValue` is found to be of the wrong type, for example, when a `JSONArray` is
+supplied as a parameter to a function that expects a `JSONObject`, or when a property of an object is a `JSONString`
+when a `JSONInt` was expected.
+The `JSONIncorrectTypeException` provides a way of reporting such errors in a consistent manner, with error messages
+including the human-readable node name, the expected type, the actual value and an optional key (for example, a
+[`JSONPointer`](https://github.com/pwall567/kjson-pointer) to assist in locating the value in error).
+
+The `JSONIncorrectTypeException` constructor takes the following parameters:
+
+| Name       | Type         | Default  | Description                               |
+|------------|--------------|----------|-------------------------------------------|
+| `nodeName` | `String`     | `"Node"` | The name of the field, _e.g._ `"Surname"` |
+| `target`   | `String`     |          | The expected type, _e.g._ `"string"`      |
+| `value`    | `JSONValue?` |          | The actual value found                    |
+| `key`      | `Any?`       | `null`   | The "key" (the location in a structure)   |
+
+For example, the following exception:
+```kotlin
+    throw JSONIncorrectTypeException("Surname", "string", surname, "/person/surname")
+```
+will result in this message (if an array was supplied in place of a string):
+```text
+Surname not correct type (string), was [ ... ], at /person/surname
+```
+
+The actual value will be displayed using the [`displayValue()`](#human-friendly-output) function, and the "at" clause
+will be omitted if the `key` is `null`.
+
+For a more convenient way of using this exception type, see [Error Reporting](#error-reporting) below.
 
 ### `JSON`
 
@@ -326,38 +364,95 @@ The elements to be elided may be specified as a `Collection` of element names to
 usefully) as a `Collection` of element names to be included (using the `include` parameter).
 The substitute string (default "`****`") may also be specified using the `substitute` parameter.
 
+#### Error Reporting
+
+To simplify the creation of a `JSONIncorrectTypeException`, the `JSON` object includes the `typeError()` extension
+function on `JSONValue?`.
+It takes the following parameters:
+
+| Name       | Type     | Default  | Description                               |
+|------------|----------|----------|-------------------------------------------|
+| `target`   | `String` |          | The expected type, _e.g._ `"string"`      | 
+| `key`      | `Any?`   | `null`   | The "key" (the location in a structure)   |
+| `nodeName` | `String` | `"Node"` | The name of the field, _e.g._ `"Surname"` |
+
+Its use is best illustrated by example:
+```kotlin
+    if (node !is JSONString)
+        node.typeError("string", "/person/surname", "Surname")
+```
+This will produce an exception like the one shown in the description of `JSONIncorrectTypeException`.
+
+The conversion may be combined with the error reporting using the `asXxxxOrError()` functions:
+
+| Extension Function              | Result type  |
+|---------------------------------|--------------|
+| `JSONValue?.asStringOrError()`  | `String`     |
+| `JSONValue?.asLongOrError()`    | `Long`       |
+| `JSONValue?.asLongOrError()`    | `Long`       |
+| `JSONValue?.asIntOrError()`     | `Int`        |
+| `JSONValue?.asShortOrError()`   | `Short`      |
+| `JSONValue?.asByteOrError()`    | `Byte`       |
+| `JSONValue?.asULongOrError()`   | `ULong`      |
+| `JSONValue?.asUIntOrError()`    | `UInt`       |
+| `JSONValue?.asUShortOrError()`  | `UShort`     |
+| `JSONValue?.asUByteOrError()`   | `UByte`      |
+| `JSONValue?.asDecimalOrError()` | `BigDecimal` |
+| `JSONValue?.asBooleanOrError()` | `Boolean`    |
+| `JSONValue?.asArrayOrError()`   | `JSONArray`  |
+| `JSONValue?.asObjectOrError()`  | `JSONObject` |
+
+Note that the functions representing a simple value return the actual value type, not the `JSONValue` subtype.
+The `asArrayOrError()` and `asObjectOrError()` functions return `JSONArray` and `JSONObject` respectively, but these can
+of course be used as the underlying implementation types (`List` and `Map`).
+
+The functions all take the same parameters as the `typeError()` function (which they all call if the type is not
+correct).
+
+Using these functions, the above example becomes:
+```kotlin
+    node.asStringOrError("string", "/person/surname", "Surname")
+```
+
 #### Extension Values
 
 To simplify casting a `JSONValue` to the expected type, the `JSON` object provides extension values on `JSONValue?`:
 
-| Value                        | Result type   | If the value is not of that type... |
+| Extension Value              | Result type   | If the value is not of that type... |
 |------------------------------|---------------|-------------------------------------|
-| `JSONValue?.asString`        | `String`      | throw exception                     |
+| `JSONValue?.asString`        | `String`      | throw `JSONIncorrectTypeException`  |
 | `JSONValue?.asStringOrNull`  | `String?`     | return `null`                       |
-| `JSONValue?.asLong`          | `Long`        | throw exception                     |
+| `JSONValue?.asLong`          | `Long`        | throw `JSONIncorrectTypeException`  |
 | `JSONValue?.asLongOrNull`    | `Long?`       | return `null`                       |
-| `JSONValue?.asInt`           | `Int`         | throw exception                     |
+| `JSONValue?.asInt`           | `Int`         | throw `JSONIncorrectTypeException`  |
 | `JSONValue?.asIntOrNull`     | `Int?`        | return `null`                       |
-| `JSONValue?.asShort`         | `Short`       | throw exception                     |
+| `JSONValue?.asShort`         | `Short`       | throw `JSONIncorrectTypeException`  |
 | `JSONValue?.asShortOrNull`   | `Short?`      | return `null`                       |
-| `JSONValue?.asByte`          | `Byte`        | throw exception                     |
+| `JSONValue?.asByte`          | `Byte`        | throw `JSONIncorrectTypeException`  |
 | `JSONValue?.asByteOrNull`    | `Byte?`       | return `null`                       |
-| `JSONValue?.asULong`         | `ULong`       | throw exception                     |
+| `JSONValue?.asULong`         | `ULong`       | throw `JSONIncorrectTypeException`  |
 | `JSONValue?.asULongOrNull`   | `ULong?`      | return `null`                       |
-| `JSONValue?.asUInt`          | `UInt`        | throw exception                     |
+| `JSONValue?.asUInt`          | `UInt`        | throw `JSONIncorrectTypeException`  |
 | `JSONValue?.asUIntOrNull`    | `UInt?`       | return `null`                       |
-| `JSONValue?.asUShort`        | `UShort`      | throw exception                     |
+| `JSONValue?.asUShort`        | `UShort`      | throw `JSONIncorrectTypeException`  |
 | `JSONValue?.asUShortOrNull`  | `UShort?`     | return `null`                       |
-| `JSONValue?.asUByte`         | `UByte`       | throw exception                     |
+| `JSONValue?.asUByte`         | `UByte`       | throw `JSONIncorrectTypeException`  |
 | `JSONValue?.asUByteOrNull`   | `UByte?`      | return `null`                       |
-| `JSONValue?.asDecimal`       | `BigDecimal`  | throw exception                     |
+| `JSONValue?.asDecimal`       | `BigDecimal`  | throw `JSONIncorrectTypeException`  |
 | `JSONValue?.asDecimalOrNull` | `BigDecimal?` | return `null`                       |
-| `JSONValue?.asBoolean`       | `Boolean`     | throw exception                     |
+| `JSONValue?.asBoolean`       | `Boolean`     | throw `JSONIncorrectTypeException`  |
 | `JSONValue?.asBooleanOrNull` | `Boolean?`    | return `null`                       |
-| `JSONValue?.asArray`         | `JSONArray`   | throw exception                     |
+| `JSONValue?.asArray`         | `JSONArray`   | throw `JSONIncorrectTypeException`  |
 | `JSONValue?.asArrayOrNull`   | `JSONArray?`  | return `null`                       |
-| `JSONValue?.asObject`        | `JSONObject`  | throw exception                     |
+| `JSONValue?.asObject`        | `JSONObject`  | throw `JSONIncorrectTypeException`  |
 | `JSONValue?.asObjectOrNull`  | `JSONObject?` | return `null`                       |
+
+The `JSONIncorrectTypeException` will use the default value `"Node"` for the `nodeName`, and the class name of the
+target type as the `target`.
+The `key` will be `null`.
+
+The same note on the return types of the `asXxxxOrError()` functions also applies to the results of these extension
+values.
 
 ## Lenient Parsing
 
@@ -448,4 +543,4 @@ The latest version of the library is 5.4, and it may be obtained from the Maven 
 
 Peter Wall
 
-2023-01-08
+2023-04-05

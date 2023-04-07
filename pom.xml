@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>kjson-core</artifactId>
-  <version>5.4</version>
+  <version>5.5</version>
   <name>JSON Kotlin core functionality</name>
   <description>JSON Kotlin core functionality</description>
   <packaging>jar</packaging>
@@ -13,7 +13,7 @@
   <parent>
     <groupId>io.kjson</groupId>
     <artifactId>kjson-maven</artifactId>
-    <version>2.1</version>
+    <version>3.0</version>
   </parent>
 
   <properties>
@@ -98,12 +98,6 @@
       <groupId>net.pwall.json</groupId>
       <artifactId>json-simple</artifactId>
       <version>1.7.3</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <!-- This is required because kotlin-test-junit 1.6.10 includes junit 4.12 -->
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

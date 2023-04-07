@@ -2,7 +2,7 @@
  * @(#) JSONStructure.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2022 Peter Wall
+ * Copyright (c) 2022, 2023 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,19 @@ package io.kjson
 
 import java.math.BigDecimal
 
-import io.kjson.JSON.asArrayOrNull
-import io.kjson.JSON.asObjectOrNull
-import io.kjson.JSON.typeError
+import io.kjson.JSON.asArrayOrError
+import io.kjson.JSON.asBooleanOrError
+import io.kjson.JSON.asByteOrError
+import io.kjson.JSON.asDecimalOrError
+import io.kjson.JSON.asIntOrError
+import io.kjson.JSON.asLongOrError
+import io.kjson.JSON.asObjectOrError
+import io.kjson.JSON.asShortOrError
+import io.kjson.JSON.asStringOrError
+import io.kjson.JSON.asUByteOrError
+import io.kjson.JSON.asUIntOrError
+import io.kjson.JSON.asULongOrError
+import io.kjson.JSON.asUShortOrError
 
 /**
  * A sealed interface to specify the [JSONValue] classes that represent structured types (array and object).
@@ -47,56 +57,30 @@ sealed interface JSONStructure<K: Any> : JSONValue {
 
     fun isNotEmpty(): Boolean = !isEmpty()
 
-    fun getString(key: K): String = get(key).let {
-        if (it is JSONString) it.value else it.typeError("String", key)
-    }
+    fun getString(key: K): String = get(key).asStringOrError(key = key)
 
-    fun getLong(key: K): Long = get(key).let {
-        if (it is JSONNumber && it.isLong()) it.toLong() else it.typeError("Long", key)
-    }
+    fun getLong(key: K): Long = get(key).asLongOrError(key = key)
 
-    fun getInt(key: K): Int = get(key).let {
-        if (it is JSONNumber && it.isInt()) it.toInt() else it.typeError("Int", key)
-    }
+    fun getInt(key: K): Int = get(key).asIntOrError(key = key)
 
-    fun getShort(key: K): Short = get(key).let {
-        if (it is JSONNumber && it.isShort()) it.toShort() else it.typeError("Short", key)
-    }
+    fun getShort(key: K): Short = get(key).asShortOrError(key = key)
 
-    fun getByte(key: K): Byte = get(key).let {
-        if (it is JSONNumber && it.isByte()) it.toByte() else it.typeError("Byte", key)
-    }
+    fun getByte(key: K): Byte = get(key).asByteOrError(key = key)
 
-    fun getULong(key: K): ULong = get(key).let {
-        if (it is JSONNumber && it.isULong()) it.toULong() else it.typeError("ULong", key)
-    }
+    fun getULong(key: K): ULong = get(key).asULongOrError(key = key)
 
-    fun getUInt(key: K): UInt = get(key).let {
-        if (it is JSONNumber && it.isUInt()) it.toUInt() else it.typeError("UInt", key)
-    }
+    fun getUInt(key: K): UInt = get(key).asUIntOrError(key = key)
 
-    fun getUShort(key: K): UShort = get(key).let {
-        if (it is JSONNumber && it.isUShort()) it.toUShort() else it.typeError("UShort", key)
-    }
+    fun getUShort(key: K): UShort = get(key).asUShortOrError(key = key)
 
-    fun getUByte(key: K): UByte = get(key).let {
-        if (it is JSONNumber && it.isUByte()) it.toUByte() else it.typeError("UByte", key)
-    }
+    fun getUByte(key: K): UByte = get(key).asUByteOrError(key = key)
 
-    fun getDecimal(key: K): BigDecimal = get(key).let {
-        if (it is JSONNumber) it.toDecimal() else it.typeError("BigDecimal", key)
-    }
+    fun getDecimal(key: K): BigDecimal = get(key).asDecimalOrError(key = key)
 
-    fun getBoolean(key: K): Boolean = get(key).let {
-        if (it is JSONBoolean) it.value else it.typeError("Boolean", key)
-    }
+    fun getBoolean(key: K): Boolean = get(key).asBooleanOrError(key = key)
 
-    fun getArray(key: K): JSONArray = get(key).let {
-        it.asArrayOrNull ?: it.typeError("JSONArray", key)
-    }
+    fun getArray(key: K): JSONArray = get(key).asArrayOrError(key = key)
 
-    fun getObject(key: K): JSONObject = get(key).let {
-        it.asObjectOrNull ?: it.typeError("JSONObject", key)
-    }
+    fun getObject(key: K): JSONObject = get(key).asObjectOrError(key = key)
 
 }

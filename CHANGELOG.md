@@ -2,6 +2,13 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [5.5] - 2023-04-06
+### Changed
+- `JSON`: added `asXxxxOrError()` functions
+- `JSONStructure`: switched to use `asXxxxOrError()` functions
+- `pom.xml`: updated Kotlin version to 1.7.21
+- `README.md`: expanded documentation
+
 ## [5.4] - 2023-01-08
 ### Changed
 - `JSONArray`, `JSONObject`: added optimisations

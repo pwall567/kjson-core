@@ -2,7 +2,7 @@
  * @(#) JSON.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022 Peter Wall
+ * Copyright (c) 2021, 2022, 2023 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -164,82 +164,160 @@ object JSON {
     }
 
     val JSONValue?.asString: String
-        get() = asStringOrNull ?: typeError("String")
+        get() = if (this is JSONString) value else typeError("String")
 
     val JSONValue?.asStringOrNull: String?
-        get() = (this as? JSONString)?.value
+        get() = if (this is JSONString) value else null
 
     val JSONValue?.asLong: Long
-        get() = asLongOrNull ?: typeError("Long")
+        get() = if (this is JSONNumber && isLong()) toLong() else typeError("Long")
 
     val JSONValue?.asLongOrNull: Long?
-        get() = (this as? JSONNumber)?.takeIf { it.isLong() }?.toLong()
+        get() = if (this is JSONNumber && isLong()) toLong() else null
 
     val JSONValue?.asInt: Int
-        get() = asIntOrNull ?: typeError("Int")
+        get() = if (this is JSONNumber && isInt()) toInt() else typeError("Int")
 
     val JSONValue?.asIntOrNull: Int?
-        get() = (this as? JSONNumber)?.takeIf { it.isInt() }?.toInt()
+        get() = if (this is JSONNumber && isInt()) toInt() else null
 
     val JSONValue?.asShort: Short
-        get() = asShortOrNull ?: typeError("Short")
+        get() = if (this is JSONNumber && isShort()) toShort() else typeError("Short")
 
     val JSONValue?.asShortOrNull: Short?
-        get() = (this as? JSONNumber)?.takeIf { it.isShort() }?.toShort()
+        get() = if (this is JSONNumber && isShort()) toShort() else null
 
     val JSONValue?.asByte: Byte
-        get() = asByteOrNull ?: typeError("Byte")
+        get() = if (this is JSONNumber && isByte()) toByte() else typeError("Byte")
 
     val JSONValue?.asByteOrNull: Byte?
-        get() = (this as? JSONNumber)?.takeIf { it.isByte() }?.toByte()
+        get() = if (this is JSONNumber && isByte()) toByte() else null
 
     val JSONValue?.asULong: ULong
-        get() = asULongOrNull ?: typeError("ULong")
+        get() = if (this is JSONNumber && isULong()) toULong() else typeError("ULong")
 
     val JSONValue?.asULongOrNull: ULong?
-        get() = (this as? JSONNumber)?.takeIf { it.isULong() }?.toULong()
+        get() = if (this is JSONNumber && isULong()) toULong() else null
 
     val JSONValue?.asUInt: UInt
-        get() = asUIntOrNull ?: typeError("UInt")
+        get() = if (this is JSONNumber && isUInt()) toUInt() else typeError("UInt")
 
     val JSONValue?.asUIntOrNull: UInt?
-        get() = (this as? JSONNumber)?.takeIf { it.isUInt() }?.toUInt()
+        get() = if (this is JSONNumber && isUInt()) toUInt() else null
 
     val JSONValue?.asUShort: UShort
-        get() = asUShortOrNull ?: typeError("UShort")
+        get() = if (this is JSONNumber && isUShort()) toUShort() else typeError("UShort")
 
     val JSONValue?.asUShortOrNull: UShort?
-        get() = (this as? JSONNumber)?.takeIf { it.isUShort() }?.toUShort()
+        get() = if (this is JSONNumber && isUShort()) toUShort() else null
 
     val JSONValue?.asUByte: UByte
-        get() = asUByteOrNull ?: typeError("UByte")
+        get() = if (this is JSONNumber && isUByte()) toUByte() else typeError("UByte")
 
     val JSONValue?.asUByteOrNull: UByte?
-        get() = (this as? JSONNumber)?.takeIf { it.isUByte() }?.toUByte()
+        get() = if (this is JSONNumber && isUByte()) toUByte() else null
 
     val JSONValue?.asDecimal: BigDecimal
-        get() = asDecimalOrNull ?: typeError("BigDecimal")
+        get() = if (this is JSONNumber) toDecimal() else typeError("BigDecimal")
 
     val JSONValue?.asDecimalOrNull: BigDecimal?
-        get() = (this as? JSONNumber)?.toDecimal()
+        get() = if (this is JSONNumber) toDecimal() else null
 
     val JSONValue?.asBoolean: Boolean
-        get() = asBooleanOrNull ?: typeError("Boolean")
+        get() = if (this is JSONBoolean) value else typeError("Boolean")
 
     val JSONValue?.asBooleanOrNull: Boolean?
-        get() = (this as? JSONBoolean)?.value
+        get() = if (this is JSONBoolean) value else null
 
     val JSONValue?.asArray: JSONArray
-        get() = asArrayOrNull ?: typeError("JSONArray")
+        get() = if (this is JSONArray) this else typeError("JSONArray")
 
     val JSONValue?.asArrayOrNull: JSONArray?
-        get() = (this as? JSONArray)
+        get() = this as? JSONArray
 
     val JSONValue?.asObject: JSONObject
-        get() = asObjectOrNull ?: typeError("JSONObject")
+        get() = if (this is JSONObject) this else typeError("JSONObject")
 
     val JSONValue?.asObjectOrNull: JSONObject?
-        get() = (this as? JSONObject)
+        get() = this as? JSONObject
+
+    fun JSONValue?.asStringOrError(
+        target: String = "String",
+        key: Any? = null,
+        nodeName: String = "Node",
+    ): String = if (this is JSONString) value else typeError(target, key, nodeName)
+
+    fun JSONValue?.asLongOrError(
+        target: String = "Long",
+        key: Any? = null,
+        nodeName: String = "Node",
+    ): Long = if (this is JSONNumber && isLong()) toLong() else typeError(target, key, nodeName)
+
+    fun JSONValue?.asIntOrError(
+        target: String = "Int",
+        key: Any? = null,
+        nodeName: String = "Node",
+    ): Int = if (this is JSONNumber && isInt()) toInt() else typeError(target, key, nodeName)
+
+    fun JSONValue?.asShortOrError(
+        target: String = "Short",
+        key: Any? = null,
+        nodeName: String = "Node",
+    ): Short = if (this is JSONNumber && isShort()) toShort() else typeError(target, key, nodeName)
+
+    fun JSONValue?.asByteOrError(
+        target: String = "Byte",
+        key: Any? = null,
+        nodeName: String = "Node",
+    ): Byte = if (this is JSONNumber && isByte()) toByte() else typeError(target, key, nodeName)
+
+    fun JSONValue?.asULongOrError(
+        target: String = "ULong",
+        key: Any? = null,
+        nodeName: String = "Node",
+    ): ULong = if (this is JSONNumber && isULong()) toULong() else typeError(target, key, nodeName)
+
+    fun JSONValue?.asUIntOrError(
+        target: String = "UInt",
+        key: Any? = null,
+        nodeName: String = "Node",
+    ): UInt = if (this is JSONNumber && isUInt()) toUInt() else typeError(target, key, nodeName)
+
+    fun JSONValue?.asUShortOrError(
+        target: String = "UShort",
+        key: Any? = null,
+        nodeName: String = "Node",
+    ): UShort = if (this is JSONNumber && isUShort()) toUShort() else typeError(target, key, nodeName)
+
+    fun JSONValue?.asUByteOrError(
+        target: String = "UByte",
+        key: Any? = null,
+        nodeName: String = "Node",
+    ): UByte = if (this is JSONNumber && isUByte()) toUByte() else typeError(target, key, nodeName)
+
+    fun JSONValue?.asDecimalOrError(
+        target: String = "BigDecimal",
+        key: Any? = null,
+        nodeName: String = "Node",
+    ): BigDecimal = if (this is JSONNumber) toDecimal() else typeError(target, key, nodeName)
+
+    fun JSONValue?.asBooleanOrError(
+        target: String = "Boolean",
+        key: Any? = null,
+        nodeName: String = "Node",
+    ): Boolean = if (this is JSONBoolean) value else typeError(target, key, nodeName)
+
+    fun JSONValue?.asArrayOrError(
+        target: String = "JSONArray",
+        key: Any? = null,
+        nodeName: String = "Node",
+    ): JSONArray = if (this is JSONArray) this else typeError(target, key, nodeName)
+
+    fun JSONValue?.asObjectOrError(
+        target: String = "JSONObject",
+        key: Any? = null,
+        nodeName: String = "Node",
+    ): JSONObject = if (this is JSONObject) this else typeError(target, key, nodeName)
 
     fun JSONValue?.typeError(
         target: String,

@@ -46,7 +46,7 @@ import net.pwall.util.output
 class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSONValue?>>, override val size: Int) :
         JSONStructure<String>, Map<String, JSONValue?> {
 
-    internal val immutableMap = ImmutableMap<String, JSONValue?>(array, size)
+    private val immutableMap = ImmutableMap<String, JSONValue?>(array, size)
 
     override fun appendTo(a: Appendable) {
         a.append('{')
@@ -192,6 +192,7 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
         fun containsKey(name: String): Boolean = ImmutableMap.containsKey(checkArray(), count, name)
 
         fun add(name: String, value: JSONValue?) {
+            // TODO consider configuration to allow duplicates
             if (containsKey(name))
                 throw JSONException("Duplicate key - $name")
             checkArray().let { validArray ->

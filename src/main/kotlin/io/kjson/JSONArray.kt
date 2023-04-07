@@ -45,7 +45,7 @@ import net.pwall.util.output
 class JSONArray internal constructor (array: Array<out JSONValue?>, override val size: Int) : JSONStructure<Int>,
         List<JSONValue?> {
 
-    internal val immutableList = ImmutableList<JSONValue?>(array, size)
+    private val immutableList = ImmutableList<JSONValue?>(array, size)
 
     override fun appendTo(a: Appendable) {
         a.append('[')
