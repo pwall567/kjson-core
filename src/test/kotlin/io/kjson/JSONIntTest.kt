@@ -34,8 +34,8 @@ import kotlinx.coroutines.runBlocking
 
 import java.math.BigDecimal
 
-import io.kjson.util.CoOutputCapture
-import io.kjson.util.OutputCapture
+import io.kjson.testutil.CoOutputCapture
+import io.kjson.testutil.OutputCapture
 
 class JSONIntTest {
 

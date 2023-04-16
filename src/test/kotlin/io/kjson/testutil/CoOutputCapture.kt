@@ -1,8 +1,8 @@
 /*
- * @(#) ParseException.kt
+ * @(#) CoOutputCapture.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2022 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +23,28 @@
  * SOFTWARE.
  */
 
-package io.kjson.parser
+package io.kjson.testutil
 
-import io.kjson.JSONException
+import net.pwall.util.CoOutput
 
 /**
- * An exception during the parsing process.
+ * Class to capture non-blocking output for testing purposes.
  *
  * @author  Peter Wall
  */
-class ParseException(val text: String, val pointer: String = "") :
-        JSONException(if (pointer.isEmpty()) text else "$text at $pointer")
+class CoOutputCapture(size: Int = 256) : CoOutput {
+
+    private val array = CharArray(size)
+    private var index = 0
+
+    override suspend fun invoke(ch: Char) {
+        array[index++] = ch
+    }
+
+    override fun toString() = String(array, 0, index)
+
+    fun reset() {
+        index = 0
+    }
+
+}

@@ -2,7 +2,7 @@
  * @(#) Parser.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022 Peter Wall
+ * Copyright (c) 2021, 2022, 2023 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,29 +35,30 @@ import io.kjson.JSONLong
 import io.kjson.JSONObject
 import io.kjson.JSONString
 import io.kjson.JSONValue
-
+import io.kjson.parser.ParserConstants.BOM
+import io.kjson.parser.ParserConstants.MAX_INTEGER_DIGITS_LENGTH
+import io.kjson.parser.ParserConstants.identifierContinuationSet
+import io.kjson.parser.ParserConstants.identifierStartSet
+import io.kjson.parser.ParserConstants.rootPointer
+import io.kjson.parser.ParserErrors.DUPLICATE_KEY
+import io.kjson.parser.ParserErrors.EXCESS_CHARS
+import io.kjson.parser.ParserErrors.ILLEGAL_KEY
+import io.kjson.parser.ParserErrors.ILLEGAL_NUMBER
+import io.kjson.parser.ParserErrors.ILLEGAL_SYNTAX
+import io.kjson.parser.ParserErrors.MISSING_CLOSING_BRACE
+import io.kjson.parser.ParserErrors.MISSING_CLOSING_BRACKET
+import io.kjson.parser.ParserErrors.MISSING_COLON
 import net.pwall.json.JSONFunctions
 import net.pwall.text.TextMatcher
 
+/**
+ * A JSON parser.
+ *
+ * @author  Peter Wall
+ */
 object Parser {
 
-    const val rootPointer = ""
-
-    private const val MAX_INTEGER_DIGITS_LENGTH = 10
-    private const val BOM = '\uFEFF'
-
-    const val EXCESS_CHARS = "Excess characters following JSON"
-    const val ILLEGAL_NUMBER = "Illegal JSON number"
-    const val ILLEGAL_SYNTAX = "Illegal JSON syntax"
-    const val ILLEGAL_KEY = "Illegal key in JSON object"
-    const val DUPLICATE_KEY = "Duplicate key in JSON object"
-    const val MISSING_COLON = "Missing colon in JSON object"
-    const val MISSING_CLOSING_BRACE = "Missing closing brace in JSON object"
-    const val MISSING_CLOSING_BRACKET = "Missing closing bracket in JSON array"
-
-    private val defaultOptions = ParseOptions()
-
-    fun parse(json: String, options: ParseOptions = defaultOptions): JSONValue? {
+    fun parse(json: String, options: ParseOptions = ParseOptions.DEFAULT): JSONValue? {
         val tm = TextMatcher(json)
         tm.match(BOM) // skip BOM if present (not required, but may help interoperability)
         val result = parse(tm, options, rootPointer)
@@ -196,7 +197,7 @@ object Parser {
         throw ParseException("$DUPLICATE_KEY \"$key\"", pointer)
     }
 
-    private fun TextMatcher.matchIdentifier(): Boolean = match { it in 'A'..'Z' || it in 'a'..'z' || it == '_' } &&
-            matchContinue { it in 'A'..'Z' || it in 'a'..'z' || it in '0'..'9' || it == '_' }
+    private fun TextMatcher.matchIdentifier(): Boolean = match { it in identifierStartSet } &&
+            matchContinue { it in identifierContinuationSet }
 
 }

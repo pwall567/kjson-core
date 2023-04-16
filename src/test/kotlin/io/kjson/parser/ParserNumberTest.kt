@@ -36,6 +36,9 @@ import java.math.BigDecimal
 import io.kjson.JSONDecimal
 import io.kjson.JSONInt
 import io.kjson.JSONLong
+import io.kjson.parser.ParserConstants.rootPointer
+import io.kjson.parser.ParserErrors.EXCESS_CHARS
+import io.kjson.parser.ParserErrors.ILLEGAL_NUMBER
 
 class ParserNumberTest {
 
@@ -46,32 +49,32 @@ class ParserNumberTest {
 
     @Test fun `should reject leading zeros`() {
         assertFailsWith<ParseException> { Parser.parse("00") }.let {
-            expect(Parser.ILLEGAL_NUMBER) { it.text }
-            expect(Parser.ILLEGAL_NUMBER) { it.message }
-            expect(Parser.rootPointer) { it.pointer }
+            expect(ILLEGAL_NUMBER) { it.text }
+            expect(ILLEGAL_NUMBER) { it.message }
+            expect(rootPointer) { it.pointer }
         }
         assertFailsWith<ParseException> { Parser.parse("0123") }.let {
-            expect(Parser.ILLEGAL_NUMBER) { it.text }
-            expect(Parser.ILLEGAL_NUMBER) { it.message }
-            expect(Parser.rootPointer) { it.pointer }
+            expect(ILLEGAL_NUMBER) { it.text }
+            expect(ILLEGAL_NUMBER) { it.message }
+            expect(rootPointer) { it.pointer }
         }
     }
 
     @Test fun `should reject incorrect numbers`() {
         assertFailsWith<ParseException> { Parser.parse("123a") }.let {
-            expect(Parser.EXCESS_CHARS) { it.text }
-            expect(Parser.EXCESS_CHARS) { it.message }
-            expect(Parser.rootPointer) { it.pointer }
+            expect(EXCESS_CHARS) { it.text }
+            expect(EXCESS_CHARS) { it.message }
+            expect(rootPointer) { it.pointer }
         }
         assertFailsWith<ParseException> { Parser.parse("12:00") }.let {
-            expect(Parser.EXCESS_CHARS) { it.text }
-            expect(Parser.EXCESS_CHARS) { it.message }
-            expect(Parser.rootPointer) { it.pointer }
+            expect(EXCESS_CHARS) { it.text }
+            expect(EXCESS_CHARS) { it.message }
+            expect(rootPointer) { it.pointer }
         }
         assertFailsWith<ParseException> { Parser.parse("1.23/4") }.let {
-            expect(Parser.EXCESS_CHARS) { it.text }
-            expect(Parser.EXCESS_CHARS) { it.message }
-            expect(Parser.rootPointer) { it.pointer }
+            expect(EXCESS_CHARS) { it.text }
+            expect(EXCESS_CHARS) { it.message }
+            expect(rootPointer) { it.pointer }
         }
     }
 

@@ -31,8 +31,8 @@ import kotlin.test.expect
 import kotlinx.coroutines.runBlocking
 
 import io.kjson.JSON.asString
-import io.kjson.util.CoOutputCapture
-import io.kjson.util.OutputCapture
+import io.kjson.testutil.CoOutputCapture
+import io.kjson.testutil.OutputCapture
 
 class JSONStringTest {
 

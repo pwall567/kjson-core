@@ -1,8 +1,8 @@
 /*
- * @(#) OutputCapture.kt
+ * @(#) LookupSetTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2022 Peter Wall
+ * Copyright (c) 2023 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,26 +25,17 @@
 
 package io.kjson.util
 
-import java.util.function.IntConsumer
+import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
-/**
- * Class to capture output for testing purposes.
- *
- * @author  Peter Wall
- */
-class OutputCapture(size: Int = 256) : IntConsumer {
+class LookupSetTest {
 
-    private val array = CharArray(size)
-    private var index = 0
-
-    override fun accept(ch: Int) {
-        array[index++] = ch.toChar()
-    }
-
-    override fun toString() = String(array, 0, index)
-
-    fun reset() {
-        index = 0
+    @Test fun `should perform simple lookup`() {
+        assertTrue('a' in LookupSet<Char> { it in 'a'..'z' })
+        assertFalse('A' in LookupSet<Char> { it in 'a'..'z' })
+        assertTrue("AUD" in LookupSet<String> { it == "AUD" || it == "NZD" })
+        assertFalse("EUR" in LookupSet<String> { it == "AUD" || it == "NZD" })
     }
 
 }

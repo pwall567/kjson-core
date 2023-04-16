@@ -31,6 +31,7 @@ import kotlin.test.assertTrue
 import kotlin.test.expect
 
 import io.kjson.JSONString
+import io.kjson.parser.ParserConstants.rootPointer
 import net.pwall.json.JSONFunctions
 
 class ParserStringTest {
@@ -57,7 +58,7 @@ class ParserStringTest {
         assertFailsWith<ParseException> { Parser.parse("\"abc") }.let {
             expect(JSONFunctions.UNTERMINATED_STRING) { it.text }
             expect(JSONFunctions.UNTERMINATED_STRING) { it.message }
-            expect(Parser.rootPointer) { it.pointer }
+            expect(rootPointer) { it.pointer }
         }
     }
 
@@ -65,7 +66,7 @@ class ParserStringTest {
         assertFailsWith<ParseException> { Parser.parse("\"ab\\c\"") }.let {
             expect(JSONFunctions.ILLEGAL_ESCAPE_SEQUENCE) { it.text }
             expect(JSONFunctions.ILLEGAL_ESCAPE_SEQUENCE) { it.message }
-            expect(Parser.rootPointer) { it.pointer }
+            expect(rootPointer) { it.pointer }
         }
     }
 
@@ -73,7 +74,7 @@ class ParserStringTest {
         assertFailsWith<ParseException> { Parser.parse("\"ab\\uxxxx\"") }.let {
             expect(JSONFunctions.ILLEGAL_UNICODE_SEQUENCE) { it.text }
             expect(JSONFunctions.ILLEGAL_UNICODE_SEQUENCE) { it.message }
-            expect(Parser.rootPointer) { it.pointer }
+            expect(rootPointer) { it.pointer }
         }
     }
 
@@ -81,12 +82,12 @@ class ParserStringTest {
         assertFailsWith<ParseException> { Parser.parse("\"ab\u0001\"") }.let {
             expect(JSONFunctions.ILLEGAL_CHAR) { it.text }
             expect(JSONFunctions.ILLEGAL_CHAR) { it.message }
-            expect(Parser.rootPointer) { it.pointer }
+            expect(rootPointer) { it.pointer }
         }
         assertFailsWith<ParseException> { Parser.parse("\"ab\n\"") }.let {
             expect(JSONFunctions.ILLEGAL_CHAR) { it.text }
             expect(JSONFunctions.ILLEGAL_CHAR) { it.message }
-            expect(Parser.rootPointer) { it.pointer }
+            expect(rootPointer) { it.pointer }
         }
     }
 

@@ -1,8 +1,8 @@
 /*
- * @(#) ParseException.kt
+ * @(#) LookupSet.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2023 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +23,31 @@
  * SOFTWARE.
  */
 
-package io.kjson.parser
-
-import io.kjson.JSONException
+package io.kjson.util
 
 /**
- * An exception during the parsing process.
+ * Simple lookup set.  This is intended to allow the use of the `in {collection}` syntax with sets of values that either
+ * (1) are too simple to justify using a `Set` (_e.g._ only 2 values), or (2) require algorithmic checking (_e.g._ an
+ * `Int` is even &ndash; easy to check in an `if` but not easy in a `when` selector).
+ *
+ * The constructor takes a lambda parameter, a function that tests whether the value is a member of the notional "set".
+ * It is expected that only the `contains` function will be used, mostly from the `in` or `!in` construct.
  *
  * @author  Peter Wall
  */
-class ParseException(val text: String, val pointer: String = "") :
-        JSONException(if (pointer.isEmpty()) text else "$text at $pointer")
+class LookupSet<T>(override val size: Int = 1, val check: (T) -> Boolean): Set<T> {
+
+    override fun isEmpty(): Boolean = false
+
+    override fun iterator(): Iterator<T> = throw UnsupportedOperationException()
+
+    override fun contains(element: T): Boolean = check(element)
+
+    override fun containsAll(elements: Collection<T>): Boolean {
+        for (element in elements)
+            if (!contains(element))
+                return false
+        return true
+    }
+
+}

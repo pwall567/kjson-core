@@ -2,7 +2,7 @@
  * @(#) ParseOptions.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2022 Peter Wall
+ * Copyright (c) 2022, 2023 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,5 +38,9 @@ data class ParseOptions(
 ) {
 
     enum class DuplicateKeyOption { ERROR, TAKE_FIRST, TAKE_LAST, CHECK_IDENTICAL }
+
+    companion object {
+        val DEFAULT = ParseOptions()
+    }
 
 }

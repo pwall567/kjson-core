@@ -32,6 +32,9 @@ import kotlin.test.expect
 
 import io.kjson.JSONArray
 import io.kjson.JSONString
+import io.kjson.parser.ParserConstants.rootPointer
+import io.kjson.parser.ParserErrors.ILLEGAL_SYNTAX
+import io.kjson.parser.ParserErrors.MISSING_CLOSING_BRACKET
 
 class ParserArrayTest {
 
@@ -70,8 +73,8 @@ class ParserArrayTest {
 
     @Test fun `should throw exception on trailing comma`() {
         assertFailsWith<ParseException> { Parser.parse("""["simple",]""") }.let {
-            expect(Parser.ILLEGAL_SYNTAX) { it.text }
-            expect("${Parser.ILLEGAL_SYNTAX} at /1") { it.message }
+            expect(ILLEGAL_SYNTAX) { it.text }
+            expect("$ILLEGAL_SYNTAX at /1") { it.message }
             expect("/1") { it.pointer }
         }
     }
@@ -86,16 +89,16 @@ class ParserArrayTest {
 
     @Test fun `should throw exception on missing closing bracket`() {
         assertFailsWith<ParseException> { Parser.parse("""["simple"""") }.let {
-            expect(Parser.MISSING_CLOSING_BRACKET) { it.text }
-            expect(Parser.MISSING_CLOSING_BRACKET) { it.message }
-            expect(Parser.rootPointer) { it.pointer }
+            expect(MISSING_CLOSING_BRACKET) { it.text }
+            expect(MISSING_CLOSING_BRACKET) { it.message }
+            expect(rootPointer) { it.pointer }
         }
     }
 
     @Test fun `should throw exception on syntax error`() {
         assertFailsWith<ParseException> { Parser.parse("""[&]""") }.let {
-            expect(Parser.ILLEGAL_SYNTAX) { it.text }
-            expect("${Parser.ILLEGAL_SYNTAX} at /0") { it.message }
+            expect(ILLEGAL_SYNTAX) { it.text }
+            expect("$ILLEGAL_SYNTAX at /0") { it.message }
             expect("/0") { it.pointer }
         }
     }

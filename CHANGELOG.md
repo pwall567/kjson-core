@@ -2,10 +2,14 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## [5.5] - 2023-04-06
+## [5.5] - 2023-04-12
+### Added
+- `ParserConstants`, `ParserErrors`: split out from `Parser` to allow access from `kjson-stream`
+- `LookupSet`: to allow definitions to be shared with `kjson-stream`
 ### Changed
 - `JSON`: added `asXxxxOrError()` functions
 - `JSONStructure`: switched to use `asXxxxOrError()` functions
+- `ParseOptions`: added `DEFAULT`
 - `pom.xml`: updated Kotlin version to 1.7.21
 - `README.md`: expanded documentation
 

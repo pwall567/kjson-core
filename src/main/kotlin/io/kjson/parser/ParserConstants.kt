@@ -1,8 +1,8 @@
 /*
- * @(#) CoOutputCapture.kt
+ * @(#) ParserConstants.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2022 Peter Wall
+ * Copyright (c) 2023 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,28 +23,25 @@
  * SOFTWARE.
  */
 
-package io.kjson.util
+package io.kjson.parser
 
-import net.pwall.util.CoOutput
+import io.kjson.util.LookupSet
 
 /**
- * Class to capture non-blocking output for testing purposes.
+ * Constants used by both the main [Parser] and the [`kjson-stream`](https://github.com/pwall567/kjson-stream) library.
  *
  * @author  Peter Wall
  */
-class CoOutputCapture(size: Int = 256) : CoOutput {
+@Suppress("unused")
+object ParserConstants {
 
-    private val array = CharArray(size)
-    private var index = 0
+    const val rootPointer = ""
+    const val BOM = '\uFEFF'
+    const val MAX_INTEGER_DIGITS_LENGTH = 10
+    const val MAX_LONG_DIGITS_LENGTH = 19
 
-    override suspend fun invoke(ch: Char) {
-        array[index++] = ch
-    }
+    val identifierStartSet = LookupSet<Char> { it in 'a'..'z' || it in 'A'..'Z' || it == '_' }
 
-    override fun toString() = String(array, 0, index)
-
-    fun reset() {
-        index = 0
-    }
+    val identifierContinuationSet = LookupSet<Char> { it in 'a'..'z' || it in 'A'..'Z' || it in '0'..'9' || it == '_' }
 
 }

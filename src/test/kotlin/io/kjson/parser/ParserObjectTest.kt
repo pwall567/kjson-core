@@ -36,6 +36,11 @@ import io.kjson.JSONArray
 import io.kjson.JSONInt
 import io.kjson.JSONObject
 import io.kjson.JSONString
+import io.kjson.parser.ParserConstants.rootPointer
+import io.kjson.parser.ParserErrors.DUPLICATE_KEY
+import io.kjson.parser.ParserErrors.ILLEGAL_KEY
+import io.kjson.parser.ParserErrors.MISSING_CLOSING_BRACE
+import io.kjson.parser.ParserErrors.MISSING_COLON
 
 class ParserObjectTest {
 
@@ -86,25 +91,25 @@ class ParserObjectTest {
 
     @Test fun `should throw exception on missing closing brace`() {
         assertFailsWith<ParseException> { Parser.parse("""{"first":123""") }.let {
-            expect(Parser.MISSING_CLOSING_BRACE) { it.text }
-            expect(Parser.MISSING_CLOSING_BRACE) { it.message }
-            expect(Parser.rootPointer) { it.pointer }
+            expect(MISSING_CLOSING_BRACE) { it.text }
+            expect(MISSING_CLOSING_BRACE) { it.message }
+            expect(rootPointer) { it.pointer }
         }
     }
 
     @Test fun `should throw exception on missing colon`() {
         assertFailsWith<ParseException> { Parser.parse("""{"first"123}""") }.let {
-            expect(Parser.MISSING_COLON) { it.text }
-            expect(Parser.MISSING_COLON) { it.message }
-            expect(Parser.rootPointer) { it.pointer }
+            expect(MISSING_COLON) { it.text }
+            expect(MISSING_COLON) { it.message }
+            expect(rootPointer) { it.pointer }
         }
     }
 
     @Test fun `should throw exception on trailing comma`() {
         assertFailsWith<ParseException> { Parser.parse("""{"first":123,}""") }.let {
-            expect(Parser.ILLEGAL_KEY) { it.text }
-            expect(Parser.ILLEGAL_KEY) { it.message }
-            expect(Parser.rootPointer) { it.pointer }
+            expect(ILLEGAL_KEY) { it.text }
+            expect(ILLEGAL_KEY) { it.message }
+            expect(rootPointer) { it.pointer }
         }
     }
 
@@ -120,9 +125,9 @@ class ParserObjectTest {
 
     @Test fun `should throw exception on missing quotes around key`() {
         assertFailsWith<ParseException> { Parser.parse("{first:123}") }.let {
-            expect(Parser.ILLEGAL_KEY) { it.text }
-            expect(Parser.ILLEGAL_KEY) { it.message }
-            expect(Parser.rootPointer) { it.pointer }
+            expect(ILLEGAL_KEY) { it.text }
+            expect(ILLEGAL_KEY) { it.message }
+            expect(rootPointer) { it.pointer }
         }
     }
 
@@ -138,27 +143,27 @@ class ParserObjectTest {
 
     @Test fun `should throw exception on duplicate keys`() {
         assertFailsWith<ParseException> { Parser.parse("""{"first":123,"first":456}""") }.let {
-            expect("${Parser.DUPLICATE_KEY} \"first\"") { it.text }
-            expect("${Parser.DUPLICATE_KEY} \"first\"") { it.message }
-            expect(Parser.rootPointer) { it.pointer }
+            expect("$DUPLICATE_KEY \"first\"") { it.text }
+            expect("$DUPLICATE_KEY \"first\"") { it.message }
+            expect(rootPointer) { it.pointer }
         }
     }
 
     @Test fun `should throw exception on duplicate keys with option ERROR`() {
         val options = ParseOptions(ParseOptions.DuplicateKeyOption.ERROR)
         assertFailsWith<ParseException> { Parser.parse("""{"first":123,"first":456}""", options) }.let {
-            expect("${Parser.DUPLICATE_KEY} \"first\"") { it.text }
-            expect("${Parser.DUPLICATE_KEY} \"first\"") { it.message }
-            expect(Parser.rootPointer) { it.pointer }
+            expect("$DUPLICATE_KEY \"first\"") { it.text }
+            expect("$DUPLICATE_KEY \"first\"") { it.message }
+            expect(rootPointer) { it.pointer }
         }
     }
 
     @Test fun `should throw exception on duplicate keys with option CHECK_IDENTICAL and different values`() {
         val options = ParseOptions(ParseOptions.DuplicateKeyOption.CHECK_IDENTICAL)
         assertFailsWith<ParseException> { Parser.parse("""{"first":123,"first":456}""", options) }.let {
-            expect("${Parser.DUPLICATE_KEY} \"first\"") { it.text }
-            expect("${Parser.DUPLICATE_KEY} \"first\"") { it.message }
-            expect(Parser.rootPointer) { it.pointer }
+            expect("$DUPLICATE_KEY \"first\"") { it.text }
+            expect("$DUPLICATE_KEY \"first\"") { it.message }
+            expect(rootPointer) { it.pointer }
         }
     }
 
