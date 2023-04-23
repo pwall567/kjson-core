@@ -522,25 +522,25 @@ The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram
 
 ## Dependency Specification
 
-The latest version of the library is 5.5, and it may be obtained from the Maven Central repository.
+The latest version of the library is 5.6, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>5.5</version>
+      <version>5.6</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:5.5"
+    implementation "io.kjson:kjson-core:5.6"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:5.5")
+    implementation("io.kjson:kjson-core:5.6")
 ```
 
 Peter Wall
 
-2023-04-16
+2023-04-23

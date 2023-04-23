@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [5.6] - 2023-04-23
+### Changed
+- `pom.xml`: updated dependency versions
+
 ## [5.5] - 2023-04-12
 ### Added
 - `ParserConstants`, `ParserErrors`: split out from `Parser` to allow access from `kjson-stream`
