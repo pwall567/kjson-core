@@ -45,6 +45,7 @@ import io.kjson.parser.ParserErrors.EXCESS_CHARS
 import io.kjson.parser.ParserErrors.ILLEGAL_KEY
 import io.kjson.parser.ParserErrors.ILLEGAL_NUMBER
 import io.kjson.parser.ParserErrors.ILLEGAL_SYNTAX
+import io.kjson.parser.ParserErrors.MAX_DEPTH_EXCEEDED
 import io.kjson.parser.ParserErrors.MISSING_CLOSING_BRACE
 import io.kjson.parser.ParserErrors.MISSING_CLOSING_BRACKET
 import io.kjson.parser.ParserErrors.MISSING_COLON
@@ -61,14 +62,30 @@ object Parser {
     fun parse(json: String, options: ParseOptions = ParseOptions.DEFAULT): JSONValue? {
         val tm = TextMatcher(json)
         tm.match(BOM) // skip BOM if present (not required, but may help interoperability)
-        val result = parse(tm, options, rootPointer)
+        val result = parse(tm, options, rootPointer, 0)
         tm.skip(JSONFunctions::isSpaceCharacter)
         if (!tm.isAtEnd)
             throw ParseException(EXCESS_CHARS)
         return result
     }
 
-    private fun parse(tm: TextMatcher, options: ParseOptions, pointer: String): JSONValue? {
+    fun parseLines(jsonLines: String, options: ParseOptions = ParseOptions.DEFAULT): JSONArray {
+        val tm = TextMatcher(jsonLines)
+        tm.match(BOM) // skip BOM if present (not required, but may help interoperability)
+        return JSONArray.build {
+            tm.skip(JSONFunctions::isSpaceCharacter)
+            var counter = 0
+            while (!tm.isAtEnd) {
+                add(parse(tm, options, "/${counter++}", 0))
+                tm.skip(JSONFunctions::isSpaceCharacter)
+            }
+        }
+    }
+
+    private fun parse(tm: TextMatcher, options: ParseOptions, pointer: String, depth: Int): JSONValue? {
+        if (depth > options.maximumNestingDepth)
+            throw ParseException(MAX_DEPTH_EXCEEDED)
+
         tm.skip(JSONFunctions::isSpaceCharacter)
 
         if (tm.match('{')) {
@@ -84,7 +101,7 @@ object Parser {
                     tm.skip(JSONFunctions::isSpaceCharacter)
                     if (!tm.match(':'))
                         throw ParseException(MISSING_COLON, pointer)
-                    val value = parse(tm, options, "$pointer/$key")
+                    val value = parse(tm, options, "$pointer/$key", depth + 1)
                     if (builder.containsKey(key)) {
                         when (options.objectKeyDuplicate) {
                             ParseOptions.DuplicateKeyOption.ERROR -> duplicateKeyError(key, pointer)
@@ -121,7 +138,7 @@ object Parser {
             tm.skip(JSONFunctions::isSpaceCharacter)
             if (!tm.match(']')) {
                 while (true) {
-                    builder.add(parse(tm, options, "$pointer/${builder.size}"))
+                    builder.add(parse(tm, options, "$pointer/${builder.size}", depth + 1))
                     tm.skip(JSONFunctions::isSpaceCharacter)
                     if (!tm.match(','))
                         break

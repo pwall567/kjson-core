@@ -142,6 +142,23 @@ class JSONTest {
         }
     }
 
+    @Test fun `should parse JSON Lines`() {
+        val json = JSON.parseLines("{\"aa\":123,\"bb\":321}\n{\"aa\":777,\"bb\":888}")
+        expect(2) { json.size }
+        with(json[0]) {
+            assertTrue(this is JSONObject)
+            expect(2) { size }
+            expect(123) { this["aa"].asInt }
+            expect(321) { this["bb"].asInt }
+        }
+        with(json[1]) {
+            assertTrue(this is JSONObject)
+            expect(2) { size }
+            expect(777) { this["aa"].asInt }
+            expect(888) { this["bb"].asInt }
+        }
+    }
+
     @Test fun `should return displayValue for number types`() {
         expect("0") { JSONInt(0).displayValue() }
         expect("12345") { JSONInt(12345).displayValue() }

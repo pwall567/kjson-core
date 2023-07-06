@@ -1,8 +1,8 @@
 /*
- * @(#) ParseOptions.kt
+ * @(#) AbstractBuilder.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2022, 2023 Peter Wall
+ * Copyright (c) 2021, 2022, 2023 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,31 +23,45 @@
  * SOFTWARE.
  */
 
-package io.kjson.parser
+package io.kjson.util
 
-import io.kjson.parser.ParserErrors.MAX_DEPTH_ERROR
+import io.kjson.JSONException
+import io.kjson.JSONStructure
 
 /**
- * Options to control parsing.
+ * An abstract base class for the `Builder` classes of `JSONArray` and `JSONObject`.
  *
  * @author  Peter Wall
+ * @param   T       the type of the array entry
  */
-data class ParseOptions(
-    val objectKeyDuplicate: DuplicateKeyOption = DuplicateKeyOption.ERROR,
-    val objectKeyUnquoted: Boolean = false,
-    val objectTrailingComma: Boolean = false,
-    val arrayTrailingComma: Boolean = false,
-    val maximumNestingDepth: Int = 1000,
-) {
+abstract class AbstractBuilder<T>(private var array: Array<T?>?) {
 
-    init {
-        require(maximumNestingDepth in 1..1200) { "$MAX_DEPTH_ERROR, was $maximumNestingDepth" }
+    private var count: Int = 0
+
+    val size: Int
+        get() = count
+
+    fun checkArray() = array ?: throw JSONException("Builder is closed")
+
+    protected fun internalAdd(value: T?) {
+        var validArray = checkArray()
+        val len = validArray.size
+        if (count >= len)
+            validArray = validArray.copyOf(len + len.coerceAtMost(4096)).also { array = it }
+        validArray[count++] = value
     }
 
-    enum class DuplicateKeyOption { ERROR, TAKE_FIRST, TAKE_LAST, CHECK_IDENTICAL }
-
-    companion object {
-        val DEFAULT = ParseOptions()
+    protected fun internalRemove(index: Int) {
+        checkArray().let {
+            System.arraycopy(it, index + 1, it, index, count - index)
+            count--
+        }
     }
+
+    protected fun invalidate() {
+        array = null
+    }
+
+    abstract fun build(): JSONStructure<*>
 
 }

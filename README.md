@@ -35,8 +35,9 @@ classes that implement the `JSONValue` interface, or in the case of the JSON "`n
 ### `JSONValue`
 
 The `JSONValue` interface specifies four functions:
-- `appendTo()` &ndash; this appends the JSON text form of the object to a specified `Appendable` (when outputting
-  JSON, it is more efficient to append to a single `Appendable`, as opposed to creating strings for each element)
+- `appendTo()` &ndash; this appends the JSON text form of the object to a specified `Appendable`, _e.g._ a `Writer`
+  (when outputting JSON, it is more efficient to append to a single `Appendable`, as opposed to creating strings for
+  each element)
 - `toJSON()` &ndash; this outputs the value in syntactically-correct JSON (a default implementation makes use of the
   above `appendTo()` function)
 - `output()` &ndash; this outputs the JSON text form of the object using an `IntConsumer` (similar to `appendTo()`, but
@@ -454,6 +455,55 @@ The `key` will be `null`.
 The same note on the return types of the `asXxxxOrError()` functions also applies to the results of these extension
 values.
 
+## JSON Lines
+
+The [JSON Lines](https://jsonlines.org/) specification allows multiple JSON values to be specified in a single stream of
+data, separated by newline (`\u000a`) characters.
+For example, events may be logged to a file as a sequence of objects on separate lines; the alternative would be to
+output a JSON array, but this would require a "`]`" terminator, complicating the shutdown of the process (particularly
+abnormal shutdown).
+
+```json lines
+{"time":"2023-06-24T12:24:10.321+10:00","eventType":"ACCOUNT_OPEN","accountNumber": "123456789"}
+{"time":"2023-06-24T12:24:10.321+10:00","eventType":"DEPOSIT","accountNumber": "123456789","amount":"1000.00"}
+```
+
+The individual items are usually objects (or sometimes arrays) formatted similarly, but that is not a requirement
+&ndash; the items may be of any JSON type.
+
+The JSON Lines format is particularly suitable for streaming data, so the
+[`kjson-stream`](https://github.com/pwall567/kjson-stream) library is more likely to be useful for JSON Lines input than
+the functions in this library that parse a complete file, but the functions here are provided for completeness.
+
+### Parsing JSON Lines
+
+The `kjson-core` library includes functions to parse JSON Lines format:
+```kotlin
+    val lines = JSON.parseLines(multiLineString)
+```
+The result will always be a `JSONArray`; an empty string will result in a zero-length array.
+
+While the `parseLines()` function (and its corresponding function in the `Parser` class) will correctly parse a stream
+of data in JSON Lines format, the newline separator is in fact not required.
+The function will accept JSON objects and/or arrays concatenated without any delimiters, but because whitespace is
+allowed between tokens of JSON data, the newline (if present) will be ignored.
+
+### Output JSON Lines
+
+In most cases, JSON Lines data will be output as individual objects using `appendTo()` or `toJSON()`.
+If an entire `JSONArray` is required to be output in JSON Lines format, there are four additional functions for this
+purpose:
+- `appendJSONLines()` &ndash; this appends the JSON Lines form of the `JSONArray` to a specified `Appendable`, _e.g._ a
+  `Writer`
+- `toJSONLines()` &ndash; this converts the `JSONArray` to a `String` in JSON Lines format
+- `outputJSONLines()` &ndash; this outputs the JSON Lines form of the `JSONArray` using an `IntConsumer` (similar to
+  `appendJSONLines()`, but allowing a greater choice of output mechanism)
+- `coOutputJSONLines()` (suspend function) &ndash; non-blocking version of `outputJSONLines()`, suitable for use in a
+  coroutine-based environment
+
+The functions all add a single newline after each item in the `JSONArray` for human readability reasons, even though (as
+noted above) this is not strictly necessary.
+
 ## Lenient Parsing
 
 The parser will by default apply strict validation to the JSON input, and in some cases this may be unhelpful.
@@ -522,25 +572,25 @@ The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram
 
 ## Dependency Specification
 
-The latest version of the library is 5.6, and it may be obtained from the Maven Central repository.
+The latest version of the library is 5.7, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>5.6</version>
+      <version>5.7</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:5.6"
+    implementation "io.kjson:kjson-core:5.7"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:5.6")
+    implementation("io.kjson:kjson-core:5.7")
 ```
 
 Peter Wall
 
-2023-04-23
+2023-07-06

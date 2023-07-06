@@ -31,9 +31,11 @@ import kotlin.test.assertTrue
 import kotlin.test.expect
 
 import io.kjson.JSONArray
+import io.kjson.JSONInt
 import io.kjson.JSONString
 import io.kjson.parser.ParserConstants.rootPointer
 import io.kjson.parser.ParserErrors.ILLEGAL_SYNTAX
+import io.kjson.parser.ParserErrors.MAX_DEPTH_EXCEEDED
 import io.kjson.parser.ParserErrors.MISSING_CLOSING_BRACKET
 
 class ParserArrayTest {
@@ -100,6 +102,27 @@ class ParserArrayTest {
             expect(ILLEGAL_SYNTAX) { it.text }
             expect("$ILLEGAL_SYNTAX at /0") { it.message }
             expect("/0") { it.pointer }
+        }
+    }
+
+    @Test fun `should allow nesting up to maximum depth`() {
+        val options = ParseOptions(maximumNestingDepth = 50)
+        val allowed = "[".repeat(options.maximumNestingDepth) + '1' + "]".repeat(options.maximumNestingDepth)
+        var result = Parser.parse(allowed, options)
+        for (i in 0 until options.maximumNestingDepth) {
+            assertTrue(result is JSONArray)
+            result = result[0]
+        }
+        expect(JSONInt(1)) { result }
+    }
+
+    @Test fun `should throw exception on nesting depth exceeded`() {
+        val options = ParseOptions(maximumNestingDepth = 50)
+        val excessive = "[".repeat(options.maximumNestingDepth + 1)
+        assertFailsWith<ParseException> { Parser.parse(excessive, options) }.let {
+            expect(MAX_DEPTH_EXCEEDED) { it.text }
+            expect(MAX_DEPTH_EXCEEDED) { it.message }
+            expect(rootPointer) { it.pointer }
         }
     }
 

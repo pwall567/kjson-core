@@ -2,7 +2,7 @@
  * @(#) ParserObjectTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022 Peter Wall
+ * Copyright (c) 2021, 2022, 2023 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,6 +39,7 @@ import io.kjson.JSONString
 import io.kjson.parser.ParserConstants.rootPointer
 import io.kjson.parser.ParserErrors.DUPLICATE_KEY
 import io.kjson.parser.ParserErrors.ILLEGAL_KEY
+import io.kjson.parser.ParserErrors.MAX_DEPTH_EXCEEDED
 import io.kjson.parser.ParserErrors.MISSING_CLOSING_BRACE
 import io.kjson.parser.ParserErrors.MISSING_COLON
 
@@ -188,6 +189,27 @@ class ParserObjectTest {
         Parser.parse("""{"first":123,"first":456}""", options).asObject.let {
             expect(1) { it.size }
             expect(456) { it["first"].asInt }
+        }
+    }
+
+    @Test fun `should allow nesting up to maximum depth`() {
+        val options = ParseOptions(maximumNestingDepth = 50)
+        val allowed = """{"a":""".repeat(options.maximumNestingDepth) + '1' + "}".repeat(options.maximumNestingDepth)
+        var result = Parser.parse(allowed, options)
+        for (i in 0 until options.maximumNestingDepth) {
+            assertTrue(result is JSONObject)
+            result = result["a"]
+        }
+        expect(JSONInt(1)) { result }
+    }
+
+    @Test fun `should throw exception on nesting depth exceeded`() {
+        val options = ParseOptions(maximumNestingDepth = 50)
+        val excessive = """{"a":""".repeat(options.maximumNestingDepth + 1)
+        assertFailsWith<ParseException> { Parser.parse(excessive, options) }.let {
+            expect(MAX_DEPTH_EXCEEDED) { it.text }
+            expect(MAX_DEPTH_EXCEEDED) { it.message }
+            expect(rootPointer) { it.pointer }
         }
     }
 

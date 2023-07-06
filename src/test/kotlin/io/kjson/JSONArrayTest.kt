@@ -202,4 +202,47 @@ class JSONArrayTest {
         expect(5) { count }
     }
 
+    @Test fun `should append in JSON Lines format`() {
+        val json = createJSONLines()
+        val sb = StringBuilder()
+        json.appendJSONLines(sb)
+        expect("{\"a\":1,\"b\":2}\n{\"a\":21,\"b\":34}\n{\"a\":55,\"b\":66}\n") { sb.toString() }
+    }
+
+    @Test fun `should create JSON Lines string`() {
+        val json = createJSONLines()
+        expect("{\"a\":1,\"b\":2}\n{\"a\":21,\"b\":34}\n{\"a\":55,\"b\":66}\n") { json.toJSONLines() }
+    }
+
+    @Test fun `should output JSON Lines using output`() {
+        val capture = OutputCapture(64)
+        createJSONLines().outputJSONLines(capture)
+        expect("{\"a\":1,\"b\":2}\n{\"a\":21,\"b\":34}\n{\"a\":55,\"b\":66}\n") { capture.toString() }
+    }
+
+    @Test fun `should output JSON Lines using coOutput`() = runBlocking {
+        val capture = CoOutputCapture(64)
+        createJSONLines().coOutputJSONLines(capture)
+        expect("{\"a\":1,\"b\":2}\n{\"a\":21,\"b\":34}\n{\"a\":55,\"b\":66}\n") { capture.toString() }
+    }
+
+    companion object {
+
+        fun createJSONLines() = JSONArray.build {
+            add(JSONObject.build {
+                add("a", 1)
+                add("b", 2)
+            })
+            add(JSONObject.build {
+                add("a", 21)
+                add("b", 34)
+            })
+            add(JSONObject.build {
+                add("a", 55)
+                add("b", 66)
+            })
+        }
+
+    }
+
 }

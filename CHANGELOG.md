@@ -2,6 +2,18 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [5.7] - 2023-06-21
+### Added
+- `AbstractBuilder`: generic base for `Builder` classes in `JSONArray` and `JSONObject`
+### Changed
+- `Parser`, `JSON`: added handling of JSON Lines
+- `JSONArray`, `JSONObject`: optimised `Builder` classes
+- `pom.xml`: updated parent POM version
+- `diagram.dia`, `diagram.png`: added new functions
+- `Parser`, `ParseOptions`: added check for excessive nesting
+- `JSONArray`, `JSONObject`: changed to use `AbstractBuilder`
+- `pom.xml`: updated dependency version
+
 ## [5.6] - 2023-04-23
 ### Changed
 - `pom.xml`: updated dependency versions

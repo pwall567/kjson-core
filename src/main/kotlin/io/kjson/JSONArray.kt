@@ -32,7 +32,9 @@ import java.util.function.IntConsumer
 import io.kjson.JSON.appendTo
 import io.kjson.JSON.coOutput
 import io.kjson.JSON.output
+import io.kjson.util.AbstractBuilder
 import net.pwall.util.CoOutput
+import net.pwall.util.CoOutputFlushable
 import net.pwall.util.ImmutableList
 import net.pwall.util.output
 
@@ -61,7 +63,17 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
         a.append(']')
     }
 
+    fun appendJSONLines(a: Appendable) {
+        var i = 0
+        while (i < size) {
+            immutableList[i++].appendTo(a)
+            a.append('\n')
+        }
+    }
+
     override fun toJSON(): String = if (isEmpty()) "[]" else buildString { appendTo(this) }
+
+    fun toJSONLines(): String = if (isEmpty()) "" else buildString { appendJSONLines(this) }
 
     override fun output(out: IntConsumer) {
         out.accept('['.code)
@@ -77,6 +89,14 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
         out.accept(']'.code)
     }
 
+    fun outputJSONLines(out: IntConsumer) {
+        var i = 0
+        while (i < size) {
+            immutableList[i++].output(out)
+            out.accept('\n'.code)
+        }
+    }
+
     override suspend fun coOutput(out: CoOutput) {
         out.output('[')
         if (isNotEmpty()) {
@@ -89,6 +109,16 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
             }
         }
         out.output(']')
+    }
+
+    suspend fun coOutputJSONLines(out: CoOutput) {
+        var i = 0
+        while (i < size) {
+            immutableList[i++].coOutput(out)
+            out.output('\n')
+            if (out is CoOutputFlushable)
+                out.flush()
+        }
     }
 
     override fun isEmpty(): Boolean = size == 0
@@ -159,36 +189,14 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
 
     }
 
-    class Builder(size: Int = 8, block: Builder.() -> Unit = {}) {
-
-        private var array: Array<JSONValue?>? = Array(size) { null }
-        private var count: Int = 0
+    class Builder(size: Int = 8, block: Builder.() -> Unit = {}) : AbstractBuilder<JSONValue>(arrayOfNulls(size)) {
 
         init {
             block()
         }
 
-        val size: Int
-            get() {
-                checkArray()
-                return count
-            }
-
-        private fun checkArray() = array ?: throw JSONException("Builder is closed")
-
         fun add(value: JSONValue?) {
-            checkArray().let { validArray ->
-                val len = validArray.size
-                if (count >= len) {
-                    val newArray = Array(len + len.coerceAtMost(4096)) { i->
-                        if (i < len) validArray[i] else null
-                    }
-                    newArray[count++] = value
-                    array = newArray
-                }
-                else
-                    validArray[count++] = value
-            }
+            internalAdd(value)
         }
 
         fun add(value: String) {
@@ -211,8 +219,8 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
             add(JSONBoolean.of(value))
         }
 
-        fun build(): JSONArray = checkArray().let {
-            (if (count == 0) EMPTY else JSONArray(it, count)).also { array = null }
+        override fun build(): JSONArray = checkArray().let {
+            (if (size == 0) EMPTY else JSONArray(it, size)).also { invalidate() }
         }
 
     }

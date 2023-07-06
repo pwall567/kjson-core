@@ -54,5 +54,7 @@ object ParserErrors {
     const val TRAILING_COMMA_ARRAY = "Trailing comma in JSON array"
     const val TRAILING_COMMA_OBJECT = "Trailing comma in JSON object"
     const val ILLEGAL_ARRAY = "Array must start with open bracket"
+    const val MAX_DEPTH_EXCEEDED = "Maximum nesting depth exceeded"
+    const val MAX_DEPTH_ERROR = "Maximum nesting depth must be 1..1200"
 
 }

@@ -31,6 +31,7 @@ import java.util.function.IntConsumer
 import io.kjson.JSON.appendTo
 import io.kjson.JSON.coOutput
 import io.kjson.JSON.output
+import io.kjson.util.AbstractBuilder
 import net.pwall.json.JSONCoFunctions.outputString
 import net.pwall.json.JSONFunctions
 import net.pwall.util.CoOutput
@@ -43,7 +44,7 @@ import net.pwall.util.output
  *
  * @author  Peter Wall
  */
-class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSONValue?>>, override val size: Int) :
+class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSONValue?>?>, override val size: Int) :
         JSONStructure<String>, Map<String, JSONValue?> {
 
     private val immutableMap = ImmutableMap<String, JSONValue?>(array, size)
@@ -154,7 +155,7 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
         val EMPTY = JSONObject(emptyArray(), 0)
 
         fun of(vararg items: Pair<String, JSONValue?>): JSONObject =
-            if (items.isEmpty()) EMPTY else Array<ImmutableMapEntry<String, JSONValue?>>(items.size) { i ->
+            if (items.isEmpty()) EMPTY else Array<ImmutableMapEntry<String, JSONValue?>?>(items.size) { i ->
                 items[i].let { ImmutableMap.entry(it.first, it.second) }
             }.let { JSONObject(it, it.size) }
 
@@ -164,7 +165,7 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
             }
 
         fun from(list: List<Pair<String, JSONValue?>>): JSONObject =
-            if (list.isEmpty()) EMPTY else Array<ImmutableMapEntry<String, JSONValue?>>(list.size) { i ->
+            if (list.isEmpty()) EMPTY else Array<ImmutableMapEntry<String, JSONValue?>?>(list.size) { i ->
                 list[i].let { ImmutableMap.entry(it.first, it.second) }
             }.let { JSONObject(it, it.size) }
 
@@ -172,41 +173,20 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
 
     }
 
-    class Builder(size: Int = 8, block: Builder.() -> Unit = {}) {
-
-        private var array: Array<ImmutableMapEntry<String, JSONValue?>>? = ImmutableMap.createArray(size)
-        private var count: Int = 0
+    class Builder(size: Int = 8, block: Builder.() -> Unit = {}) :
+            AbstractBuilder<ImmutableMapEntry<String, JSONValue?>>(ImmutableMap.createArray(size)) {
 
         init {
             block()
         }
 
-        val size: Int
-            get() {
-                checkArray()
-                return count
-            }
-
-        private fun checkArray() = array ?: throw JSONException("Builder is closed")
-
-        fun containsKey(name: String): Boolean = ImmutableMap.containsKey(checkArray(), count, name)
+        fun containsKey(name: String): Boolean = ImmutableMap.containsKey(checkArray(), size, name)
 
         fun add(name: String, value: JSONValue?) {
             // TODO consider configuration to allow duplicates
             if (containsKey(name))
                 throw JSONException("Duplicate key - $name")
-            checkArray().let { validArray ->
-                val len = validArray.size
-                if (count >= len) {
-                    val newArray: Array<ImmutableMapEntry<String, JSONValue?>> =
-                            ImmutableMap.createArray(len + len.coerceAtMost(4096))
-                    System.arraycopy(validArray, 0, newArray, 0, len)
-                    newArray[count++] = ImmutableMap.entry(name, value)
-                    array = newArray
-                }
-                else
-                    validArray[count++] = ImmutableMap.entry(name, value)
-            }
+            internalAdd(ImmutableMap.entry(name, value))
         }
 
         fun add(name: String, value: String) {
@@ -231,21 +211,20 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
 
         fun remove(name: String) {
             checkArray().let {
-                val index = ImmutableMap.findKey(it, count, name)
+                val index = ImmutableMap.findKey(it, size, name)
                 if (index < 0)
                     throw JSONException("Key not found - $name")
-                System.arraycopy(it, index + 1, it, index, count - index)
-                count--
+                internalRemove(index)
             }
         }
 
         fun get(name: String): JSONValue? = checkArray().let {
-            val index = ImmutableMap.findKey(it, count, name)
-            if (index >= 0) it[index].value else null
+            val index = ImmutableMap.findKey(it, size, name)
+            if (index >= 0) it[index]?.value else null
         }
 
-        fun build(): JSONObject = checkArray().let {
-            (if (count == 0) EMPTY else JSONObject(it, count)).also { array = null }
+        override fun build(): JSONObject = checkArray().let {
+            (if (size == 0) EMPTY else JSONObject(it, size)).also { invalidate() }
         }
 
     }

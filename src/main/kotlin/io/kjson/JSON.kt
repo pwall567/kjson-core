@@ -63,6 +63,8 @@ object JSON {
 
     fun parseObject(json: String): JSONObject = parse(json).asObject
 
+    fun parseLines(jsonLines: String): JSONArray = Parser.parseLines(jsonLines)
+
     fun JSONValue?.toJSON(): String = this?.toJSON() ?: "null"
 
     fun JSONValue?.appendTo(a: Appendable) {
