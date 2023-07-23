@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [5.8] - 2023-07-22
+### Changed
+- `pom.xml`: updated Kotlin version to 1.8.22
+
 ## [5.7] - 2023-06-21
 ### Added
 - `AbstractBuilder`: generic base for `Builder` classes in `JSONArray` and `JSONObject`
