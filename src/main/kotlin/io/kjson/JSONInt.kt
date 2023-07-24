@@ -39,40 +39,94 @@ import net.pwall.util.IntOutput
  */
 class JSONInt(override val value: Int) : JSONNumber(), JSONPrimitive<Int> {
 
+    /**
+     * Append as a JSON string to an [Appendable].
+     */
     override fun appendTo(a: Appendable) = IntOutput.appendInt(a, value)
 
+    /**
+     * Output as a JSON string to an [IntConsumer].
+     */
     override fun output(out: IntConsumer) = IntOutput.outputInt(value, out)
 
+    /**
+     * Output as a JSON string to a [CoOutput].
+     */
     override suspend fun coOutput(out: CoOutput) = out.outputInt(value)
 
+    /**
+     * Return `true` if the value is integral (will fit in an `Int` or a `Long`).
+     */
     override fun isIntegral(): Boolean = true
 
+    /**
+     * Return `true` if the value is will fit in a `Long`.
+     */
     override fun isLong(): Boolean = true
 
+    /**
+     * Return `true` if the value is will fit in an `Int`.
+     */
     override fun isInt(): Boolean = true
 
+    /**
+     * Return `true` if the value is will fit in a `Short`.
+     */
     override fun isShort(): Boolean = value in Short.MIN_VALUE..Short.MAX_VALUE
 
+    /**
+     * Return `true` if the value is will fit in a `Byte`.
+     */
     override fun isByte(): Boolean = value in Byte.MIN_VALUE..Byte.MAX_VALUE
 
+    /**
+     * Return `true` if the value is will fit in a `ULong`.
+     */
     override fun isULong(): Boolean = value >= 0
 
+    /**
+     * Return `true` if the value is will fit in a `UInt`.
+     */
     override fun isUInt(): Boolean = value >= 0
 
+    /**
+     * Return `true` if the value is will fit in a `UShort`.
+     */
     override fun isUShort(): Boolean = value in 0..UShort.MAX_VALUE.toInt()
 
+    /**
+     * Return `true` if the value is will fit in a `UByte`.
+     */
     override fun isUByte(): Boolean = value in 0..UByte.MAX_VALUE.toInt()
 
+    /**
+     * Return `true` if the value is zero.
+     */
     override fun isZero(): Boolean = value == 0
 
+    /**
+     * Return `true` if the value is negative.
+     */
     override fun isNegative(): Boolean = value < 0
 
+    /**
+     * Return `true` if the value is positive.
+     */
     override fun isPositive(): Boolean = value > 0
 
+    /**
+     * Return `true` if the value is not zero.
+     */
     override fun isNotZero(): Boolean = value != 0
 
+    /**
+     * Return `true` if the value is not negative.
+     */
     override fun isNotNegative(): Boolean = value >= 0
 
+    /**
+     * Return `true` if the value is not positive.
+     */
     override fun isNotPositive(): Boolean = value <= 0
 
     override fun toDouble(): Double = value.toDouble()
@@ -89,16 +143,34 @@ class JSONInt(override val value: Int) : JSONNumber(), JSONPrimitive<Int> {
 
     override fun toByte(): Byte = value.toByte()
 
+    /**
+     * Convert the value to [BigDecimal].
+     */
     override fun toDecimal(): BigDecimal = BigDecimal(value)
 
+    /**
+     * Convert the value to [ULong].
+     */
     override fun toULong(): ULong = value.toULong()
 
+    /**
+     * Convert the value to [UInt].
+     */
     override fun toUInt(): UInt = value.toUInt()
 
+    /**
+     * Convert the value to [UShort].
+     */
     override fun toUShort(): UShort = value.toUShort()
 
+    /**
+     * Convert the value to [UByte].
+     */
     override fun toUByte(): UByte = value.toUByte()
 
+    /**
+     * Compare the value to another value.
+     */
     override fun equals(other: Any?): Boolean {
         if (this === other)
             return true
@@ -111,6 +183,9 @@ class JSONInt(override val value: Int) : JSONNumber(), JSONPrimitive<Int> {
         }
     }
 
+    /**
+     * Get the hash code for the value.
+     */
     override fun hashCode(): Int = value
 
     override fun toString(): String = value.toString()

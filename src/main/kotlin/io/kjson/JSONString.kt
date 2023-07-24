@@ -46,8 +46,14 @@ class JSONString(override val value: String) : JSONPrimitive<String>, CharSequen
 
     override fun appendTo(a: Appendable) = JSONFunctions.appendString(a, value, false)
 
+    /**
+     * Output as a JSON string to an [IntConsumer].
+     */
     override fun output(out: IntConsumer) = JSONFunctions.outputString(value, false, out)
 
+    /**
+     * Output as a JSON string to a [CoOutput].
+     */
     override suspend fun coOutput(out: CoOutput) = out.outputString(value, false)
 
     override fun equals(other: Any?): Boolean = this === other || other is JSONString && value == other.value

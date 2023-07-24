@@ -35,8 +35,14 @@ enum class JSONBoolean(override val value: Boolean) : JSONPrimitive<Boolean> {
     TRUE(true),
     FALSE(false);
 
+    /**
+     * Convert to a JSON string.
+     */
     override fun toJSON(): String = if (value) "true" else "false"
 
+    /**
+     * Append as a JSON string to an [Appendable].
+     */
     override fun appendTo(a: Appendable) {
         a.append(toJSON())
     }

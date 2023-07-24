@@ -35,50 +35,117 @@ import java.math.BigDecimal
  */
 sealed class JSONNumber : Number(), JSONValue {
 
+    /** The value (will be overridden by a value of a specific type). */
     abstract val value: Number
 
+    /**
+     * Return `true` if the value is integral (will fit in an `Int` or a `Long`).
+     */
     abstract fun isIntegral(): Boolean
 
+    /**
+     * Return `true` if the value is will fit in a `Long`.
+     */
     abstract fun isLong(): Boolean
 
+    /**
+     * Return `true` if the value is will fit in an `Int`.
+     */
     abstract fun isInt(): Boolean
 
+    /**
+     * Return `true` if the value is will fit in a `Short`.
+     */
     abstract fun isShort(): Boolean
 
+    /**
+     * Return `true` if the value is will fit in a `Byte`.
+     */
     abstract fun isByte(): Boolean
 
+    /**
+     * Return `true` if the value is will fit in a `ULong`.
+     */
     abstract fun isULong(): Boolean
 
+    /**
+     * Return `true` if the value is will fit in a `UInt`.
+     */
     abstract fun isUInt(): Boolean
 
+    /**
+     * Return `true` if the value is will fit in a `UShort`.
+     */
     abstract fun isUShort(): Boolean
 
+    /**
+     * Return `true` if the value is will fit in a `UByte`.
+     */
     abstract fun isUByte(): Boolean
 
+    /**
+     * Return `true` if the value is zero.
+     */
     abstract fun isZero(): Boolean
 
+    /**
+     * Return `true` if the value is negative.
+     */
     abstract fun isNegative(): Boolean
 
+    /**
+     * Return `true` if the value is positive.
+     */
     abstract fun isPositive(): Boolean
 
+    /**
+     * Return `true` if the value is not zero.
+     */
     abstract fun isNotZero(): Boolean
 
+    /**
+     * Return `true` if the value is not negative.
+     */
     abstract fun isNotNegative(): Boolean
 
+    /**
+     * Return `true` if the value is not positive.
+     */
     abstract fun isNotPositive(): Boolean
 
+    /**
+     * Convert the value to [BigDecimal].
+     */
     abstract fun toDecimal(): BigDecimal
 
+    /**
+     * Convert the value to [ULong].
+     */
     abstract fun toULong(): ULong
 
+    /**
+     * Convert the value to [UInt].
+     */
     abstract fun toUInt(): UInt
 
+    /**
+     * Convert the value to [UShort].
+     */
     abstract fun toUShort(): UShort
 
+    /**
+     * Convert the value to [UByte].
+     */
     abstract fun toUByte(): UByte
 
+    /**
+     * Compare the value to another value.
+     */
     abstract override fun equals(other: Any?): Boolean
 
+    /**
+     * Get the hash code for the value.
+     */
     abstract override fun hashCode(): Int
 
 }

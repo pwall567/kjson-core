@@ -40,41 +40,92 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumber(), JSONPrimitive<
 
     constructor(int: Int): this(BigDecimal(int))
 
+    /**
+     * Convert to a JSON string.
+     */
     override fun toJSON(): String = value.toString()
 
+    /**
+     * Append as a JSON string to an [Appendable].
+     */
     override fun appendTo(a: Appendable) {
         a.append(value.toString())
     }
 
+    /**
+     * Return `true` if the value is integral (will fit in an `Int` or a `Long`).
+     */
     override fun isIntegral(): Boolean =
         value.scale() <= 0 || value.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0
 
+    /**
+     * Return `true` if the value is will fit in a `Long`.
+     */
     override fun isLong(): Boolean = isIntegral() && value in MIN_LONG..MAX_LONG
 
+    /**
+     * Return `true` if the value is will fit in an `Int`.
+     */
     override fun isInt(): Boolean = isIntegral() && value in MIN_INT..MAX_INT
 
+    /**
+     * Return `true` if the value is will fit in a `Short`.
+     */
     override fun isShort(): Boolean = isIntegral() && value in MIN_SHORT..MAX_SHORT
 
+    /**
+     * Return `true` if the value is will fit in a `Byte`.
+     */
     override fun isByte(): Boolean = isIntegral() && value in MIN_BYTE..MAX_BYTE
 
+    /**
+     * Return `true` if the value is will fit in a `ULong`.
+     */
     override fun isULong(): Boolean = isIntegral() && value in BigDecimal.ZERO..MAX_ULONG
 
+    /**
+     * Return `true` if the value is will fit in a `UInt`.
+     */
     override fun isUInt(): Boolean = isIntegral() && value in BigDecimal.ZERO..MAX_UINT
 
+    /**
+     * Return `true` if the value is will fit in a `UShort`.
+     */
     override fun isUShort(): Boolean = isIntegral() && value in BigDecimal.ZERO..MAX_USHORT
 
+    /**
+     * Return `true` if the value is will fit in a `UByte`.
+     */
     override fun isUByte(): Boolean = isIntegral() && value in BigDecimal.ZERO..MAX_UBYTE
 
+    /**
+     * Return `true` if the value is zero.
+     */
     override fun isZero(): Boolean = value.compareTo(BigDecimal.ZERO) == 0
 
+    /**
+     * Return `true` if the value is negative.
+     */
     override fun isNegative(): Boolean = value < BigDecimal.ZERO
 
+    /**
+     * Return `true` if the value is positive.
+     */
     override fun isPositive(): Boolean = value > BigDecimal.ZERO
 
+    /**
+     * Return `true` if the value is not zero.
+     */
     override fun isNotZero(): Boolean = value.compareTo(BigDecimal.ZERO) != 0
 
+    /**
+     * Return `true` if the value is not negative.
+     */
     override fun isNotNegative(): Boolean = value >= BigDecimal.ZERO
 
+    /**
+     * Return `true` if the value is not positive.
+     */
     override fun isNotPositive(): Boolean = value <= BigDecimal.ZERO
 
     override fun toDouble(): Double = value.toDouble()
@@ -91,16 +142,34 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumber(), JSONPrimitive<
 
     override fun toByte(): Byte = value.toByte()
 
+    /**
+     * Convert the value to [BigDecimal].
+     */
     override fun toDecimal(): BigDecimal = value
 
+    /**
+     * Convert the value to [ULong].
+     */
     override fun toULong(): ULong = value.toLong().toULong()
 
+    /**
+     * Convert the value to [UInt].
+     */
     override fun toUInt(): UInt = value.toInt().toUInt()
 
+    /**
+     * Convert the value to [UShort].
+     */
     override fun toUShort(): UShort = value.toInt().toUShort()
 
+    /**
+     * Convert the value to [UByte].
+     */
     override fun toUByte(): UByte = value.toInt().toUByte()
 
+    /**
+     * Compare the value to another value.
+     */
     override fun equals(other: Any?): Boolean {
         if (this === other)
             return true
@@ -113,6 +182,9 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumber(), JSONPrimitive<
         }
     }
 
+    /**
+     * Get the hash code for the value.
+     */
     override fun hashCode(): Int = value.toInt()
 
     override fun toString(): String = toJSON()

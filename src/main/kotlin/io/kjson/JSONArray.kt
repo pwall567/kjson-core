@@ -49,6 +49,9 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
 
     private val immutableList = ImmutableList<JSONValue?>(array, size)
 
+    /**
+     * Append as a JSON string to an [Appendable].
+     */
     override fun appendTo(a: Appendable) {
         a.append('[')
         if (isNotEmpty()) {
@@ -63,6 +66,9 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
         a.append(']')
     }
 
+    /**
+     * Append in JSON Lines form to an [Appendable].
+     */
     fun appendJSONLines(a: Appendable) {
         var i = 0
         while (i < size) {
@@ -71,10 +77,19 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
         }
     }
 
+    /**
+     * Convert to a JSON string.
+     */
     override fun toJSON(): String = if (isEmpty()) "[]" else buildString { appendTo(this) }
 
+    /**
+     * Convert to a string in JSON Lines form.
+     */
     fun toJSONLines(): String = if (isEmpty()) "" else buildString { appendJSONLines(this) }
 
+    /**
+     * Output as a JSON string to an [IntConsumer].
+     */
     override fun output(out: IntConsumer) {
         out.accept('['.code)
         if (isNotEmpty()) {
@@ -89,6 +104,9 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
         out.accept(']'.code)
     }
 
+    /**
+     * Output in JSON Lines form to an [IntConsumer].
+     */
     fun outputJSONLines(out: IntConsumer) {
         var i = 0
         while (i < size) {
@@ -97,6 +115,9 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
         }
     }
 
+    /**
+     * Output as a JSON string to a [CoOutput].
+     */
     override suspend fun coOutput(out: CoOutput) {
         out.output('[')
         if (isNotEmpty()) {
@@ -111,6 +132,9 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
         out.output(']')
     }
 
+    /**
+     * Output in JSON lines form to a [CoOutput].
+     */
     suspend fun coOutputJSONLines(out: CoOutput) {
         var i = 0
         while (i < size) {
@@ -121,25 +145,55 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
         }
     }
 
+    /**
+     * Return `true` if the array is empty
+     */
     override fun isEmpty(): Boolean = size == 0
 
+    /**
+     * Return `true` if the array contains the nominated value.
+     */
     override fun contains(element: JSONValue?): Boolean = immutableList.contains(element)
 
+    /**
+     * Get an `Iterator` over the values in the array.
+     */
     override fun iterator(): Iterator<JSONValue?> = immutableList.iterator()
 
+    /**
+     * Return `true` if the array contains all of the values in another collection.
+     */
     override fun containsAll(elements: Collection<JSONValue?>): Boolean = immutableList.containsAll(elements)
 
+    /**
+     * Get the value at the given index.
+     */
     @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
     override fun get(index: Int): JSONValue? = immutableList[index]
 
+    /**
+     * Find the index of the first occurrence of a given value in the array, or -1 if the value is not found.
+     */
     override fun indexOf(element: JSONValue?): Int = immutableList.indexOf(element)
 
+    /**
+     * Find the index of the last occurrence of a given value in the array, or -1 if the value is not found.
+     */
     override fun lastIndexOf(element: JSONValue?): Int = immutableList.lastIndexOf(element)
 
+    /**
+     * Get a `ListIterator` over the values in the array.
+     */
     override fun listIterator(): ListIterator<JSONValue?> = immutableList.listIterator()
 
+    /**
+     * Get a `ListIterator` over the values in the array, from a given index.
+     */
     override fun listIterator(index: Int): ListIterator<JSONValue?> = immutableList.listIterator(index)
 
+    /**
+     * Get a sub-list of the array.
+     */
     override fun subList(fromIndex: Int, toIndex: Int): JSONArray {
         if (fromIndex == toIndex)
             return EMPTY
@@ -149,25 +203,42 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
         return JSONArray(oldArray.copyOfRange(fromIndex, toIndex), toIndex - fromIndex)
     }
 
+    /**
+     * Apply a function to each item in the array.
+     */
     fun forEachItem(func: (JSONValue?) -> Unit) {
         repeat(size) { func(immutableList[it]) }
     }
 
+    /**
+     * Apply a function to each item in the array, supplying the index.
+     */
     fun forEachItemIndexed(func: (Int, JSONValue?) -> Unit) {
         repeat(size) { func(it, immutableList[it]) }
     }
 
+    /**
+     * Compare the value to another value, applying the rule in Java for comparing `List`s.
+     */
     @Suppress("SuspiciousEqualsCombination")
     override fun equals(other: Any?): Boolean = this === other || other is List<*> && immutableList == other
 
+    /**
+     * Get the hash code for the value, applying the rule in Java for `List` hash codes.
+     */
     override fun hashCode(): Int = immutableList.hashCode()
 
+    /**
+     * Convert to a [String] (converts to JSON).
+     */
     override fun toString(): String = toJSON()
 
+    /** The value as a [JSONArray] (unnecessary). */
     @Deprecated("Unnecessary (value is known to be JSONArray)", ReplaceWith("this"))
     val asArray: JSONArray
         get() = this
 
+    /** The value as a [JSONArray] or `null` (unnecessary).  */
     @Deprecated("Unnecessary (value is known to be JSONArray)", ReplaceWith("this"))
     val asArrayOrNull: JSONArray
         get() = this

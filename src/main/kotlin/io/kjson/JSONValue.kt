@@ -38,12 +38,24 @@ import net.pwall.util.output
  */
 sealed interface JSONValue {
 
+    /**
+     * Append as a JSON string to an [Appendable].
+     */
     fun appendTo(a: Appendable)
 
+    /**
+     * Convert to a JSON string.
+     */
     fun toJSON(): String = buildString { appendTo(this) }
 
+    /**
+     * Output as a JSON string to an [IntConsumer].
+     */
     fun output(out: IntConsumer) = out.accept(toJSON())
 
+    /**
+     * Output as a JSON string to a [CoOutput].
+     */
     suspend fun coOutput(out: CoOutput) = out.output(toJSON())
 
 }

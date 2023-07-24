@@ -49,6 +49,9 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
 
     private val immutableMap = ImmutableMap<String, JSONValue?>(array, size)
 
+    /**
+     * Append as a JSON string to an [Appendable].
+     */
     override fun appendTo(a: Appendable) {
         a.append('{')
         if (isNotEmpty()) {
@@ -66,8 +69,14 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
         a.append('}')
     }
 
+    /**
+     * Convert to a JSON string.
+     */
     override fun toJSON(): String = if (isEmpty()) "{}" else buildString { appendTo(this) }
 
+    /**
+     * Output as a JSON string to an [IntConsumer].
+     */
     override fun output(out: IntConsumer) {
         out.accept('{'.code)
         if (isNotEmpty()) {
@@ -85,6 +94,9 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
         out.accept('}'.code)
     }
 
+    /**
+     * Output as a JSON string to a [CoOutput].
+     */
     override suspend fun coOutput(out: CoOutput) {
         out.output('{')
         if (isNotEmpty()) {
