@@ -114,24 +114,49 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
         out.output('}')
     }
 
+    /**
+     * Return `true` if the object is empty.
+     */
     @Suppress("ReplaceSizeZeroCheckWithIsEmpty")
     override fun isEmpty(): Boolean = size == 0
 
+    /**
+     * Get a [Set] of the [Map.Entry] objects in the object.
+     */
     override val entries: Set<Map.Entry<String, JSONValue?>>
         get() = immutableMap.entries
 
+    /**
+     * Get a [Set] of the keys (property names) in the object.
+     */
     override val keys: Set<String>
         get() = immutableMap.keys
 
+    /**
+     * Get a [Collection] of the property values in the object.
+     */
     override val values: Collection<JSONValue?>
         get() = immutableMap.values
 
+    /**
+     * Return `true` if the object contains the specified key (property name).
+     */
     override fun containsKey(key: String): Boolean = immutableMap.containsKey(key)
 
+    /**
+     * Return `true` if the object contains the property value.
+     */
     override fun containsValue(value: JSONValue?): Boolean = immutableMap.containsValue(value)
 
+    /**
+     * Get the value for the property with the specified name, or `null` if it is not present.
+     */
     override fun get(key: String): JSONValue? = immutableMap[key]
 
+    /**
+     * Perform a function with each property in turn (the function takes two parameters, the name [String] and value
+     * [JSONValue]`?`).
+     */
     fun forEachEntry(func: (String, JSONValue?) -> Unit) {
         repeat(size) {
             val entry = immutableMap.getEntry(it)
@@ -139,52 +164,86 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
         }
     }
 
+    /**
+     * Perform a function with each property name in turn (the function takes a single parameters, the name [String]).
+     */
     fun forEachKey(func: (String) -> Unit) {
         repeat(size) { func(immutableMap.getKey(it)) }
     }
 
+    /**
+     * Perform a function with each property value in turn (the function takes a single parameters, the value
+     * [JSONValue]`?`).
+     */
     fun forEachValue(func: (JSONValue?) -> Unit) {
         repeat(size) { func(immutableMap.getValue(it)) }
     }
 
+    /**
+     * Compare the object to another value, applying the rule in Java for comparing `Map`s.
+     */
     @Suppress("SuspiciousEqualsCombination")
     override fun equals(other: Any?): Boolean = this === other || other is Map<*, *> && immutableMap == other
 
+    /**
+     * Get the hash code for the object, applying the rule in Java for `Map` hash codes.
+     */
     override fun hashCode(): Int = immutableMap.hashCode()
 
+    /**
+     * Convert to a [String] (converts to JSON).
+     */
     override fun toString(): String = toJSON()
 
+    /** The value as a [JSONObject] (unnecessary when type is known statically). */
     @Deprecated("Unnecessary (value is known to be JSONObject)", ReplaceWith("this"))
     val asObject: JSONObject
         get() = this
 
+    /** The value as a [JSONObject] or `null` (unnecessary when type is known statically). */
     @Deprecated("Unnecessary (value is known to be JSONObject)", ReplaceWith("this"))
     val asObjectOrNull: JSONObject
         get() = this
 
     companion object {
 
+        /** An empty [JSONObject]. */
         val EMPTY = JSONObject(emptyArray(), 0)
 
+        /**
+         * Create a [JSONObject] from a `vararg` list of map entries.
+         */
         fun of(vararg items: Pair<String, JSONValue?>): JSONObject =
             if (items.isEmpty()) EMPTY else Array<ImmutableMapEntry<String, JSONValue?>?>(items.size) { i ->
                 items[i].let { ImmutableMap.entry(it.first, it.second) }
             }.let { JSONObject(it, it.size) }
 
+        /**
+         * Create a [JSONObject] from a [Map].
+         */
         fun from(map: Map<String, JSONValue?>): JSONObject =
             if (map.isEmpty()) EMPTY else map.entries.map { ImmutableMap.entry(it.key, it.value) }.toTypedArray().let {
                 JSONObject(it, it.size)
             }
 
+        /**
+         * Create a [JSONObject] from a [List] of [Pair]s of name and value.
+         */
         fun from(list: List<Pair<String, JSONValue?>>): JSONObject =
             if (list.isEmpty()) EMPTY else Array<ImmutableMapEntry<String, JSONValue?>?>(list.size) { i ->
                 list[i].let { ImmutableMap.entry(it.first, it.second) }
             }.let { JSONObject(it, it.size) }
 
+        /**
+         * Create a [JSONObject] by applying the supplied [block] to a [Builder], and then taking the result.
+         */
         fun build(block: Builder.() -> Unit): JSONObject = Builder(block = block).build()
 
     }
 
+    /**
+     * [JSONObject] builder class.
+     */
     class Builder(size: Int = 8, block: Builder.() -> Unit = {}) :
             AbstractBuilder<ImmutableMapEntry<String, JSONValue?>>(ImmutableMap.createArray(size)) {
 
@@ -192,8 +251,14 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
             block()
         }
 
+        /**
+         * Test whether an entry with the nominated key (name) already exists in the builder.
+         */
         fun containsKey(name: String): Boolean = ImmutableMap.containsKey(checkArray(), size, name)
 
+        /**
+         * Add a [JSONValue] with the specified name.
+         */
         fun add(name: String, value: JSONValue?) {
             // TODO consider configuration to allow duplicates
             if (containsKey(name))
@@ -201,26 +266,44 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
             internalAdd(ImmutableMap.entry(name, value))
         }
 
+        /**
+         * Add a [JSONString] with the supplied value and name.
+         */
         fun add(name: String, value: String) {
             add(name, JSONString(value))
         }
 
+        /**
+         * Add a [JSONInt] with the supplied value and name.
+         */
         fun add(name: String, value: Int) {
             add(name, JSONInt.of(value))
         }
 
+        /**
+         * Add a [JSONLong] with the supplied value and name.
+         */
         fun add(name: String, value: Long) {
             add(name, JSONLong.of(value))
         }
 
+        /**
+         * Add a [JSONDecimal] with the supplied value and name.
+         */
         fun add(name: String, value: BigDecimal) {
             add(name, JSONDecimal.of(value))
         }
 
+        /**
+         * Add a [JSONBoolean] with the supplied value and name.
+         */
         fun add(name: String, value: Boolean) {
             add(name, JSONBoolean.of(value))
         }
 
+        /**
+         * Remove and entry with the specified name.
+         */
         fun remove(name: String) {
             checkArray().let {
                 val index = ImmutableMap.findKey(it, size, name)
@@ -230,11 +313,17 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
             }
         }
 
+        /**
+         * Get an existing entry with the specified name.
+         */
         fun get(name: String): JSONValue? = checkArray().let {
             val index = ImmutableMap.findKey(it, size, name)
             if (index >= 0) it[index]?.value else null
         }
 
+        /**
+         * Build a [JSONObject] with the entries added.
+         */
         override fun build(): JSONObject = checkArray().let {
             (if (size == 0) EMPTY else JSONObject(it, size)).also { invalidate() }
         }

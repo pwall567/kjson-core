@@ -59,6 +59,9 @@ import net.pwall.text.TextMatcher
  */
 object Parser {
 
+    /**
+     * Parse a [String] to a [JSONValue] (or `null` if the string is `"null"`).
+     */
     fun parse(json: String, options: ParseOptions = ParseOptions.DEFAULT): JSONValue? {
         val tm = TextMatcher(json)
         tm.match(BOM) // skip BOM if present (not required, but may help interoperability)
@@ -69,6 +72,9 @@ object Parser {
         return result
     }
 
+    /**
+     * Parse a [String] to a [JSONArray], where the input is in JSON Lines form.
+     */
     fun parseLines(jsonLines: String, options: ParseOptions = ParseOptions.DEFAULT): JSONArray {
         val tm = TextMatcher(jsonLines)
         tm.match(BOM) // skip BOM if present (not required, but may help interoperability)

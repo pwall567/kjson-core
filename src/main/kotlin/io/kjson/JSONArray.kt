@@ -26,7 +26,6 @@
 package io.kjson
 
 import java.math.BigDecimal
-import java.util.Arrays
 import java.util.function.IntConsumer
 
 import io.kjson.JSON.appendTo
@@ -41,6 +40,11 @@ import net.pwall.util.output
 /**
  * A JSON array.  As allowed by the JSON specification, array members may be primitive types, objects, other arrays or
  * `null`.
+ *
+ * A `JSONArray` is immutable; instances may be created dynamically using the [build] function and the [Builder] class.
+ *
+ * The `JSONArray` class implements the Kotlin [List] interface; all the functions of that interface are available,
+ * including indexed access, iteration over the list contents and comparison with another list.
  *
  * @author  Peter Wall
  */
@@ -146,7 +150,7 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
     }
 
     /**
-     * Return `true` if the array is empty
+     * Return `true` if the array is empty.
      */
     override fun isEmpty(): Boolean = size == 0
 
@@ -218,13 +222,13 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
     }
 
     /**
-     * Compare the value to another value, applying the rule in Java for comparing `List`s.
+     * Compare the array to another value, applying the rule in Java for comparing `List`s.
      */
     @Suppress("SuspiciousEqualsCombination")
     override fun equals(other: Any?): Boolean = this === other || other is List<*> && immutableList == other
 
     /**
-     * Get the hash code for the value, applying the rule in Java for `List` hash codes.
+     * Get the hash code for the array, applying the rule in Java for `List` hash codes.
      */
     override fun hashCode(): Int = immutableList.hashCode()
 
@@ -233,12 +237,12 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
      */
     override fun toString(): String = toJSON()
 
-    /** The value as a [JSONArray] (unnecessary). */
+    /** The value as a [JSONArray] (unnecessary when type is known statically). */
     @Deprecated("Unnecessary (value is known to be JSONArray)", ReplaceWith("this"))
     val asArray: JSONArray
         get() = this
 
-    /** The value as a [JSONArray] or `null` (unnecessary).  */
+    /** The value as a [JSONArray] or `null` (unnecessary when type is known statically).  */
     @Deprecated("Unnecessary (value is known to be JSONArray)", ReplaceWith("this"))
     val asArrayOrNull: JSONArray
         get() = this
@@ -247,49 +251,82 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
 
         private val EMPTY_ARRAY = emptyArray<JSONValue?>()
 
+        /** An empty [JSONArray]. */
         val EMPTY = JSONArray(EMPTY_ARRAY, 0)
 
-        @Suppress("ReplaceJavaStaticMethodWithKotlinAnalog")
+        /**
+         * Create a [JSONArray] from a `vararg` list of [JSONValue] items.
+         */
         fun of(vararg items: JSONValue?): JSONArray =
-                if (items.isEmpty()) EMPTY else JSONArray(Arrays.copyOf(items, items.size), items.size)
+                if (items.isEmpty()) EMPTY else JSONArray(items.copyOf(), items.size)
 
+        /**
+         * Create a [JSONArray] from a [List] of [JSONValue] items.
+         */
         fun from(list: List<JSONValue?>): JSONArray =
                 if (list.isEmpty()) EMPTY else JSONArray(list.toTypedArray(), list.size)
 
+        /**
+         * Create a [JSONArray] by applying the supplied [block] to a [Builder], and then taking the result.
+         */
         fun build(block: Builder.() -> Unit): JSONArray = Builder(block = block).build()
 
     }
 
+    /**
+     * [JSONArray] builder class.
+     */
     class Builder(size: Int = 8, block: Builder.() -> Unit = {}) : AbstractBuilder<JSONValue>(arrayOfNulls(size)) {
 
         init {
             block()
         }
 
+        /**
+         * Add a [JSONValue].
+         */
         fun add(value: JSONValue?) {
             internalAdd(value)
         }
 
+        /**
+         * Add a [JSONString] with the supplied value.
+         */
         fun add(value: String) {
             add(JSONString(value))
         }
 
+        /**
+         * Add a [JSONInt] with the supplied value.
+         */
         fun add(value: Int) {
             add(JSONInt.of(value))
         }
 
+        /**
+         * Add a [JSONLong] with the supplied value.
+         */
         fun add(value: Long) {
             add(JSONLong.of(value))
         }
 
+        /**
+         * Add a [JSONDecimal] with the supplied value.
+         */
         fun add(value: BigDecimal) {
             add(JSONDecimal.of(value))
         }
 
+        /**
+         * Add a [JSONBoolean] with the supplied value.
+         */
         fun add(value: Boolean) {
             add(JSONBoolean.of(value))
         }
 
+        /**
+         * Build a [JSONArray] with the values added.
+         */
         override fun build(): JSONArray = checkArray().let {
             (if (size == 0) EMPTY else JSONArray(it, size)).also { invalidate() }
         }

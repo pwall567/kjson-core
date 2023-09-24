@@ -2,7 +2,7 @@
  * @(#) JSONDecimal.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022 Peter Wall
+ * Copyright (c) 2021, 2022, 2023 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -53,7 +53,7 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumber(), JSONPrimitive<
     }
 
     /**
-     * Return `true` if the value is integral (will fit in an `Int` or a `Long`).
+     * Return `true` if the value is integral (has no fractional part, or the fractional part is zero).
      */
     override fun isIntegral(): Boolean =
         value.scale() <= 0 || value.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0
@@ -128,18 +128,39 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumber(), JSONPrimitive<
      */
     override fun isNotPositive(): Boolean = value <= BigDecimal.ZERO
 
+    /**
+     * Convert the value to [Double].
+     */
     override fun toDouble(): Double = value.toDouble()
 
+    /**
+     * Convert the value to [Float].
+     */
     override fun toFloat(): Float = value.toFloat()
 
+    /**
+     * Convert the value to [Long].
+     */
     override fun toLong(): Long = value.toLong()
 
+    /**
+     * Convert the value to [Int].
+     */
     override fun toInt(): Int = value.toInt()
 
+    /**
+     * Convert the value to [Char].
+     */
     override fun toChar(): Char = value.toChar()
 
+    /**
+     * Convert the value to [Short].
+     */
     override fun toShort(): Short = value.toShort()
 
+    /**
+     * Convert the value to [Byte].
+     */
     override fun toByte(): Byte = value.toByte()
 
     /**
@@ -168,35 +189,36 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumber(), JSONPrimitive<
     override fun toUByte(): UByte = value.toInt().toUByte()
 
     /**
-     * Compare the value to another value.
+     * Compare the value to another [JSONNumber] value.  [JSONNumber] objects with different types but the same value
+     * are considered equal.
      */
-    override fun equals(other: Any?): Boolean {
-        if (this === other)
-            return true
-        if (other !is JSONNumber)
-            return false
-        return when (other) {
-            is JSONInt -> value.compareTo(BigDecimal(other.value)) == 0
-            is JSONLong -> value.compareTo(BigDecimal(other.value)) == 0
-            is JSONDecimal -> value.compareTo(other.value) == 0
-        }
-    }
+    override fun equals(other: Any?): Boolean =
+            this === other || other is JSONNumber && value.compareTo(other.toDecimal()) == 0
 
     /**
-     * Get the hash code for the value.
+     * Get the hash code for the [JSONNumber] value.  [JSONNumber] objects with different types but the same value will
+     * return the same hash code.
      */
     override fun hashCode(): Int = value.toInt()
 
+    /**
+     * Convert the value to [String].
+     */
     override fun toString(): String = toJSON()
 
+    /** The value as a [BigDecimal] (optimisation of the extension value in [JSON] when the type is known
+     *  statically). */
     val asDecimal: BigDecimal
         get() = value
 
+    /** The value as a [BigDecimal] or `null` (optimisation of the extension value in [JSON] when the type is known
+     *  statically). */
     val asDecimalOrNull: BigDecimal
         get() = value
 
     companion object {
 
+        /** A [JSONDecimal] of 0. */
         val ZERO = JSONDecimal(BigDecimal.ZERO)
 
         private val MIN_LONG = BigDecimal(Long.MIN_VALUE)
@@ -212,12 +234,24 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumber(), JSONPrimitive<
         private val MAX_USHORT = BigDecimal(UShort.MAX_VALUE.toInt())
         private val MAX_UBYTE = BigDecimal(UByte.MAX_VALUE.toInt())
 
+        /**
+         * Create a [JSONDecimal] from a [BigDecimal].
+         */
         fun of(d: BigDecimal): JSONDecimal = if (d == BigDecimal.ZERO) ZERO else JSONDecimal(d)
 
+        /**
+         * Create a [JSONDecimal] from an [Int].
+         */
         fun of(i: Int): JSONDecimal = if (i == 0) ZERO else JSONDecimal(i)
 
+        /**
+         * Create a [JSONDecimal] from a [Long].
+         */
         fun of(i: Long): JSONDecimal = if (i == 0L) ZERO else JSONDecimal(i)
 
+        /**
+         * Create a [JSONDecimal] from a [String].
+         */
         fun of(s: String): JSONDecimal = if (s == "0") ZERO else JSONDecimal(s)
 
     }

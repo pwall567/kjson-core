@@ -2,7 +2,7 @@
  * @(#) JSONNumber.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022 Peter Wall
+ * Copyright (c) 2021, 2022, 2023 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,47 +39,47 @@ sealed class JSONNumber : Number(), JSONValue {
     abstract val value: Number
 
     /**
-     * Return `true` if the value is integral (will fit in an `Int` or a `Long`).
+     * Return `true` if the value is integral (has no fractional part, or the fractional part is zero).
      */
     abstract fun isIntegral(): Boolean
 
     /**
-     * Return `true` if the value is will fit in a `Long`.
+     * Return `true` if the value will fit in a `Long`.
      */
     abstract fun isLong(): Boolean
 
     /**
-     * Return `true` if the value is will fit in an `Int`.
+     * Return `true` if the value will fit in an `Int`.
      */
     abstract fun isInt(): Boolean
 
     /**
-     * Return `true` if the value is will fit in a `Short`.
+     * Return `true` if the value will fit in a `Short`.
      */
     abstract fun isShort(): Boolean
 
     /**
-     * Return `true` if the value is will fit in a `Byte`.
+     * Return `true` if the value will fit in a `Byte`.
      */
     abstract fun isByte(): Boolean
 
     /**
-     * Return `true` if the value is will fit in a `ULong`.
+     * Return `true` if the value will fit in a `ULong`.
      */
     abstract fun isULong(): Boolean
 
     /**
-     * Return `true` if the value is will fit in a `UInt`.
+     * Return `true` if the value will fit in a `UInt`.
      */
     abstract fun isUInt(): Boolean
 
     /**
-     * Return `true` if the value is will fit in a `UShort`.
+     * Return `true` if the value will fit in a `UShort`.
      */
     abstract fun isUShort(): Boolean
 
     /**
-     * Return `true` if the value is will fit in a `UByte`.
+     * Return `true` if the value will fit in a `UByte`.
      */
     abstract fun isUByte(): Boolean
 
@@ -139,12 +139,14 @@ sealed class JSONNumber : Number(), JSONValue {
     abstract fun toUByte(): UByte
 
     /**
-     * Compare the value to another value.
+     * Compare the value to another [JSONNumber] value.  [JSONNumber] objects with different types but the same value
+     * are considered equal.
      */
     abstract override fun equals(other: Any?): Boolean
 
     /**
-     * Get the hash code for the value.
+     * Get the hash code for the [JSONNumber] value.  [JSONNumber] objects with different types but the same value will
+     * return the same hash code.
      */
     abstract override fun hashCode(): Int
 

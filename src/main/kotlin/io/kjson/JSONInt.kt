@@ -2,7 +2,7 @@
  * @(#) JSONInt.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022 Peter Wall
+ * Copyright (c) 2021, 2022, 2023 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -55,7 +55,7 @@ class JSONInt(override val value: Int) : JSONNumber(), JSONPrimitive<Int> {
     override suspend fun coOutput(out: CoOutput) = out.outputInt(value)
 
     /**
-     * Return `true` if the value is integral (will fit in an `Int` or a `Long`).
+     * Return `true` if the value is integral (has no fractional part, or the fractional part is zero).
      */
     override fun isIntegral(): Boolean = true
 
@@ -129,18 +129,39 @@ class JSONInt(override val value: Int) : JSONNumber(), JSONPrimitive<Int> {
      */
     override fun isNotPositive(): Boolean = value <= 0
 
+    /**
+     * Convert the value to [Double].
+     */
     override fun toDouble(): Double = value.toDouble()
 
+    /**
+     * Convert the value to [Float].
+     */
     override fun toFloat(): Float = value.toFloat()
 
+    /**
+     * Convert the value to [Long].
+     */
     override fun toLong(): Long = value.toLong()
 
+    /**
+     * Convert the value to [Int].
+     */
     override fun toInt(): Int = value
 
+    /**
+     * Convert the value to [Char].
+     */
     override fun toChar(): Char = value.toChar()
 
+    /**
+     * Convert the value to [Short].
+     */
     override fun toShort(): Short = value.toShort()
 
+    /**
+     * Convert the value to [Byte].
+     */
     override fun toByte(): Byte = value.toByte()
 
     /**
@@ -169,7 +190,8 @@ class JSONInt(override val value: Int) : JSONNumber(), JSONPrimitive<Int> {
     override fun toUByte(): UByte = value.toUByte()
 
     /**
-     * Compare the value to another value.
+     * Compare the value to another [JSONNumber] value.  [JSONNumber] objects with different types but the same value
+     * are considered equal.
      */
     override fun equals(other: Any?): Boolean {
         if (this === other)
@@ -184,34 +206,52 @@ class JSONInt(override val value: Int) : JSONNumber(), JSONPrimitive<Int> {
     }
 
     /**
-     * Get the hash code for the value.
+     * Get the hash code for the [JSONNumber] value.  [JSONNumber] objects with different types but the same value will
+     * return the same hash code.
      */
     override fun hashCode(): Int = value
 
+    /**
+     * Convert the value to [String].
+     */
     override fun toString(): String = value.toString()
 
+    /** The value as an [Int] (optimisation of the extension value in [JSON] when the type is known statically). */
     val asInt: Int
         get() = value
 
+    /** The value as an [Int] or `null` (optimisation of the extension value in [JSON] when the type is known
+     *  statically). */
     val asIntOrNull: Int
         get() = value
 
+    /** The value as a [Long] (optimisation of the extension value in [JSON] when the type is known statically). */
     val asLong: Long
         get() = value.toLong()
 
+    /** The value as a [Long] or `null` (optimisation of the extension value in [JSON] when the type is known
+     *  statically). */
     val asLongOrNull: Long
         get() = value.toLong()
 
+    /** The value as a [BigDecimal] (optimisation of the extension value in [JSON] when the type is known
+     *  statically). */
     val asDecimal: BigDecimal
         get() = BigDecimal(value)
 
+    /** The value as a [BigDecimal] or `null` (optimisation of the extension value in [JSON] when the type is known
+     *  statically). */
     val asDecimalOrNull: BigDecimal
         get() = BigDecimal(value)
 
     companion object {
 
+        /** A [JSONInt] of 0. */
         val ZERO = JSONInt(0)
 
+        /**
+         * Create a [JSONInt] from an [Int].
+         */
         fun of(i: Int): JSONInt = if (i == 0) ZERO else JSONInt(i)
 
     }

@@ -2,9 +2,17 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [5.10] - 2023-09-24
+### Changed
+- `JSONArray`: switched to use Kotlin intrinsic functions
+- `JSONDecimal`: minor simplification of `equals()`
+- `JSON`: simplified `appendElided()`
+- `pom.xml`: updated dependency versions
+- many files: Added more KDoc
+
 ## [5.9] - 2023-07-24
 ### Changed
-- many file: Added KDoc
+- many files: Added KDoc
 - `pom.xml`: updated dependency versions
 
 ## [5.8] - 2023-07-22

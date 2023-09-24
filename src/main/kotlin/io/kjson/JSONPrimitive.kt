@@ -2,7 +2,7 @@
  * @(#) JSONPrimitive.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2022 Peter Wall
+ * Copyright (c) 2022, 2023 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,7 @@ package io.kjson
  */
 sealed interface JSONPrimitive<out T> : JSONValue {
 
+    /** The value, of the appropriate type. */
     val value: T
 
 }

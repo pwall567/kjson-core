@@ -2,7 +2,7 @@
  * @(#) JSONBoolean.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022 Peter Wall
+ * Copyright (c) 2021, 2022, 2023 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,16 +47,25 @@ enum class JSONBoolean(override val value: Boolean) : JSONPrimitive<Boolean> {
         a.append(toJSON())
     }
 
+    /**
+     * Convert the value to [String].
+     */
     override fun toString(): String = toJSON()
 
+    /** The value as a [Boolean] (optimisation of the extension value in [JSON] when the type is known statically). */
     val asBoolean: Boolean
         get() = value
 
+    /** The value as a [Boolean] or `null` (optimisation of the extension value in [JSON] when the type is known
+     *  statically). */
     val asBooleanOrNull: Boolean
         get() = value
 
     companion object {
 
+        /**
+         * Create a [JSONBoolean] from a [Boolean].
+         */
         fun of(b: Boolean): JSONBoolean = if (b) TRUE else FALSE
 
     }

@@ -2,7 +2,7 @@
  * @(#) JSONString.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022 Peter Wall
+ * Copyright (c) 2021, 2022, 2023 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,12 +38,22 @@ import net.pwall.util.CoOutput
  */
 class JSONString(override val value: String) : JSONPrimitive<String>, CharSequence {
 
+    /** The length of the string */
     override val length = value.length
 
+    /**
+     * Get a single [Char] from the string.
+     */
     override fun get(index: Int): Char = value[index]
 
+    /**
+     * Create a new [JSONString] from a sub-sequence of the value, using the specified start and end indices.
+     */
     override fun subSequence(startIndex: Int, endIndex: Int) = JSONString(value.substring(startIndex, endIndex))
 
+    /**
+     * Append as a JSON string to an [Appendable].
+     */
     override fun appendTo(a: Appendable) = JSONFunctions.appendString(a, value, false)
 
     /**
@@ -56,22 +66,38 @@ class JSONString(override val value: String) : JSONPrimitive<String>, CharSequen
      */
     override suspend fun coOutput(out: CoOutput) = out.outputString(value, false)
 
+    /**
+     * Compare the value to another value.
+     */
     override fun equals(other: Any?): Boolean = this === other || other is JSONString && value == other.value
 
+    /**
+     * Get the hash code for the [JSONString] value.
+     */
     override fun hashCode(): Int = value.hashCode()
 
+    /**
+     * Get the string value.
+     */
     override fun toString(): String = value
 
+    /** The value as a [String] (optimisation of the extension value in [JSON] when the type is known statically). */
     val asString: String
         get() = value
 
+    /** The value as a [String] or `null` (optimisation of the extension value in [JSON] when the type is known
+     *  statically). */
     val asStringOrNull: String
         get() = value
 
     companion object {
 
+        /** An empty [JSONString]. */
         val EMPTY = JSONString("")
 
+        /**
+         * Create a [JSONString] from the given [CharSequence].
+         */
         fun of(s: CharSequence): JSONString = if (s.isEmpty()) EMPTY else JSONString(s.toString())
 
     }
