@@ -177,51 +177,51 @@ object JSON {
         substitute: String = "****",
     ): String = when (this) {
         null -> "null"
-        is JSONStructure<*> -> buildString { appendElided(this, this@elidedValue, exclude, include, substitute) }
+        is JSONStructure<*> -> buildString { appendElided(this@elidedValue, exclude, include, substitute) }
         else -> toJSON()
     }
 
-    private fun appendElided(
-        a: Appendable,
+    private fun Appendable.appendElided(
         json: JSONValue?,
         exclude: Collection<String>?,
         include: Collection<String>?,
         substitute: String,
     ) {
         when (json) {
+            null -> append("null")
             is JSONObject -> {
-                a.append('{')
+                append('{')
                 if (json.isNotEmpty()) {
                     val iterator = json.entries.iterator()
                     while (true) {
                         val (key, value) = iterator.next()
-                        appendString(a, key, false)
-                        a.append(':')
+                        appendString(this, key, false)
+                        append(':')
                         if ((exclude == null || key !in exclude) && (include == null || key in include))
-                            appendElided(a, value, exclude, include, substitute)
+                            appendElided(value, exclude, include, substitute)
                         else
-                            appendString(a, substitute, false)
+                            appendString(this, substitute, false)
                         if (!iterator.hasNext())
                             break
-                        a.append(',')
+                        append(',')
                     }
                 }
-                a.append('}')
+                append('}')
             }
             is JSONArray -> {
-                a.append('[')
+                append('[')
                 if (json.isNotEmpty()) {
                     val iterator = json.iterator()
                     while (true) {
-                        appendElided(a, iterator.next(), exclude, include, substitute)
+                        appendElided(iterator.next(), exclude, include, substitute)
                         if (!iterator.hasNext())
                             break
-                        a.append(',')
+                        append(',')
                     }
                 }
-                a.append(']')
+                append(']')
             }
-            else -> a.appendJSONValue(json)
+            else -> json.appendTo(this)
         }
     }
 
