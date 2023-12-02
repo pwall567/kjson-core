@@ -25,7 +25,6 @@
 
 package io.kjson
 
-import kotlin.reflect.KClass
 import io.kjson.JSON.displayValue
 
 /**
