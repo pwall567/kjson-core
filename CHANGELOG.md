@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [5.11] - 2023-12-02
+### Changed
+- `pom.xml`: updated dependency versions
+
 ## [5.10] - 2023-09-24
 ### Changed
 - `JSONArray`: switched to use Kotlin intrinsic functions
