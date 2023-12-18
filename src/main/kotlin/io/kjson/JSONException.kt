@@ -30,4 +30,18 @@ package io.kjson
  *
  * @author  Peter Wall
  */
-open class JSONException(override val message: String): RuntimeException(message)
+open class JSONException(message: String, key: Any? = null): RuntimeException(extendMessage(message, key)) {
+
+    companion object {
+
+        fun extendMessage(message: String, key: Any?): String {
+            key?.toString()?.let {
+                if (it.isNotEmpty())
+                    return "$message, at $it"
+            }
+            return message
+        }
+
+    }
+
+}

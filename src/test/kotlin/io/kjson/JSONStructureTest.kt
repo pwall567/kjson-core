@@ -48,7 +48,7 @@ class JSONStructureTest {
         val outer = JSONObject.build {
             add("data", true)
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getString("data") }.let {
+        assertFailsWith<JSONTypeException> { outer.getString("data") }.let {
             expect("Node") { it.nodeName }
             expect("String") { it.target }
             expect("data") { it.key }
@@ -68,7 +68,7 @@ class JSONStructureTest {
         val outer = JSONArray.build {
             add(42)
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getString(0) }.let {
+        assertFailsWith<JSONTypeException> { outer.getString(0) }.let {
             expect("Node") { it.nodeName }
             expect("String") { it.target }
             expect(0) { it.key }
@@ -88,7 +88,7 @@ class JSONStructureTest {
         val outer = JSONObject.build {
             add("lots", "millions")
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getLong("lots") }.let {
+        assertFailsWith<JSONTypeException> { outer.getLong("lots") }.let {
             expect("Node") { it.nodeName }
             expect("Long") { it.target }
             expect("lots") { it.key }
@@ -108,7 +108,7 @@ class JSONStructureTest {
         val outer = JSONArray.build {
             add(BigDecimal("1.555"))
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getLong(0) }.let {
+        assertFailsWith<JSONTypeException> { outer.getLong(0) }.let {
             expect("Node") { it.nodeName }
             expect("Long") { it.target }
             expect(0) { it.key }
@@ -128,7 +128,7 @@ class JSONStructureTest {
         val outer = JSONObject.build {
             add("number", "trouble")
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getInt("number") }.let {
+        assertFailsWith<JSONTypeException> { outer.getInt("number") }.let {
             expect("Node") { it.nodeName }
             expect("Int") { it.target }
             expect("number") { it.key }
@@ -148,7 +148,7 @@ class JSONStructureTest {
         val outer = JSONArray.build {
             add(BigDecimal("1.5"))
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getInt(0) }.let {
+        assertFailsWith<JSONTypeException> { outer.getInt(0) }.let {
             expect("Node") { it.nodeName }
             expect("Int") { it.target }
             expect(0) { it.key }
@@ -168,7 +168,7 @@ class JSONStructureTest {
         val outer = JSONObject.build {
             add("mini", 123456)
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getShort("mini") }.let {
+        assertFailsWith<JSONTypeException> { outer.getShort("mini") }.let {
             expect("Node") { it.nodeName }
             expect("Short") { it.target }
             expect("mini") { it.key }
@@ -188,7 +188,7 @@ class JSONStructureTest {
         val outer = JSONArray.build {
             add(false)
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getShort(0) }.let {
+        assertFailsWith<JSONTypeException> { outer.getShort(0) }.let {
             expect("Node") { it.nodeName }
             expect("Short") { it.target }
             expect(0) { it.key }
@@ -208,7 +208,7 @@ class JSONStructureTest {
         val outer = JSONObject.build {
             add("little", "why?")
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getByte("little") }.let {
+        assertFailsWith<JSONTypeException> { outer.getByte("little") }.let {
             expect("Node") { it.nodeName }
             expect("Byte") { it.target }
             expect("little") { it.key }
@@ -228,7 +228,7 @@ class JSONStructureTest {
         val outer = JSONArray.build {
             add("mushroom")
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getByte(0) }.let {
+        assertFailsWith<JSONTypeException> { outer.getByte(0) }.let {
             expect("Node") { it.nodeName }
             expect("Byte") { it.target }
             expect(0) { it.key }
@@ -248,7 +248,7 @@ class JSONStructureTest {
         val outer = JSONObject.build {
             add("big", true)
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getULong("big") }.let {
+        assertFailsWith<JSONTypeException> { outer.getULong("big") }.let {
             expect("Node") { it.nodeName }
             expect("ULong") { it.target }
             expect("big") { it.key }
@@ -268,7 +268,7 @@ class JSONStructureTest {
         val outer = JSONArray.build {
             add(BigDecimal("1.1"))
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getULong(0) }.let {
+        assertFailsWith<JSONTypeException> { outer.getULong(0) }.let {
             expect("Node") { it.nodeName }
             expect("ULong") { it.target }
             expect(0) { it.key }
@@ -288,7 +288,7 @@ class JSONStructureTest {
         val outer = JSONObject.build {
             add("number", -123456)
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getUInt("number") }.let {
+        assertFailsWith<JSONTypeException> { outer.getUInt("number") }.let {
             expect("Node") { it.nodeName }
             expect("UInt") { it.target }
             expect("number") { it.key }
@@ -308,7 +308,7 @@ class JSONStructureTest {
         val outer = JSONArray.build {
             add("incorrect")
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getUInt(0) }.let {
+        assertFailsWith<JSONTypeException> { outer.getUInt(0) }.let {
             expect("Node") { it.nodeName }
             expect("UInt") { it.target }
             expect(0) { it.key }
@@ -328,7 +328,7 @@ class JSONStructureTest {
         val outer = JSONObject.build {
             add("unit", -1)
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getUShort("unit") }.let {
+        assertFailsWith<JSONTypeException> { outer.getUShort("unit") }.let {
             expect("Node") { it.nodeName }
             expect("UShort") { it.target }
             expect("unit") { it.key }
@@ -348,7 +348,7 @@ class JSONStructureTest {
         val outer = JSONArray.build {
             add(123456)
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getUShort(0) }.let {
+        assertFailsWith<JSONTypeException> { outer.getUShort(0) }.let {
             expect("Node") { it.nodeName }
             expect("UShort") { it.target }
             expect(0) { it.key }
@@ -368,7 +368,7 @@ class JSONStructureTest {
         val outer = JSONObject.build {
             add("unit", -200)
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getUByte("unit") }.let {
+        assertFailsWith<JSONTypeException> { outer.getUByte("unit") }.let {
             expect("Node") { it.nodeName }
             expect("UByte") { it.target }
             expect("unit") { it.key }
@@ -388,7 +388,7 @@ class JSONStructureTest {
         val outer = JSONArray.build {
             add(300)
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getUByte(0) }.let {
+        assertFailsWith<JSONTypeException> { outer.getUByte(0) }.let {
             expect("Node") { it.nodeName }
             expect("UByte") { it.target }
             expect(0) { it.key }
@@ -408,7 +408,7 @@ class JSONStructureTest {
         val outer = JSONObject.build {
             add("money", "bad")
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getDecimal("money") }.let {
+        assertFailsWith<JSONTypeException> { outer.getDecimal("money") }.let {
             expect("Node") { it.nodeName }
             expect("BigDecimal") { it.target }
             expect("money") { it.key }
@@ -428,7 +428,7 @@ class JSONStructureTest {
         val outer = JSONArray.build {
             add("sideboard")
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getDecimal(0) }.let {
+        assertFailsWith<JSONTypeException> { outer.getDecimal(0) }.let {
             expect("Node") { it.nodeName }
             expect("BigDecimal") { it.target }
             expect(0) { it.key }
@@ -450,7 +450,7 @@ class JSONStructureTest {
         val outer = JSONObject.build {
             add("bool1", 27)
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getBoolean("bool1") }.let {
+        assertFailsWith<JSONTypeException> { outer.getBoolean("bool1") }.let {
             expect("Node") { it.nodeName }
             expect("Boolean") { it.target }
             expect("bool1") { it.key }
@@ -472,7 +472,7 @@ class JSONStructureTest {
         val outer = JSONArray.build {
             add("wrong")
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getBoolean(0) }.let {
+        assertFailsWith<JSONTypeException> { outer.getBoolean(0) }.let {
             expect("Node") { it.nodeName }
             expect("Boolean") { it.target }
             expect(0) { it.key }
@@ -495,7 +495,7 @@ class JSONStructureTest {
         val outer = JSONObject.build {
             add("inner", 123)
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getArray("inner") }.let {
+        assertFailsWith<JSONTypeException> { outer.getArray("inner") }.let {
             expect("Node") { it.nodeName }
             expect("JSONArray") { it.target }
             expect("inner") { it.key }
@@ -518,7 +518,7 @@ class JSONStructureTest {
         val outer = JSONArray.build {
             add(false)
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getArray(0) }.let {
+        assertFailsWith<JSONTypeException> { outer.getArray(0) }.let {
             expect("Node") { it.nodeName }
             expect("JSONArray") { it.target }
             expect(0) { it.key }
@@ -541,7 +541,7 @@ class JSONStructureTest {
         val outer = JSONObject.build {
             add("inner", 42)
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getObject("inner") }.let {
+        assertFailsWith<JSONTypeException> { outer.getObject("inner") }.let {
             expect("Node") { it.nodeName }
             expect("JSONObject") { it.target }
             expect("inner") { it.key }
@@ -564,7 +564,7 @@ class JSONStructureTest {
         val outer = JSONArray.build {
             add("wrong")
         }
-        assertFailsWith<JSONIncorrectTypeException> { outer.getObject(0) }.let {
+        assertFailsWith<JSONTypeException> { outer.getObject(0) }.let {
             expect("JSONObject") { it.target }
             expect(0) { it.key }
             expect(JSONString("wrong")) { it.value }

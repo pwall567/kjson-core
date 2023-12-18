@@ -76,7 +76,7 @@ class ParserArrayTest {
     @Test fun `should throw exception on trailing comma`() {
         assertFailsWith<ParseException> { Parser.parse("""["simple",]""") }.let {
             expect(ILLEGAL_SYNTAX) { it.text }
-            expect("$ILLEGAL_SYNTAX at /1") { it.message }
+            expect("$ILLEGAL_SYNTAX, at /1") { it.message }
             expect("/1") { it.pointer }
         }
     }
@@ -100,7 +100,7 @@ class ParserArrayTest {
     @Test fun `should throw exception on syntax error`() {
         assertFailsWith<ParseException> { Parser.parse("""[&]""") }.let {
             expect(ILLEGAL_SYNTAX) { it.text }
-            expect("$ILLEGAL_SYNTAX at /0") { it.message }
+            expect("$ILLEGAL_SYNTAX, at /0") { it.message }
             expect("/0") { it.pointer }
         }
     }

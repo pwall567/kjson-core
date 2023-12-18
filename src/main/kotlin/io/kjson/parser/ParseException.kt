@@ -26,11 +26,11 @@
 package io.kjson.parser
 
 import io.kjson.JSONException
+import io.kjson.parser.ParserConstants.rootPointer
 
 /**
  * An exception during the parsing process.
  *
  * @author  Peter Wall
  */
-class ParseException(val text: String, val pointer: String = "") :
-        JSONException(if (pointer.isEmpty()) text else "$text at $pointer")
+class ParseException(val text: String, val pointer: String = rootPointer) : JSONException(text, pointer)

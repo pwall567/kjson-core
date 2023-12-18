@@ -118,7 +118,7 @@ class ParserLinesTest {
 
     @Test fun `should show correct pointer on errors`() {
         assertFailsWith<ParseException> { Parser.parseLines("""{} {"aaa":[xxx]}""") }.let {
-            expect("Illegal JSON syntax at /1/aaa/0") { it.message }
+            expect("Illegal JSON syntax, at /1/aaa/0") { it.message }
             expect("/1/aaa/0") { it.pointer }
         }
     }

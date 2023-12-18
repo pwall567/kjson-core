@@ -1,5 +1,5 @@
 /*
- * @(#) JSONIncorrectTypeException.kt
+ * @(#) JSONTypeException.kt
  *
  * kjson-core  JSON Kotlin core functionality
  * Copyright (c) 2022 Peter Wall
@@ -33,26 +33,9 @@ import io.kjson.JSON.displayValue
  *
  * @author  Peter Wall
  */
-class JSONIncorrectTypeException(
+class JSONTypeException(
     val nodeName: String = "Node",
     val target: String,
     val value: JSONValue?,
     val key: Any? = null,
-) : JSONException("Incorrect Type") {
-
-    private var lazyMessage: String? = null
-
-    override val message: String
-        get() = lazyMessage ?: buildString {
-            append(nodeName)
-            append(" not correct type (")
-            append(target)
-            append("), was ")
-            append(value.displayValue())
-            key?.toString()?.takeIf { it.isNotEmpty() }?.let {
-                append(", at ")
-                append(it)
-            }
-        }.also { lazyMessage = it }
-
-}
+) : JSONException("$nodeName not correct type ($target), was ${value.displayValue()}", key)

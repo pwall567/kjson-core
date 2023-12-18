@@ -245,14 +245,18 @@ the additional functions are optimised for the specific implementation details o
 Error conditions will usually result in a `JSONException` being thrown.
 This is a derived class of `RuntimeException`, and the `message` property will contain a text description of the error.
 
-### `JSONIncorrectTypeException`
+The exception also includes a property `key` (of type `Any?`) which is used to provide information on the location of
+the error, for example a [`JSONPointer`](https://github.com/pwall567/kjson-pointer) or a property name.
+When the key is provided, it will be appended to the message, as "`, at {key}`".
+
+### `JSONTypeException`
 
 A common error case arises when a `JSONValue` is found to be of the wrong type, for example, when a `JSONArray` is
 supplied as a parameter to a function that expects a `JSONObject`, or when a property of an object is a `JSONString`
 when a `JSONInt` was expected.
-The `JSONIncorrectTypeException` provides a way of reporting such errors in a consistent manner, with error messages
-including the human-readable node name, the expected type, the actual value and an optional key (for example, a
-[`JSONPointer`](https://github.com/pwall567/kjson-pointer) to assist in locating the value in error).
+The `JSONTypeException` provides a way of reporting such errors in a consistent manner, with error messages including
+the human-readable node name, the expected type, the actual value and an optional key (as described
+[above](#jsonexception)).
 
 The `JSONIncorrectTypeException` constructor takes the following parameters:
 
@@ -572,25 +576,25 @@ The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram
 
 ## Dependency Specification
 
-The latest version of the library is 5.11, and it may be obtained from the Maven Central repository.
+The latest version of the library is 6.0, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>5.11</version>
+      <version>6.0</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:5.11"
+    implementation "io.kjson:kjson-core:6.0"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:5.11")
+    implementation("io.kjson:kjson-core:6.0")
 ```
 
 Peter Wall
 
-2023-12-02
+2023-12-18

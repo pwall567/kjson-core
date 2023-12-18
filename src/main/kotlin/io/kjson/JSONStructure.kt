@@ -68,67 +68,67 @@ sealed interface JSONStructure<K: Any> : JSONValue {
     fun isNotEmpty(): Boolean = !isEmpty()
 
     /**
-     * Get the nominated value os a [String], or throw a [JSONIncorrectTypeException] if it is of the wrong type.
+     * Get the nominated value os a [String], or throw a [JSONTypeException] if it is of the wrong type.
      */
     fun getString(key: K): String = get(key).asStringOrError(key = key)
 
     /**
-     * Get the nominated value os a [Long], or throw a [JSONIncorrectTypeException] if it is of the wrong type.
+     * Get the nominated value os a [Long], or throw a [JSONTypeException] if it is of the wrong type.
      */
     fun getLong(key: K): Long = get(key).asLongOrError(key = key)
 
     /**
-     * Get the nominated value os a [Int], or throw a [JSONIncorrectTypeException] if it is of the wrong type.
+     * Get the nominated value os a [Int], or throw a [JSONTypeException] if it is of the wrong type.
      */
     fun getInt(key: K): Int = get(key).asIntOrError(key = key)
 
     /**
-     * Get the nominated value os a [Short], or throw a [JSONIncorrectTypeException] if it is of the wrong type.
+     * Get the nominated value os a [Short], or throw a [JSONTypeException] if it is of the wrong type.
      */
     fun getShort(key: K): Short = get(key).asShortOrError(key = key)
 
     /**
-     * Get the nominated value os a [Byte], or throw a [JSONIncorrectTypeException] if it is of the wrong type.
+     * Get the nominated value os a [Byte], or throw a [JSONTypeException] if it is of the wrong type.
      */
     fun getByte(key: K): Byte = get(key).asByteOrError(key = key)
 
     /**
-     * Get the nominated value os a [ULong], or throw a [JSONIncorrectTypeException] if it is of the wrong type.
+     * Get the nominated value os a [ULong], or throw a [JSONTypeException] if it is of the wrong type.
      */
     fun getULong(key: K): ULong = get(key).asULongOrError(key = key)
 
     /**
-     * Get the nominated value os a [UInt], or throw a [JSONIncorrectTypeException] if it is of the wrong type.
+     * Get the nominated value os a [UInt], or throw a [JSONTypeException] if it is of the wrong type.
      */
     fun getUInt(key: K): UInt = get(key).asUIntOrError(key = key)
 
     /**
-     * Get the nominated value os a [UShort], or throw a [JSONIncorrectTypeException] if it is of the wrong type.
+     * Get the nominated value os a [UShort], or throw a [JSONTypeException] if it is of the wrong type.
      */
     fun getUShort(key: K): UShort = get(key).asUShortOrError(key = key)
 
     /**
-     * Get the nominated value os a [UByte], or throw a [JSONIncorrectTypeException] if it is of the wrong type.
+     * Get the nominated value os a [UByte], or throw a [JSONTypeException] if it is of the wrong type.
      */
     fun getUByte(key: K): UByte = get(key).asUByteOrError(key = key)
 
     /**
-     * Get the nominated value os a [BigDecimal], or throw a [JSONIncorrectTypeException] if it is of the wrong type.
+     * Get the nominated value os a [BigDecimal], or throw a [JSONTypeException] if it is of the wrong type.
      */
     fun getDecimal(key: K): BigDecimal = get(key).asDecimalOrError(key = key)
 
     /**
-     * Get the nominated value os a [Boolean], or throw a [JSONIncorrectTypeException] if it is of the wrong type.
+     * Get the nominated value os a [Boolean], or throw a [JSONTypeException] if it is of the wrong type.
      */
     fun getBoolean(key: K): Boolean = get(key).asBooleanOrError(key = key)
 
     /**
-     * Get the nominated value os a [JSONArray], or throw a [JSONIncorrectTypeException] if it is of the wrong type.
+     * Get the nominated value os a [JSONArray], or throw a [JSONTypeException] if it is of the wrong type.
      */
     fun getArray(key: K): JSONArray = get(key).asArrayOrError(key = key)
 
     /**
-     * Get the nominated value os a [JSONObject], or throw a [JSONIncorrectTypeException] if it is of the wrong type.
+     * Get the nominated value os a [JSONObject], or throw a [JSONTypeException] if it is of the wrong type.
      */
     fun getObject(key: K): JSONObject = get(key).asObjectOrError(key = key)
 

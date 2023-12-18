@@ -199,7 +199,7 @@ object Parser {
                         return JSONInt.of(result.toInt())
                     return JSONLong.of(result)
                 }
-                catch (ignore: NumberFormatException) {
+                catch (_: NumberFormatException) {
                     // too big for long - drop through to BigDecimal
                 }
             }

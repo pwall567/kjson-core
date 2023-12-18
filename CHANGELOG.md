@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [6.0] - 2023-12-19
+### Changed
+- `JSONException`, `JSONIncorrectTypeException` (renamed `JSONTypeException`): simplified exceptions
+
 ## [5.11] - 2023-12-02
 ### Changed
 - `pom.xml`: updated dependency versions
