@@ -187,15 +187,13 @@ class JSONTest {
 
     @Test fun `should return displayValue for array`() {
         expect("[]") { JSONArray.EMPTY.displayValue() }
-        expect("[123]") { JSONArray.of(JSONInt(123)).displayValue() }
-        expect("[\"Hello\"]") { JSONArray.of(JSONString("Hello")).displayValue() }
+        expect("[ ... ]") { JSONArray.of(JSONString("Hello")).displayValue() }
         expect("[ ... ]") { JSONArray.of(JSONInt(123), JSONInt(456)).displayValue() }
     }
 
     @Test fun `should return displayValue for object`() {
         expect("{}") { JSONObject.EMPTY.displayValue() }
-        expect("""{"abc":123}""") { JSONObject.of("abc" to JSONInt(123)).displayValue() }
-        expect("""{"greeting":"Hello"}""") { JSONObject.of("greeting" to JSONString("Hello")).displayValue() }
+        expect("{ ... }") { JSONObject.of("abc" to JSONInt(123)).displayValue() }
         expect("{ ... }") { JSONObject.of("abc" to JSONInt(123), "def" to JSONInt(456)).displayValue() }
     }
 
@@ -337,7 +335,7 @@ class JSONTest {
             expect("String") { it.target }
             assertNull(it.key)
             expect(jsonArray) { it.value }
-            expect("Node not correct type (String), was [\"Testing\"]") { it.message }
+            expect("Node not correct type (String), was [ ... ]") { it.message }
         }
     }
 
@@ -386,7 +384,7 @@ class JSONTest {
             expect("Int") { it.target }
             assertNull(it.key)
             expect(jsonArray) { it.value }
-            expect("Node not correct type (Int), was [\"Testing\"]") { it.message }
+            expect("Node not correct type (Int), was [ ... ]") { it.message }
         }
         val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
         assertNull(jsonDecimal.asIntOrNull)
@@ -442,7 +440,7 @@ class JSONTest {
             expect("Long") { it.target }
             assertNull(it.key)
             expect(jsonObject) { it.value }
-            expect("Node not correct type (Long), was {\"name\":\"value\"}") { it.message }
+            expect("Node not correct type (Long), was { ... }") { it.message }
         }
         val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
         assertNull(jsonDecimal.asLongOrNull)
@@ -500,7 +498,7 @@ class JSONTest {
             expect("Short") { it.target }
             assertNull(it.key)
             expect(jsonArray) { it.value }
-            expect("Node not correct type (Short), was [\"Testing\"]") { it.message }
+            expect("Node not correct type (Short), was [ ... ]") { it.message }
         }
         val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
         assertNull(jsonDecimal.asShortOrNull)
@@ -558,7 +556,7 @@ class JSONTest {
             expect("Byte") { it.target }
             assertNull(it.key)
             expect(jsonArray) { it.value }
-            expect("Node not correct type (Byte), was [\"Testing\"]") { it.message }
+            expect("Node not correct type (Byte), was [ ... ]") { it.message }
         }
         val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
         assertNull(jsonDecimal.asByteOrNull)
@@ -616,7 +614,7 @@ class JSONTest {
             expect("ULong") { it.target }
             assertNull(it.key)
             expect(jsonArray) { it.value }
-            expect("Node not correct type (ULong), was [\"Testing\"]") { it.message }
+            expect("Node not correct type (ULong), was [ ... ]") { it.message }
         }
         val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
         assertNull(jsonDecimal.asULongOrNull)
@@ -683,7 +681,7 @@ class JSONTest {
             expect("UInt") { it.target }
             assertNull(it.key)
             expect(jsonArray) { it.value }
-            expect("Node not correct type (UInt), was [\"Testing\"]") { it.message }
+            expect("Node not correct type (UInt), was [ ... ]") { it.message }
         }
         val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
         assertNull(jsonDecimal.asUIntOrNull)
@@ -750,7 +748,7 @@ class JSONTest {
             expect("UShort") { it.target }
             assertNull(it.key)
             expect(jsonArray) { it.value }
-            expect("Node not correct type (UShort), was [\"Testing\"]") { it.message }
+            expect("Node not correct type (UShort), was [ ... ]") { it.message }
         }
         val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
         assertNull(jsonDecimal.asUShortOrNull)
@@ -817,7 +815,7 @@ class JSONTest {
             expect("UByte") { it.target }
             assertNull(it.key)
             expect(jsonArray) { it.value }
-            expect("Node not correct type (UByte), was [\"Testing\"]") { it.message }
+            expect("Node not correct type (UByte), was [ ... ]") { it.message }
         }
         val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
         assertNull(jsonDecimal.asUByteOrNull)
@@ -883,7 +881,7 @@ class JSONTest {
             expect("BigDecimal") { it.target }
             assertNull(it.key)
             expect(jsonObject) { it.value }
-            expect("Node not correct type (BigDecimal), was {\"name\":\"value\"}") { it.message }
+            expect("Node not correct type (BigDecimal), was { ... }") { it.message }
         }
     }
 

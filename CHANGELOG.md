@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [6.1] - 2023-12-20
+### Changed
+- `JSON`: simplified `displayValue()` function
+
 ## [6.0] - 2023-12-19
 ### Changed
 - `JSONException`, `JSONIncorrectTypeException` (renamed `JSONTypeException`): simplified exceptions

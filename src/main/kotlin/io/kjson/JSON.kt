@@ -154,16 +154,8 @@ object JSON {
     fun JSONValue?.displayValue(maxString: Int = 21): String = when (this) {
         null -> "null"
         is JSONString -> displayString(value, maxString)
-        is JSONArray -> when (size) {
-            0 -> "[]"
-            1 -> "[${this[0].displayValue()}]"
-            else -> "[ ... ]"
-        }
-        is JSONObject -> when (size) {
-            0 -> "{}"
-            1 -> entries.iterator().next().let { "{${displayString(it.key, maxString)}:${it.value.displayValue()}}" }
-            else -> "{ ... }"
-        }
+        is JSONArray -> if (isEmpty()) "[]" else "[ ... ]"
+        is JSONObject -> if (isEmpty()) "{}" else "{ ... }"
         else -> toString()
     }
 
