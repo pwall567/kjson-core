@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [6.2] - 2024-01-01
+### Changed
+- `JSONException`: ensure `message` is always non-null
+
 ## [6.1] - 2023-12-20
 ### Changed
 - `JSON`: simplified `displayValue()` function
