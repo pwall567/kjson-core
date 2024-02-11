@@ -2,7 +2,7 @@
  * @(#) JSONObjectTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -61,6 +61,42 @@ class JSONObjectTest {
         assertFalse(jsonObject.isNotEmpty())
     }
 
+    @Test fun `should create JSONObject using from Map`() {
+        val map = mapOf<String, JSONValue?>("abc" to JSONInt(12345), "def" to JSONString("X"))
+        val jsonObject = JSONObject.from(map)
+        expect(2) { jsonObject.size }
+        expect(JSONInt(12345)) { jsonObject["abc"] }
+        expect(JSONString("X")) { jsonObject["def"] }
+        expect("""{"abc":12345,"def":"X"}""") { jsonObject.toJSON() }
+        expect("""{"abc":12345,"def":"X"}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should create JSONObject using from List`() {
+        val list = listOf<Pair<String, JSONValue?>>("abc" to JSONInt(12345), "def" to JSONString("X"))
+        val jsonObject = JSONObject.from(list)
+        expect(2) { jsonObject.size }
+        expect(JSONInt(12345)) { jsonObject["abc"] }
+        expect(JSONString("X")) { jsonObject["def"] }
+        expect("""{"abc":12345,"def":"X"}""") { jsonObject.toJSON() }
+        expect("""{"abc":12345,"def":"X"}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should create JSONObject using fromProperties`() {
+        val properties = listOf(JSONProperty("abc", JSONInt(12345)), JSONProperty("def", JSONString("X")))
+        val jsonObject = JSONObject.fromProperties(properties)
+        expect(2) { jsonObject.size }
+        expect(JSONInt(12345)) { jsonObject["abc"] }
+        expect(JSONString("X")) { jsonObject["def"] }
+        expect("""{"abc":12345,"def":"X"}""") { jsonObject.toJSON() }
+        expect("""{"abc":12345,"def":"X"}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
     @Test fun `should build JSONObject using Builder`() {
         val json = JSONObject.Builder {
             add("first", JSONInt(123))
@@ -77,6 +113,16 @@ class JSONObjectTest {
         val json = JSONObject.build {
             add("first", JSONInt(123))
             add("second", JSONString("dummy"))
+        }
+        expect(2) { json.size }
+        expect(JSONInt(123)) { json["first"] }
+        expect(JSONString("dummy")) { json["second"] }
+    }
+
+    @Test fun `should build JSONObject using build and JSONProperty`() {
+        val json = JSONObject.build {
+            add(JSONProperty("first", JSONInt(123)))
+            add(JSONProperty("second", JSONString("dummy")))
         }
         expect(2) { json.size }
         expect(JSONInt(123)) { json["first"] }
@@ -283,6 +329,42 @@ class JSONObjectTest {
                 2 -> expect(JSONLong(123456789123456789)) { it }
                 3 -> expect(JSONDecimal("0.123")) { it }
                 4 -> expect(JSONBoolean.TRUE) { it }
+            }
+        }
+        expect(5) { count }
+    }
+
+    @Test fun `should iterate over object as List`() {
+        val json = JSONObject.build {
+            add("first", 123)
+            add("second", "dummy")
+            add("third", 123456789123456789)
+            add("fourth", BigDecimal("0.123"))
+            add("fifth", true)
+        }
+        var count = 0
+        for (property in json) {
+            when (count++) {
+                0 -> {
+                    expect("first") { property.name }
+                    expect(JSONInt(123)) { property.value }
+                }
+                1 -> {
+                    expect("second") { property.name }
+                    expect(JSONString("dummy")) { property.value }
+                }
+                2 -> {
+                    expect("third") { property.name }
+                    expect(JSONLong(123456789123456789)) { property.value }
+                }
+                3 -> {
+                    expect("fourth") { property.name }
+                    expect(JSONDecimal("0.123")) { property.value }
+                }
+                4 -> {
+                    expect("fifth") { property.name }
+                    expect(JSONBoolean.TRUE) { property.value }
+                }
             }
         }
         expect(5) { count }

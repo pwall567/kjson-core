@@ -2,6 +2,12 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [7.0] - 2024-02-10
+### Added
+- `JSONProperty`: `typealias` for the `JSONObject` map entry
+### Changed
+- `JSONObject`: changed to also implement `List` (as well as `Map`) to allow simple iteration over properties
+
 ## [6.2] - 2024-01-01
 ### Changed
 - `JSONException`: ensure `message` is always non-null

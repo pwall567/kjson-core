@@ -2,7 +2,7 @@
  * @(#) JSONObject.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,8 +35,8 @@ import io.kjson.util.AbstractBuilder
 import net.pwall.json.JSONCoFunctions.outputString
 import net.pwall.json.JSONFunctions
 import net.pwall.util.CoOutput
+import net.pwall.util.ImmutableCollection
 import net.pwall.util.ImmutableMap
-import net.pwall.util.ImmutableMapEntry
 import net.pwall.util.output
 
 /**
@@ -44,10 +44,22 @@ import net.pwall.util.output
  *
  * @author  Peter Wall
  */
-class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSONValue?>?>, override val size: Int) :
-        JSONStructure<String>, Map<String, JSONValue?> {
+class JSONObject internal constructor(private val array: Array<JSONProperty>, override val size: Int) :
+        JSONStructure<String>, Map<String, JSONValue?>, List<JSONProperty> {
 
     private val immutableMap = ImmutableMap<String, JSONValue?>(array, size)
+
+    /** A [Set] of the [Map.Entry] objects in the object. */
+    override val entries: Set<Map.Entry<String, JSONValue?>>
+        get() = immutableMap.entries
+
+    /** A [Set] of the keys (property names) in the object. */
+    override val keys: Set<String>
+        get() = immutableMap.keys
+
+    /** A [Collection] of the property values in the object. */
+    override val values: Collection<JSONValue?>
+        get() = immutableMap.values
 
     /**
      * Append as a JSON string to an [Appendable].
@@ -57,10 +69,10 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
         if (isNotEmpty()) {
             var i = 0
             while (true) {
-                val entry = immutableMap.getEntry(i)
-                JSONFunctions.appendString(a, entry.key, false)
+                val property = array[i]
+                JSONFunctions.appendString(a, property.key, false)
                 a.append(':')
-                entry.value.appendTo(a)
+                property.value.appendTo(a)
                 if (++i >= size)
                     break
                 a.append(',')
@@ -82,10 +94,10 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
         if (isNotEmpty()) {
             var i = 0
             while (true) {
-                val entry = immutableMap.getEntry(i)
-                JSONFunctions.outputString(entry.key, false, out)
+                val property = array[i]
+                JSONFunctions.outputString(property.key, false, out)
                 out.accept(':'.code)
-                entry.value.output(out)
+                property.value.output(out)
                 if (++i >= size)
                     break
                 out.accept(','.code)
@@ -102,10 +114,10 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
         if (isNotEmpty()) {
             var i = 0
             while (true) {
-                val entry = immutableMap.getEntry(i)
-                out.outputString(entry.key, false)
+                val property = array[i]
+                out.outputString(property.key, false)
                 out.output(':')
-                entry.value.coOutput(out)
+                property.value.coOutput(out)
                 if (++i >= size)
                     break
                 out.output(',')
@@ -119,24 +131,6 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
      */
     @Suppress("ReplaceSizeZeroCheckWithIsEmpty")
     override fun isEmpty(): Boolean = size == 0
-
-    /**
-     * Get a [Set] of the [Map.Entry] objects in the object.
-     */
-    override val entries: Set<Map.Entry<String, JSONValue?>>
-        get() = immutableMap.entries
-
-    /**
-     * Get a [Set] of the keys (property names) in the object.
-     */
-    override val keys: Set<String>
-        get() = immutableMap.keys
-
-    /**
-     * Get a [Collection] of the property values in the object.
-     */
-    override val values: Collection<JSONValue?>
-        get() = immutableMap.values
 
     /**
      * Return `true` if the object contains the specified key (property name).
@@ -159,7 +153,7 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
      */
     fun forEachEntry(func: (String, JSONValue?) -> Unit) {
         repeat(size) {
-            val entry = immutableMap.getEntry(it)
+            val entry = array[it]
             func(entry.key, entry.value)
         }
     }
@@ -168,7 +162,7 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
      * Perform a function with each property name in turn (the function takes a single parameters, the name [String]).
      */
     fun forEachKey(func: (String) -> Unit) {
-        repeat(size) { func(immutableMap.getKey(it)) }
+        repeat(size) { func(array[it].key) }
     }
 
     /**
@@ -176,7 +170,7 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
      * [JSONValue]`?`).
      */
     fun forEachValue(func: (JSONValue?) -> Unit) {
-        repeat(size) { func(immutableMap.getValue(it)) }
+        repeat(size) { func(array[it].value) }
     }
 
     /**
@@ -205,6 +199,80 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
     val asObjectOrNull: JSONObject
         get() = this
 
+    // List functions
+
+    /**
+     * Get an iterator over the object [JSONProperty]s.
+     */
+    @Suppress("unchecked_cast")
+    override fun iterator(): Iterator<JSONProperty> = immutableMap.iterator() as Iterator<JSONProperty>
+
+    /**
+     * Get a [kotlin.collections.ListIterator] over the object [JSONProperty]s.
+     */
+    override fun listIterator(): kotlin.collections.ListIterator<JSONProperty> = ListIterator(array, size)
+
+    /**
+     * Get a [kotlin.collections.ListIterator] over the object [JSONProperty]s, specifying the start index.
+     */
+    override fun listIterator(index: Int): kotlin.collections.ListIterator<JSONProperty> =
+            ListIterator(array, size, index)
+
+    /**
+     * Get a `JSONObject` containing the set of properties bounded by `fromIndex` (inclusive) and `toIndex` (exclusive).
+     */
+    override fun subList(fromIndex: Int, toIndex: Int): JSONObject {
+        if (fromIndex == 0 && toIndex == size)
+            return this
+        if (fromIndex < 0 || toIndex > size || toIndex < fromIndex)
+            throw IndexOutOfBoundsException()
+        val newSize = toIndex - fromIndex
+        if (newSize == 0)
+            return EMPTY
+        return JSONObject(array.copyOfRange(fromIndex, toIndex), newSize)
+    }
+
+    /**
+     * Get the index of the last occurrence of the specified [JSONProperty], or -1 if the entry is not found.
+     */
+    override fun lastIndexOf(element: JSONProperty): Int {
+        var index = size
+        while (--index > 0)
+            if (array[index] == element)
+                return index
+        return -1
+    }
+
+    /**
+     * Return `true` if the object contains the nominated entry.
+     */
+    override fun contains(element: JSONProperty): Boolean = ImmutableCollection.contains(array, size, element)
+
+    /**
+     * Return `true` if the object contains all of the entries in another collection.
+     */
+    override fun containsAll(elements: Collection<JSONProperty>): Boolean = elements.all { contains(it) }
+
+    /**
+     * Get the [JSONProperty] at the nominated index.
+     */
+    override fun get(index: Int): JSONProperty {
+        if (index >= size)
+            throw IndexOutOfBoundsException(index.toString())
+        return array[index]
+    }
+
+    /**
+     * Get the index of the first occurrence of the specified [JSONProperty], or -1 if the entry is not found.
+     */
+    override fun indexOf(element: JSONProperty): Int {
+        var index = 0
+        while (index < size)
+            if (array[index++] == element)
+                return index
+        return -1
+    }
+
     companion object {
 
         /** An empty [JSONObject]. */
@@ -214,15 +282,15 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
          * Create a [JSONObject] from a `vararg` list of map entries.
          */
         fun of(vararg items: Pair<String, JSONValue?>): JSONObject =
-            if (items.isEmpty()) EMPTY else Array<ImmutableMapEntry<String, JSONValue?>?>(items.size) { i ->
-                items[i].let { ImmutableMap.entry(it.first, it.second) }
+            if (items.isEmpty()) EMPTY else Array(items.size) { i ->
+                items[i].let { JSONProperty(it.first, it.second) }
             }.let { JSONObject(it, it.size) }
 
         /**
          * Create a [JSONObject] from a [Map].
          */
-        fun from(map: Map<String, JSONValue?>): JSONObject =
-            if (map.isEmpty()) EMPTY else map.entries.map { ImmutableMap.entry(it.key, it.value) }.toTypedArray().let {
+        fun from(map: Map<String, JSONValue?>): JSONObject = if (map.isEmpty()) EMPTY else
+            map.entries.map { JSONProperty(it.key, it.value) }.toTypedArray().let {
                 JSONObject(it, it.size)
             }
 
@@ -230,9 +298,15 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
          * Create a [JSONObject] from a [List] of [Pair]s of name and value.
          */
         fun from(list: List<Pair<String, JSONValue?>>): JSONObject =
-            if (list.isEmpty()) EMPTY else Array<ImmutableMapEntry<String, JSONValue?>?>(list.size) { i ->
-                list[i].let { ImmutableMap.entry(it.first, it.second) }
+            if (list.isEmpty()) EMPTY else Array(list.size) { i ->
+                list[i].let { JSONProperty(it.first, it.second) }
             }.let { JSONObject(it, it.size) }
+
+        /**
+         * Create a [JSONObject] from a [List] of [JSONProperty].
+         */
+        fun fromProperties(list: List<JSONProperty>): JSONObject =
+            if (list.isEmpty()) EMPTY else JSONObject(list.toTypedArray(), list.size)
 
         /**
          * Create a [JSONObject] by applying the supplied [block] to a [Builder], and then taking the result.
@@ -244,8 +318,7 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
     /**
      * [JSONObject] builder class.
      */
-    class Builder(size: Int = 8, block: Builder.() -> Unit = {}) :
-            AbstractBuilder<ImmutableMapEntry<String, JSONValue?>>(ImmutableMap.createArray(size)) {
+    class Builder(size: Int = 8, block: Builder.() -> Unit = {}) : AbstractBuilder<JSONProperty>(Array(size) { null }) {
 
         init {
             block()
@@ -259,11 +332,21 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
         /**
          * Add a [JSONValue] with the specified name.
          */
+        fun add(property: JSONProperty) {
+            // TODO consider configuration to allow duplicates
+            if (containsKey(property.key))
+                throw JSONException("Duplicate key - ${property.key}")
+            internalAdd(property)
+        }
+
+        /**
+         * Add a [JSONValue] with the specified name.
+         */
         fun add(name: String, value: JSONValue?) {
             // TODO consider configuration to allow duplicates
             if (containsKey(name))
                 throw JSONException("Duplicate key - $name")
-            internalAdd(ImmutableMap.entry(name, value))
+            internalAdd(JSONProperty(name, value))
         }
 
         /**
@@ -324,9 +407,59 @@ class JSONObject internal constructor(array: Array<ImmutableMapEntry<String, JSO
         /**
          * Build a [JSONObject] with the entries added.
          */
+        @Suppress("unchecked_cast")
         override fun build(): JSONObject = checkArray().let {
-            (if (size == 0) EMPTY else JSONObject(it, size)).also { invalidate() }
+            (if (size == 0) EMPTY else JSONObject(it as Array<JSONProperty>, size)).also { invalidate() }
         }
+
+    }
+
+    /**
+     * [kotlin.collections.ListIterator] implementation for [JSONObject].
+     */
+    internal class ListIterator(
+        private val array: Array<JSONProperty>,
+        private val size: Int,
+        initialIndex: Int = 0,
+    ) : kotlin.collections.ListIterator<JSONProperty> {
+
+        private var index = initialIndex
+
+        /**
+         * Test whether iterator has any more elements.
+         */
+        override fun hasNext(): Boolean = index < size
+
+        /**
+         * Get the next element referenced by this iterator.
+         */
+        override fun next(): JSONProperty = if (hasNext())
+            array[index++]
+        else
+            throw NoSuchElementException(index.toString())
+
+        /**
+         * Test whether the iterator has any preceding elements.
+         */
+        override fun hasPrevious(): Boolean = index > 0
+
+        /**
+         * Get the preceding element referenced by this iterator.
+         */
+        override fun previous(): JSONProperty = if (hasPrevious())
+            array[--index]
+        else
+            throw NoSuchElementException(previousIndex().toString())
+
+        /**
+         * Get the index of the "next" element.
+         */
+        override fun nextIndex(): Int = index
+
+        /**
+         * Get the preceding element referenced by this iterator.
+         */
+        override fun previousIndex(): Int = index - 1
 
     }
 
