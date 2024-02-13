@@ -86,7 +86,10 @@ class JSONObjectTest {
     }
 
     @Test fun `should create JSONObject using fromProperties`() {
-        val properties = listOf(JSONProperty("abc", JSONInt(12345)), JSONProperty("def", JSONString("X")))
+        val properties = listOf(
+            JSONObject.Property("abc", JSONInt(12345)),
+            JSONObject.Property("def", JSONString("X")),
+        )
         val jsonObject = JSONObject.fromProperties(properties)
         expect(2) { jsonObject.size }
         expect(JSONInt(12345)) { jsonObject["abc"] }
@@ -119,10 +122,10 @@ class JSONObjectTest {
         expect(JSONString("dummy")) { json["second"] }
     }
 
-    @Test fun `should build JSONObject using build and JSONProperty`() {
+    @Test fun `should build JSONObject using build and Property`() {
         val json = JSONObject.build {
-            add(JSONProperty("first", JSONInt(123)))
-            add(JSONProperty("second", JSONString("dummy")))
+            add(JSONObject.Property("first", JSONInt(123)))
+            add(JSONObject.Property("second", JSONString("dummy")))
         }
         expect(2) { json.size }
         expect(JSONInt(123)) { json["first"] }
@@ -159,6 +162,18 @@ class JSONObjectTest {
         assertFailsWith<JSONException> { builder.build() }.let {
             expect("Builder is closed") { it.message }
         }
+    }
+
+    @Test fun `should correctly report containsKey`() {
+        assertTrue(simpleObject.containsKey("abc"))
+        assertFalse(simpleObject.containsKey("xyz"))
+    }
+
+    @Test fun `should correctly report containsValue`() {
+        assertTrue(mixedObject.containsValue(JSONInt(123)))
+        assertFalse(mixedObject.containsValue(JSONInt(456)))
+        assertFalse(mixedObject.containsValue(null))
+        assertTrue(mixedObjectWithNull.containsValue(null))
     }
 
     @Test fun `should compare to other Map`() {
@@ -207,12 +222,19 @@ class JSONObjectTest {
         }
     }
 
+    @Test fun `should output JSONObject using appendTo`() {
+        val string = buildString {
+            simpleObject.appendTo(this)
+        }
+        expect("""{"abc":12345,"def":"X"}""") { string }
+    }
+
     @Test fun `should format JSONObject using output`() {
         val capture = OutputCapture(64)
         JSONObject.EMPTY.output(capture)
         expect("{}") { capture.toString() }
         capture.reset()
-        JSONObject.of("abc" to JSONInt(12345), "def" to JSONString("X")).output(capture)
+        simpleObject.output(capture)
         expect("""{"abc":12345,"def":"X"}""") { capture.toString() }
     }
 
@@ -221,7 +243,7 @@ class JSONObjectTest {
         JSONObject.EMPTY.coOutput(capture)
         expect("{}") { capture.toString() }
         capture.reset()
-        JSONObject.of("abc" to JSONInt(12345), "def" to JSONString("X")).coOutput(capture)
+        simpleObject.coOutput(capture)
         expect("""{"abc":12345,"def":"X"}""") { capture.toString() }
     }
 
@@ -257,15 +279,8 @@ class JSONObjectTest {
     }
 
     @Test fun `should iterate over object entries`() {
-        val json = JSONObject.build {
-            add("first", 123)
-            add("second", "dummy")
-            add("third", 123456789123456789)
-            add("fourth", BigDecimal("0.123"))
-            add("fifth", true)
-        }
         var count = 0
-        json.forEachEntry { k, v ->
+        mixedObject.forEachEntry { k, v ->
             when (count++) {
                 0 -> {
                     expect("first") { k }
@@ -293,15 +308,8 @@ class JSONObjectTest {
     }
 
     @Test fun `should iterate over object keys`() {
-        val json = JSONObject.build {
-            add("first", 123)
-            add("second", "dummy")
-            add("third", 123456789123456789)
-            add("fourth", BigDecimal("0.123"))
-            add("fifth", true)
-        }
         var count = 0
-        json.forEachKey {
+        mixedObject.forEachKey {
             when (count++) {
                 0 -> expect("first") { it }
                 1 -> expect("second") { it }
@@ -314,15 +322,8 @@ class JSONObjectTest {
     }
 
     @Test fun `should iterate over object values`() {
-        val json = JSONObject.build {
-            add("first", 123)
-            add("second", "dummy")
-            add("third", 123456789123456789)
-            add("fourth", BigDecimal("0.123"))
-            add("fifth", true)
-        }
         var count = 0
-        json.forEachValue {
+        mixedObject.forEachValue {
             when (count++) {
                 0 -> expect(JSONInt(123)) { it }
                 1 -> expect(JSONString("dummy")) { it }
@@ -335,15 +336,8 @@ class JSONObjectTest {
     }
 
     @Test fun `should iterate over object as List`() {
-        val json = JSONObject.build {
-            add("first", 123)
-            add("second", "dummy")
-            add("third", 123456789123456789)
-            add("fourth", BigDecimal("0.123"))
-            add("fifth", true)
-        }
         var count = 0
-        for (property in json) {
+        for (property in mixedObject) {
             when (count++) {
                 0 -> {
                     expect("first") { property.name }
@@ -368,6 +362,140 @@ class JSONObjectTest {
             }
         }
         expect(5) { count }
+    }
+
+    @Test fun `should iterate over object using ListIterator`() {
+        val iterator = mixedObject.listIterator()
+        assertTrue(iterator.hasNext())
+        assertFalse(iterator.hasPrevious())
+        with(iterator.next()) {
+            expect("first") { name }
+            expect(JSONInt(123)) { value }
+        }
+        assertTrue(iterator.hasNext())
+        assertTrue(iterator.hasPrevious())
+        with(iterator.next()) {
+            expect("second") { name }
+            expect(JSONString("dummy")) { value }
+        }
+        assertTrue(iterator.hasNext())
+        assertTrue(iterator.hasPrevious())
+        with(iterator.next()) {
+            expect("third") { name }
+            expect(JSONLong(123456789123456789)) { value }
+        }
+        assertTrue(iterator.hasNext())
+        assertTrue(iterator.hasPrevious())
+        with(iterator.next()) {
+            expect("fourth") { name }
+            expect(JSONDecimal("0.123")) { value }
+        }
+        assertTrue(iterator.hasNext())
+        assertTrue(iterator.hasPrevious())
+        with(iterator.next()) {
+            expect("fifth") { name }
+            expect(JSONBoolean.TRUE) { value }
+        }
+        assertFalse(iterator.hasNext())
+        assertTrue(iterator.hasPrevious())
+        with(iterator.previous()) {
+            expect("fifth") { name }
+            expect(JSONBoolean.TRUE) { value }
+        }
+        assertTrue(iterator.hasNext())
+        assertTrue(iterator.hasPrevious())
+        with(iterator.previous()) {
+            expect("fourth") { name }
+            expect(JSONDecimal("0.123")) { value }
+        }
+        assertTrue(iterator.hasNext())
+        assertTrue(iterator.hasPrevious())
+        with(iterator.previous()) {
+            expect("third") { name }
+            expect(JSONLong(123456789123456789)) { value }
+        }
+        assertTrue(iterator.hasNext())
+        assertTrue(iterator.hasPrevious())
+        with(iterator.previous()) {
+            expect("second") { name }
+            expect(JSONString("dummy")) { value }
+        }
+        assertTrue(iterator.hasNext())
+        assertTrue(iterator.hasPrevious())
+        with(iterator.previous()) {
+            expect("first") { name }
+            expect(JSONInt(123)) { value }
+        }
+        assertTrue(iterator.hasNext())
+        assertFalse(iterator.hasPrevious())
+    }
+
+    @Test fun `should iterate over object using ListIterator with start index`() {
+        val iterator = mixedObject.listIterator(1)
+        assertTrue(iterator.hasNext())
+        assertTrue(iterator.hasPrevious())
+        with(iterator.previous()) {
+            expect("first") { name }
+            expect(JSONInt(123)) { value }
+        }
+        assertTrue(iterator.hasNext())
+        assertFalse(iterator.hasPrevious())
+    }
+
+    @Test fun `should not iterate over empty object using ListIterator`() {
+        val iterator = JSONObject.EMPTY.listIterator(1)
+        assertFalse(iterator.hasNext())
+        assertTrue(iterator.hasPrevious())
+    }
+
+    @Test fun `should create subset object using subList`() {
+        val sub = mixedObject.subList(2, 4)
+        expect(2) { sub.size }
+        with(sub[0]) {
+            expect("third") { name }
+            expect(JSONLong(123456789123456789)) { value }
+        }
+        with(sub[1]) {
+            expect("fourth") { name }
+            expect(JSONDecimal("0.123")) { value }
+        }
+    }
+
+    @Test fun `should create Property`() {
+        val property = JSONObject.Property("propertyName", JSONInt(12345))
+        expect("propertyName") { property.name }
+        expect(JSONInt(12345)) { property.value }
+        expect("propertyName=12345") { property.toString() }
+    }
+
+    @Test fun `should allow destructuring operations on Property`() {
+        val property = JSONObject.Property("propertyName", JSONInt(12345))
+        val (aaa, bbb) = property
+        expect("propertyName") { aaa }
+        expect(JSONInt(12345)) { bbb }
+    }
+
+    companion object {
+
+        val simpleObject = JSONObject.of("abc" to JSONInt(12345), "def" to JSONString("X"))
+
+        val mixedObject = JSONObject.build {
+            add("first", 123)
+            add("second", "dummy")
+            add("third", 123456789123456789)
+            add("fourth", BigDecimal("0.123"))
+            add("fifth", true)
+        }
+
+        val mixedObjectWithNull = JSONObject.build {
+            add("first", 123)
+            add("second", "dummy")
+            add("third", 123456789123456789)
+            add("fourth", BigDecimal("0.123"))
+            add("fifth", true)
+            add("sixth", null)
+        }
+
     }
 
 }

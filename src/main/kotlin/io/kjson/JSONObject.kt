@@ -37,6 +37,7 @@ import net.pwall.json.JSONFunctions
 import net.pwall.util.CoOutput
 import net.pwall.util.ImmutableCollection
 import net.pwall.util.ImmutableMap
+import net.pwall.util.ImmutableMapEntry
 import net.pwall.util.output
 
 /**
@@ -44,8 +45,8 @@ import net.pwall.util.output
  *
  * @author  Peter Wall
  */
-class JSONObject internal constructor(private val array: Array<JSONProperty>, override val size: Int) :
-        JSONStructure<String>, Map<String, JSONValue?>, List<JSONProperty> {
+class JSONObject internal constructor(private val array: Array<Property>, override val size: Int) :
+        JSONStructure<String>, Map<String, JSONValue?>, List<JSONObject.Property> {
 
     private val immutableMap = ImmutableMap<String, JSONValue?>(array, size)
 
@@ -202,24 +203,24 @@ class JSONObject internal constructor(private val array: Array<JSONProperty>, ov
     // List functions
 
     /**
-     * Get an iterator over the object [JSONProperty]s.
+     * Get an iterator over the object [Property]s.
      */
     @Suppress("unchecked_cast")
-    override fun iterator(): Iterator<JSONProperty> = immutableMap.iterator() as Iterator<JSONProperty>
+    override fun iterator(): Iterator<Property> = immutableMap.iterator() as Iterator<Property>
 
     /**
-     * Get a [kotlin.collections.ListIterator] over the object [JSONProperty]s.
+     * Get a [kotlin.collections.ListIterator] over the object [Property]s.
      */
-    override fun listIterator(): kotlin.collections.ListIterator<JSONProperty> = ListIterator(array, size)
+    override fun listIterator(): kotlin.collections.ListIterator<Property> = ListIterator(array, size)
 
     /**
-     * Get a [kotlin.collections.ListIterator] over the object [JSONProperty]s, specifying the start index.
+     * Get a [kotlin.collections.ListIterator] over the object [Property]s, specifying the start index.
      */
-    override fun listIterator(index: Int): kotlin.collections.ListIterator<JSONProperty> =
-            ListIterator(array, size, index)
+    override fun listIterator(index: Int): kotlin.collections.ListIterator<Property> = ListIterator(array, size, index)
 
     /**
-     * Get a `JSONObject` containing the set of properties bounded by `fromIndex` (inclusive) and `toIndex` (exclusive).
+     * Get a `JSONObject` containing the set of [Property]s bounded by `fromIndex` (inclusive) and `toIndex`
+     * (exclusive).
      */
     override fun subList(fromIndex: Int, toIndex: Int): JSONObject {
         if (fromIndex == 0 && toIndex == size)
@@ -233,9 +234,9 @@ class JSONObject internal constructor(private val array: Array<JSONProperty>, ov
     }
 
     /**
-     * Get the index of the last occurrence of the specified [JSONProperty], or -1 if the entry is not found.
+     * Get the index of the last occurrence of the specified [Property], or -1 if the [Property] is not found.
      */
-    override fun lastIndexOf(element: JSONProperty): Int {
+    override fun lastIndexOf(element: Property): Int {
         var index = size
         while (--index > 0)
             if (array[index] == element)
@@ -244,33 +245,43 @@ class JSONObject internal constructor(private val array: Array<JSONProperty>, ov
     }
 
     /**
-     * Return `true` if the object contains the nominated entry.
+     * Return `true` if the object contains the nominated [Property].
      */
-    override fun contains(element: JSONProperty): Boolean = ImmutableCollection.contains(array, size, element)
+    override fun contains(element: Property): Boolean = ImmutableCollection.contains(array, size, element)
 
     /**
-     * Return `true` if the object contains all of the entries in another collection.
+     * Return `true` if the object contains all of the [Property]s in another collection.
      */
-    override fun containsAll(elements: Collection<JSONProperty>): Boolean = elements.all { contains(it) }
+    override fun containsAll(elements: Collection<Property>): Boolean = elements.all { contains(it) }
 
     /**
-     * Get the [JSONProperty] at the nominated index.
+     * Get the [Property] at the nominated index.
      */
-    override fun get(index: Int): JSONProperty {
+    override fun get(index: Int): Property {
         if (index >= size)
             throw IndexOutOfBoundsException(index.toString())
         return array[index]
     }
 
     /**
-     * Get the index of the first occurrence of the specified [JSONProperty], or -1 if the entry is not found.
+     * Get the index of the first occurrence of the specified [Property], or -1 if the [Property] is not found.
      */
-    override fun indexOf(element: JSONProperty): Int {
+    override fun indexOf(element: Property): Int {
         var index = 0
         while (index < size)
             if (array[index++] == element)
                 return index
         return -1
+    }
+
+    /**
+     * A class to represent a property (name-value pair).
+     */
+    class Property(key: String, value: JSONValue?) : ImmutableMapEntry<String, JSONValue?>(key, value) {
+
+        val name: String
+            get() = key
+
     }
 
     companion object {
@@ -279,18 +290,18 @@ class JSONObject internal constructor(private val array: Array<JSONProperty>, ov
         val EMPTY = JSONObject(emptyArray(), 0)
 
         /**
-         * Create a [JSONObject] from a `vararg` list of map entries.
+         * Create a [JSONObject] from a `vararg` list of [Pair]s of name and value.
          */
         fun of(vararg items: Pair<String, JSONValue?>): JSONObject =
             if (items.isEmpty()) EMPTY else Array(items.size) { i ->
-                items[i].let { JSONProperty(it.first, it.second) }
+                items[i].let { Property(it.first, it.second) }
             }.let { JSONObject(it, it.size) }
 
         /**
          * Create a [JSONObject] from a [Map].
          */
         fun from(map: Map<String, JSONValue?>): JSONObject = if (map.isEmpty()) EMPTY else
-            map.entries.map { JSONProperty(it.key, it.value) }.toTypedArray().let {
+            map.entries.map { Property(it.key, it.value) }.toTypedArray().let {
                 JSONObject(it, it.size)
             }
 
@@ -299,13 +310,13 @@ class JSONObject internal constructor(private val array: Array<JSONProperty>, ov
          */
         fun from(list: List<Pair<String, JSONValue?>>): JSONObject =
             if (list.isEmpty()) EMPTY else Array(list.size) { i ->
-                list[i].let { JSONProperty(it.first, it.second) }
+                list[i].let { Property(it.first, it.second) }
             }.let { JSONObject(it, it.size) }
 
         /**
-         * Create a [JSONObject] from a [List] of [JSONProperty].
+         * Create a [JSONObject] from a [List] of [Property].
          */
-        fun fromProperties(list: List<JSONProperty>): JSONObject =
+        fun fromProperties(list: List<Property>): JSONObject =
             if (list.isEmpty()) EMPTY else JSONObject(list.toTypedArray(), list.size)
 
         /**
@@ -318,7 +329,7 @@ class JSONObject internal constructor(private val array: Array<JSONProperty>, ov
     /**
      * [JSONObject] builder class.
      */
-    class Builder(size: Int = 8, block: Builder.() -> Unit = {}) : AbstractBuilder<JSONProperty>(Array(size) { null }) {
+    class Builder(size: Int = 8, block: Builder.() -> Unit = {}) : AbstractBuilder<Property>(Array(size) { null }) {
 
         init {
             block()
@@ -330,9 +341,9 @@ class JSONObject internal constructor(private val array: Array<JSONProperty>, ov
         fun containsKey(name: String): Boolean = ImmutableMap.containsKey(checkArray(), size, name)
 
         /**
-         * Add a [JSONValue] with the specified name.
+         * Add a [Property].
          */
-        fun add(property: JSONProperty) {
+        fun add(property: Property) {
             // TODO consider configuration to allow duplicates
             if (containsKey(property.key))
                 throw JSONException("Duplicate key - ${property.key}")
@@ -343,10 +354,7 @@ class JSONObject internal constructor(private val array: Array<JSONProperty>, ov
          * Add a [JSONValue] with the specified name.
          */
         fun add(name: String, value: JSONValue?) {
-            // TODO consider configuration to allow duplicates
-            if (containsKey(name))
-                throw JSONException("Duplicate key - $name")
-            internalAdd(JSONProperty(name, value))
+            add(Property(name, value))
         }
 
         /**
@@ -409,7 +417,7 @@ class JSONObject internal constructor(private val array: Array<JSONProperty>, ov
          */
         @Suppress("unchecked_cast")
         override fun build(): JSONObject = checkArray().let {
-            (if (size == 0) EMPTY else JSONObject(it as Array<JSONProperty>, size)).also { invalidate() }
+            (if (size == 0) EMPTY else JSONObject(it as Array<Property>, size)).also { invalidate() }
         }
 
     }
@@ -418,10 +426,10 @@ class JSONObject internal constructor(private val array: Array<JSONProperty>, ov
      * [kotlin.collections.ListIterator] implementation for [JSONObject].
      */
     internal class ListIterator(
-        private val array: Array<JSONProperty>,
+        private val array: Array<Property>,
         private val size: Int,
         initialIndex: Int = 0,
-    ) : kotlin.collections.ListIterator<JSONProperty> {
+    ) : kotlin.collections.ListIterator<Property> {
 
         private var index = initialIndex
 
@@ -433,7 +441,7 @@ class JSONObject internal constructor(private val array: Array<JSONProperty>, ov
         /**
          * Get the next element referenced by this iterator.
          */
-        override fun next(): JSONProperty = if (hasNext())
+        override fun next(): Property = if (hasNext())
             array[index++]
         else
             throw NoSuchElementException(index.toString())
@@ -446,7 +454,7 @@ class JSONObject internal constructor(private val array: Array<JSONProperty>, ov
         /**
          * Get the preceding element referenced by this iterator.
          */
-        override fun previous(): JSONProperty = if (hasPrevious())
+        override fun previous(): Property = if (hasPrevious())
             array[--index]
         else
             throw NoSuchElementException(previousIndex().toString())

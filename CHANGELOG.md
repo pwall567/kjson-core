@@ -2,6 +2,14 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [7.1] - 2024-02-13
+### Changed
+- `JSONObject`: changed `JSONProperty` to a nested class `Property` within `JSONObject`
+  (Strictly speaking, this is a breaking change, but I'm assuming that the probability of anyone having created code
+  using version 7.0 that will break under 7.1 is close to zero, particularly given the short time between releases.)
+### Removed
+- `JSONProperty`
+
 ## [7.0] - 2024-02-10
 ### Added
 - `JSONProperty`: `typealias` for the `JSONObject` map entry

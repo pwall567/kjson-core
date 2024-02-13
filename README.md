@@ -216,15 +216,16 @@ available to navigate the object (retrieval via `structure["name"]`, `containsKe
 The class also implements the [`JSONStructure`](#jsonstructure) interface.
 
 The original order of the input is maintained on parsing or on the programmatic creation of a `JSONObject`, and to take
-advantage of this sequential ordering of properties, the `JSONObject` class also implements the `List<JSONProperty>`
-interface, where `JSONProperty` is a `typealias` for the `Map.Entry` objects used by `JSONObject`.
+advantage of this sequential ordering of properties, the `JSONObject` class also implements the `List<Property>`
+interface, where `Property` is a nested class representing the `Map.Entry` objects used by `JSONObject` (see
+[below](#jsonobjectproperty)).
 This means that the `JSONObject` class provides both:
 ```kotlin
     jsonObject["name"]  // get the property named "name" as a JSONValue?
 ```
 and:
 ```kotlin
-    jsonObject[3] // get the fourth property (index 3) as a JSONProperty
+    jsonObject[3] // get the fourth property (index 3) as a JSONObject.Property
  ```
 
 The constructor for `JSONObject` is not publicly accessible, but an `of()` function is available in the
@@ -249,6 +250,20 @@ the additional functions are optimised for the specific implementation details o
         println("Property value = $it")
     }
 ```
+
+### `JSONObject.Property`
+
+The `JSONObject.Property` nested class implements the `Map.Entry<String, JSONValue?>` interface, and is used to hold the
+key-value pairs of the `Map` behind `JSONObject`,
+
+It has two properties:
+
+| Name    | Type         | Contains           |
+|---------|--------------|--------------------|
+| `name`  | `String`     | The property name  |
+| `value` | `JSONValue?` | The property value |
+
+The `JSONObject.Property` object is immutable.
 
 ### `JSONException`
 
@@ -578,7 +593,8 @@ To allow trailing commas in arrays, the option `arrayTrailingComma` can be set t
 
 ## Class Diagram
 
-This class diagram may help to explain the main classes and interfaces and the relationships between them.
+This class diagram may help to explain the main classes and interfaces and the inheritance and interface implementation
+relationships between them.
 
 ![Class Diagram](diagram.png "UML Class Diagram")
 
@@ -586,25 +602,25 @@ The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram
 
 ## Dependency Specification
 
-The latest version of the library is 7.0, and it may be obtained from the Maven Central repository.
+The latest version of the library is 7.1, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>7.0</version>
+      <version>7.1</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:7.0"
+    implementation "io.kjson:kjson-core:7.1"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:7.0")
+    implementation("io.kjson:kjson-core:7.1")
 ```
 
 Peter Wall
 
-2024-02-11
+2024-02-13
