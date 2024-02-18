@@ -2,7 +2,7 @@
  * @(#) JSONArray.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,7 @@ import io.kjson.JSON.output
 import io.kjson.util.AbstractBuilder
 import net.pwall.util.CoOutput
 import net.pwall.util.CoOutputFlushable
+import net.pwall.util.ImmutableCollection
 import net.pwall.util.ImmutableList
 import net.pwall.util.output
 
@@ -48,10 +49,8 @@ import net.pwall.util.output
  *
  * @author  Peter Wall
  */
-class JSONArray internal constructor (array: Array<out JSONValue?>, override val size: Int) : JSONStructure<Int>,
-        List<JSONValue?> {
-
-    private val immutableList = ImmutableList<JSONValue?>(array, size)
+class JSONArray internal constructor (private val array: Array<out JSONValue?>, override val size: Int) :
+        JSONStructure<Int>, List<JSONValue?> by ImmutableList<JSONValue?>(array, size) {
 
     /**
      * Append as a JSON string to an [Appendable].
@@ -61,7 +60,7 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
         if (isNotEmpty()) {
             var i = 0
             while (true) {
-                immutableList[i].appendTo(a)
+                array[i].appendTo(a)
                 if (++i >= size)
                     break
                 a.append(',')
@@ -76,7 +75,7 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
     fun appendJSONLines(a: Appendable) {
         var i = 0
         while (i < size) {
-            immutableList[i++].appendTo(a)
+            array[i++].appendTo(a)
             a.append('\n')
         }
     }
@@ -99,7 +98,7 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
         if (isNotEmpty()) {
             var i = 0
             while (true) {
-                immutableList[i].output(out)
+                array[i].output(out)
                 if (++i >= size)
                     break
                 out.accept(','.code)
@@ -114,7 +113,7 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
     fun outputJSONLines(out: IntConsumer) {
         var i = 0
         while (i < size) {
-            immutableList[i++].output(out)
+            array[i++].output(out)
             out.accept('\n'.code)
         }
     }
@@ -127,7 +126,7 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
         if (isNotEmpty()) {
             var i = 0
             while (true) {
-                immutableList[i].coOutput(out)
+                array[i].coOutput(out)
                 if (++i >= size)
                     break
                 out.output(',')
@@ -142,7 +141,7 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
     suspend fun coOutputJSONLines(out: CoOutput) {
         var i = 0
         while (i < size) {
-            immutableList[i++].coOutput(out)
+            array[i++].coOutput(out)
             out.output('\n')
             if (out is CoOutputFlushable)
                 out.flush()
@@ -155,45 +154,10 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
     override fun isEmpty(): Boolean = size == 0
 
     /**
-     * Return `true` if the array contains the nominated value.
-     */
-    override fun contains(element: JSONValue?): Boolean = immutableList.contains(element)
-
-    /**
-     * Get an `Iterator` over the values in the array.
-     */
-    override fun iterator(): Iterator<JSONValue?> = immutableList.iterator()
-
-    /**
-     * Return `true` if the array contains all of the values in another collection.
-     */
-    override fun containsAll(elements: Collection<JSONValue?>): Boolean = immutableList.containsAll(elements)
-
-    /**
      * Get the value at the given index.
      */
     @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
-    override fun get(index: Int): JSONValue? = immutableList[index]
-
-    /**
-     * Find the index of the first occurrence of a given value in the array, or -1 if the value is not found.
-     */
-    override fun indexOf(element: JSONValue?): Int = immutableList.indexOf(element)
-
-    /**
-     * Find the index of the last occurrence of a given value in the array, or -1 if the value is not found.
-     */
-    override fun lastIndexOf(element: JSONValue?): Int = immutableList.lastIndexOf(element)
-
-    /**
-     * Get a `ListIterator` over the values in the array.
-     */
-    override fun listIterator(): ListIterator<JSONValue?> = immutableList.listIterator()
-
-    /**
-     * Get a `ListIterator` over the values in the array, from a given index.
-     */
-    override fun listIterator(index: Int): ListIterator<JSONValue?> = immutableList.listIterator(index)
+    override fun get(index: Int): JSONValue? = ImmutableCollection.get(array, size, index)
 
     /**
      * Get a sub-list of the array.
@@ -201,36 +165,35 @@ class JSONArray internal constructor (array: Array<out JSONValue?>, override val
     override fun subList(fromIndex: Int, toIndex: Int): JSONArray {
         if (fromIndex == toIndex)
             return EMPTY
-        val oldArray = immutableList.toArray(EMPTY_ARRAY)
         if (fromIndex == 0)
-            return JSONArray(oldArray, toIndex)
-        return JSONArray(oldArray.copyOfRange(fromIndex, toIndex), toIndex - fromIndex)
+            return JSONArray(array, toIndex)
+        return JSONArray(array.copyOfRange(fromIndex, toIndex), toIndex - fromIndex)
     }
 
     /**
      * Apply a function to each item in the array.
      */
     fun forEachItem(func: (JSONValue?) -> Unit) {
-        repeat(size) { func(immutableList[it]) }
+        repeat(size) { func(array[it]) }
     }
 
     /**
      * Apply a function to each item in the array, supplying the index.
      */
     fun forEachItemIndexed(func: (Int, JSONValue?) -> Unit) {
-        repeat(size) { func(it, immutableList[it]) }
+        repeat(size) { func(it, array[it]) }
     }
 
     /**
      * Compare the array to another value, applying the rule in Java for comparing `List`s.
      */
-    @Suppress("SuspiciousEqualsCombination")
-    override fun equals(other: Any?): Boolean = this === other || other is List<*> && immutableList == other
+    override fun equals(other: Any?): Boolean = this === other || other is List<*> && size == other.size &&
+            indices.all { array[it] == other[it] }
 
     /**
      * Get the hash code for the array, applying the rule in Java for `List` hash codes.
      */
-    override fun hashCode(): Int = immutableList.hashCode()
+    override fun hashCode(): Int = this.fold(1) { a, b -> 31 * a + b.hashCode() }
 
     /**
      * Convert to a [String] (converts to JSON).

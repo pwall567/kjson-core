@@ -2,7 +2,7 @@
  * @(#) JSONArrayTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -77,10 +77,12 @@ class JSONArrayTest {
     }
 
     @Test fun `should compare to other List`() {
-        val testArray = JSONArray.from(listOf(JSONInt(123), JSONInt(456)))
+        val list = listOf(JSONInt(123), JSONInt(456))
+        val testArray = JSONArray.from(list)
         expect(2) { testArray.size }
-        assertEquals<List<*>>(testArray, listOf(JSONInt(123), JSONInt(456)))
-        assertEquals<List<*>>(listOf(JSONInt(123), JSONInt(456)), testArray)
+        assertEquals<List<*>>(testArray, list)
+        assertEquals<List<*>>(list, testArray)
+        assertEquals(testArray.hashCode(), list.hashCode())
     }
 
     @Test fun `should build JSONArray using Builder`() {

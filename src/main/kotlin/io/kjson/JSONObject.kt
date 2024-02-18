@@ -35,7 +35,7 @@ import io.kjson.util.AbstractBuilder
 import net.pwall.json.JSONCoFunctions.outputString
 import net.pwall.json.JSONFunctions
 import net.pwall.util.CoOutput
-import net.pwall.util.ImmutableCollection
+import net.pwall.util.ImmutableList
 import net.pwall.util.ImmutableMap
 import net.pwall.util.ImmutableMapEntry
 import net.pwall.util.output
@@ -45,22 +45,9 @@ import net.pwall.util.output
  *
  * @author  Peter Wall
  */
-class JSONObject internal constructor(private val array: Array<Property>, override val size: Int) :
-        JSONStructure<String>, Map<String, JSONValue?>, List<JSONObject.Property> {
-
-    private val immutableMap = ImmutableMap<String, JSONValue?>(array, size)
-
-    /** A [Set] of the [Map.Entry] objects in the object. */
-    override val entries: Set<Map.Entry<String, JSONValue?>>
-        get() = immutableMap.entries
-
-    /** A [Set] of the keys (property names) in the object. */
-    override val keys: Set<String>
-        get() = immutableMap.keys
-
-    /** A [Collection] of the property values in the object. */
-    override val values: Collection<JSONValue?>
-        get() = immutableMap.values
+class JSONObject internal constructor(private val array: Array<out Property>, override val size: Int) :
+        JSONStructure<String>, Map<String, JSONValue?> by ImmutableMap<String, JSONValue?>(array, size),
+        List<JSONObject.Property> by ImmutableList(array, size) {
 
     /**
      * Append as a JSON string to an [Appendable].
@@ -134,21 +121,6 @@ class JSONObject internal constructor(private val array: Array<Property>, overri
     override fun isEmpty(): Boolean = size == 0
 
     /**
-     * Return `true` if the object contains the specified key (property name).
-     */
-    override fun containsKey(key: String): Boolean = immutableMap.containsKey(key)
-
-    /**
-     * Return `true` if the object contains the property value.
-     */
-    override fun containsValue(value: JSONValue?): Boolean = immutableMap.containsValue(value)
-
-    /**
-     * Get the value for the property with the specified name, or `null` if it is not present.
-     */
-    override fun get(key: String): JSONValue? = immutableMap[key]
-
-    /**
      * Perform a function with each property in turn (the function takes two parameters, the name [String] and value
      * [JSONValue]`?`).
      */
@@ -175,15 +147,25 @@ class JSONObject internal constructor(private val array: Array<Property>, overri
     }
 
     /**
-     * Compare the object to another value, applying the rule in Java for comparing `Map`s.
+     * Compare the object to another value, applying the rule in Java for comparing `Map`s, or the rule for comparing
+     * `List`s.
      */
-    @Suppress("SuspiciousEqualsCombination")
-    override fun equals(other: Any?): Boolean = this === other || other is Map<*, *> && immutableMap == other
+    override fun equals(other: Any?): Boolean {
+        if (this === other)
+            return true
+        return when (other) {
+            is Map<*, *> -> size == other.size && indices.all { other[array[it].name] == array[it].value }
+            is List<*> -> size == other.size && indices.all { array[it] == other[it] }
+            else -> false
+        }
+    }
 
     /**
-     * Get the hash code for the object, applying the rule in Java for `Map` hash codes.
+     * Get the hash code for the object, applying the rule in Java for `Map` hash codes.  Note that the Java rule for
+     * `List` hash codes is different, so it will not be possible to use this class in a hashing context (_e.g._ in a
+     * `HashSet`) with other `List` implementations.
      */
-    override fun hashCode(): Int = immutableMap.hashCode()
+    override fun hashCode(): Int = indices.sumOf { array[it].hashCode() }
 
     /**
      * Convert to a [String] (converts to JSON).
@@ -200,78 +182,13 @@ class JSONObject internal constructor(private val array: Array<Property>, overri
     val asObjectOrNull: JSONObject
         get() = this
 
-    // List functions
-
-    /**
-     * Get an iterator over the object [Property]s.
-     */
-    @Suppress("unchecked_cast")
-    override fun iterator(): Iterator<Property> = immutableMap.iterator() as Iterator<Property>
-
-    /**
-     * Get a [kotlin.collections.ListIterator] over the object [Property]s.
-     */
-    override fun listIterator(): kotlin.collections.ListIterator<Property> = ListIterator(array, size)
-
-    /**
-     * Get a [kotlin.collections.ListIterator] over the object [Property]s, specifying the start index.
-     */
-    override fun listIterator(index: Int): kotlin.collections.ListIterator<Property> = ListIterator(array, size, index)
-
     /**
      * Get a `JSONObject` containing the set of [Property]s bounded by `fromIndex` (inclusive) and `toIndex`
      * (exclusive).
      */
     override fun subList(fromIndex: Int, toIndex: Int): JSONObject {
-        if (fromIndex == 0 && toIndex == size)
-            return this
-        if (fromIndex < 0 || toIndex > size || toIndex < fromIndex)
-            throw IndexOutOfBoundsException()
-        val newSize = toIndex - fromIndex
-        if (newSize == 0)
-            return EMPTY
-        return JSONObject(array.copyOfRange(fromIndex, toIndex), newSize)
-    }
-
-    /**
-     * Get the index of the last occurrence of the specified [Property], or -1 if the [Property] is not found.
-     */
-    override fun lastIndexOf(element: Property): Int {
-        var index = size
-        while (--index > 0)
-            if (array[index] == element)
-                return index
-        return -1
-    }
-
-    /**
-     * Return `true` if the object contains the nominated [Property].
-     */
-    override fun contains(element: Property): Boolean = ImmutableCollection.contains(array, size, element)
-
-    /**
-     * Return `true` if the object contains all of the [Property]s in another collection.
-     */
-    override fun containsAll(elements: Collection<Property>): Boolean = elements.all { contains(it) }
-
-    /**
-     * Get the [Property] at the nominated index.
-     */
-    override fun get(index: Int): Property {
-        if (index >= size)
-            throw IndexOutOfBoundsException(index.toString())
-        return array[index]
-    }
-
-    /**
-     * Get the index of the first occurrence of the specified [Property], or -1 if the [Property] is not found.
-     */
-    override fun indexOf(element: Property): Int {
-        var index = 0
-        while (index < size)
-            if (array[index++] == element)
-                return index
-        return -1
+        val list: List<Property> = ImmutableList(array, size)
+        return fromProperties(list.subList(fromIndex, toIndex))
     }
 
     /**
@@ -419,55 +336,6 @@ class JSONObject internal constructor(private val array: Array<Property>, overri
         override fun build(): JSONObject = checkArray().let {
             (if (size == 0) EMPTY else JSONObject(it as Array<Property>, size)).also { invalidate() }
         }
-
-    }
-
-    /**
-     * [kotlin.collections.ListIterator] implementation for [JSONObject].
-     */
-    internal class ListIterator(
-        private val array: Array<Property>,
-        private val size: Int,
-        initialIndex: Int = 0,
-    ) : kotlin.collections.ListIterator<Property> {
-
-        private var index = initialIndex
-
-        /**
-         * Test whether iterator has any more elements.
-         */
-        override fun hasNext(): Boolean = index < size
-
-        /**
-         * Get the next element referenced by this iterator.
-         */
-        override fun next(): Property = if (hasNext())
-            array[index++]
-        else
-            throw NoSuchElementException(index.toString())
-
-        /**
-         * Test whether the iterator has any preceding elements.
-         */
-        override fun hasPrevious(): Boolean = index > 0
-
-        /**
-         * Get the preceding element referenced by this iterator.
-         */
-        override fun previous(): Property = if (hasPrevious())
-            array[--index]
-        else
-            throw NoSuchElementException(previousIndex().toString())
-
-        /**
-         * Get the index of the "next" element.
-         */
-        override fun nextIndex(): Int = index
-
-        /**
-         * Get the preceding element referenced by this iterator.
-         */
-        override fun previousIndex(): Int = index - 1
 
     }
 

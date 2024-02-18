@@ -181,8 +181,10 @@ class JSONObjectTest {
             add("alpha", JSONInt(1111))
             add("beta", JSONString("hello"))
         }.build()
-        assertEquals<Map<*, *>>(json, mapOf("alpha" to JSONInt(1111), "beta" to JSONString("hello")))
-        assertEquals<Map<*, *>>(mapOf("alpha" to JSONInt(1111), "beta" to JSONString("hello")), json)
+        val map = mapOf("alpha" to JSONInt(1111), "beta" to JSONString("hello"))
+        assertEquals<Map<*, *>>(json, map)
+        assertEquals<Map<*, *>>(map, json)
+        assertEquals(json.hashCode(), map.hashCode())
     }
 
     @Test fun `should allow use of keys`() {
@@ -451,14 +453,8 @@ class JSONObjectTest {
     @Test fun `should create subset object using subList`() {
         val sub = mixedObject.subList(2, 4)
         expect(2) { sub.size }
-        with(sub[0]) {
-            expect("third") { name }
-            expect(JSONLong(123456789123456789)) { value }
-        }
-        with(sub[1]) {
-            expect("fourth") { name }
-            expect(JSONDecimal("0.123")) { value }
-        }
+        expect(JSONObject.Property("third", JSONLong(123456789123456789))) { sub[0] }
+        expect(JSONObject.Property("fourth", JSONDecimal("0.123"))) { sub[1] }
     }
 
     @Test fun `should create Property`() {

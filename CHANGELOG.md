@@ -2,6 +2,11 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [7.2] - 2024-02-18
+### Changed
+- `JSONObject`, `JSONArray`: switched to delegation pattern
+- `pom.xml`: updated dependency version
+
 ## [7.1] - 2024-02-13
 ### Changed
 - `JSONObject`: changed `JSONProperty` to a nested class `Property` within `JSONObject`
