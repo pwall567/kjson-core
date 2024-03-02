@@ -33,8 +33,6 @@ import kotlin.test.assertTrue
 import kotlin.test.expect
 import kotlinx.coroutines.runBlocking
 
-import java.math.BigDecimal
-
 import io.kjson.testutil.CoOutputCapture
 import io.kjson.testutil.OutputCapture
 
@@ -114,14 +112,14 @@ class JSONArrayTest {
             add(123)
             add("abc")
             add(112233445566778899)
-            add(BigDecimal("1.456"))
+            add("1.456".toBigDecimal())
             add(true)
         }
         expect(5) { json.size }
         expect(JSONInt(123)) { json[0] }
         expect(JSONString("abc")) { json[1] }
         expect(JSONLong(112233445566778899)) { json[2] }
-        expect(JSONDecimal(BigDecimal("1.456"))) { json[3] }
+        expect(JSONDecimal("1.456".toBigDecimal())) { json[3] }
         expect(JSONBoolean.TRUE) { json[4] }
     }
 
@@ -150,14 +148,14 @@ class JSONArrayTest {
     @Test fun `should format JSONArray using output`() {
         val capture = OutputCapture(64)
         JSONArray.from(listOf(JSONString("Hello"), JSONInt(123), JSONBoolean.TRUE,
-                JSONDecimal(BigDecimal("1.5")), null, JSONLong(0))).output(capture)
+                JSONDecimal("1.5".toBigDecimal()), null, JSONLong(0))).output(capture)
         expect("[\"Hello\",123,true,1.5,null,0]") { capture.toString() }
     }
 
     @Test fun `should format JSONArray using coOutput`() = runBlocking {
         val capture = CoOutputCapture(64)
         JSONArray.from(listOf(JSONString("Hello"), JSONInt(123), JSONBoolean.TRUE,
-                JSONDecimal(BigDecimal("1.5")), null, JSONLong(0))).coOutput(capture)
+                JSONDecimal("1.5".toBigDecimal()), null, JSONLong(0))).coOutput(capture)
         expect("[\"Hello\",123,true,1.5,null,0]") { capture.toString() }
     }
 
@@ -166,7 +164,7 @@ class JSONArrayTest {
             add(123)
             add("abc")
             add(112233445566778899)
-            add(BigDecimal("1.456"))
+            add("1.456".toBigDecimal())
             add(true)
         }
         var count = 0
@@ -187,7 +185,7 @@ class JSONArrayTest {
             add(123)
             add("abc")
             add(112233445566778899)
-            add(BigDecimal("1.456"))
+            add("1.456".toBigDecimal())
             add(true)
         }
         var count = 0

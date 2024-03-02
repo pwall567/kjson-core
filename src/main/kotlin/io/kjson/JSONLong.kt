@@ -2,7 +2,7 @@
  * @(#) JSONLong.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -167,7 +167,7 @@ class JSONLong(override val value: Long) : JSONNumber(), JSONPrimitive<Long> {
     /**
      * Convert the value to [BigDecimal].
      */
-    override fun toDecimal(): BigDecimal = BigDecimal(value)
+    override fun toDecimal(): BigDecimal = value.toBigDecimal()
 
     /**
      * Convert the value to [ULong].
@@ -201,7 +201,7 @@ class JSONLong(override val value: Long) : JSONNumber(), JSONPrimitive<Long> {
         return when (other) {
             is JSONInt -> value == other.value.toLong()
             is JSONLong -> value == other.value
-            is JSONDecimal -> BigDecimal(value).compareTo(other.value) == 0
+            is JSONDecimal -> value.toBigDecimal().compareTo(other.value) == 0
         }
     }
 
@@ -227,12 +227,12 @@ class JSONLong(override val value: Long) : JSONNumber(), JSONPrimitive<Long> {
 
     /** The value as a [Long] (optimisation of the extension value in [JSON] when the type is known statically). */
     val asDecimal: BigDecimal
-        get() = BigDecimal(value)
+        get() = value.toBigDecimal()
 
     /** The value as a [Long] or `null` (optimisation of the extension value in [JSON] when the type is known
      *  statically). */
     val asDecimalOrNull: BigDecimal
-        get() = BigDecimal(value)
+        get() = value.toBigDecimal()
 
     companion object {
 

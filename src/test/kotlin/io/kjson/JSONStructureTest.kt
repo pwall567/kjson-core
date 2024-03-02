@@ -2,7 +2,7 @@
  * @(#) JSONStructureTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2022 Peter Wall
+ * Copyright (c) 2022, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,8 +30,6 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.test.expect
-
-import java.math.BigDecimal
 
 import io.kjson.JSON.asString
 
@@ -106,7 +104,7 @@ class JSONStructureTest {
 
     @Test fun `should fail on getLong from array when not a long`() {
         val outer = JSONArray.build {
-            add(BigDecimal("1.555"))
+            add("1.555".toBigDecimal())
         }
         assertFailsWith<JSONTypeException> { outer.getLong(0) }.let {
             expect("Node") { it.nodeName }
@@ -146,7 +144,7 @@ class JSONStructureTest {
 
     @Test fun `should fail on getInt from array when not an int`() {
         val outer = JSONArray.build {
-            add(BigDecimal("1.5"))
+            add("1.5".toBigDecimal())
         }
         assertFailsWith<JSONTypeException> { outer.getInt(0) }.let {
             expect("Node") { it.nodeName }
@@ -266,7 +264,7 @@ class JSONStructureTest {
 
     @Test fun `should fail on getULong from array when not a ULong`() {
         val outer = JSONArray.build {
-            add(BigDecimal("1.1"))
+            add("1.1".toBigDecimal())
         }
         assertFailsWith<JSONTypeException> { outer.getULong(0) }.let {
             expect("Node") { it.nodeName }
@@ -399,9 +397,9 @@ class JSONStructureTest {
 
     @Test fun `should get decimal from object`() {
         val outer = JSONObject.build {
-            add("money", BigDecimal("2.50"))
+            add("money", "2.50".toBigDecimal())
         }
-        expect(BigDecimal("2.50")) { outer.getDecimal("money") }
+        expect("2.50".toBigDecimal()) { outer.getDecimal("money") }
     }
 
     @Test fun `should fail on getDecimal from object when not a decimal`() {
@@ -419,9 +417,9 @@ class JSONStructureTest {
 
     @Test fun `should get decimal from array`() {
         val outer = JSONArray.build {
-            add(BigDecimal("250.00"))
+            add("250.00".toBigDecimal())
         }
-        expect(BigDecimal("250.00")) { outer.getDecimal(0) }
+        expect("250.00".toBigDecimal()) { outer.getDecimal(0) }
     }
 
     @Test fun `should fail on getDecimal from array when not a decimal`() {

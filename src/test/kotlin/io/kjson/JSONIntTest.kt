@@ -2,7 +2,7 @@
  * @(#) JSONIntTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022 Peter Wall
+ * Copyright (c) 2021, 2022, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ class JSONIntTest {
             expect("12345") { it.toJSON() }
             expect("12345") { it.toString() }
             expect<JSONValue>(JSONLong(12345)) { it }
-            expect<JSONValue>(JSONDecimal(BigDecimal(12345))) { it }
+            expect<JSONValue>(JSONDecimal(12345.toBigDecimal())) { it }
         }
         JSONInt(-888).let {
             expect(-888) { it.value }
@@ -157,8 +157,8 @@ class JSONIntTest {
 
     @Test fun `should implement toDecimal`() {
         expect(BigDecimal.ZERO) { JSONInt.ZERO.toDecimal() }
-        expect(BigDecimal(12345)) { JSONInt(12345).toDecimal() }
-        expect(BigDecimal(-9)) { JSONInt(-9).toDecimal() }
+        expect(12345.toBigDecimal()) { JSONInt(12345).toDecimal() }
+        expect((-9).toBigDecimal()) { JSONInt(-9).toDecimal() }
     }
 
     @Test fun `should implement toULong`() {

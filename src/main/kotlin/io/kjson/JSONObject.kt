@@ -246,7 +246,7 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
     /**
      * [JSONObject] builder class.
      */
-    class Builder(size: Int = 8, block: Builder.() -> Unit = {}) : AbstractBuilder<Property>(Array(size) { null }) {
+    class Builder(size: Int = 8, block: Builder.() -> Unit = {}) : AbstractBuilder<Property>(arrayOfNulls(size)) {
 
         init {
             block()

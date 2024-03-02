@@ -2,7 +2,7 @@
  * @(#) JSONLongTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022 Peter Wall
+ * Copyright (c) 2021, 2022, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -182,8 +182,8 @@ class JSONLongTest {
 
     @Test fun `should implement toDecimal`() {
         expect(BigDecimal.ZERO) { JSONLong.ZERO.toDecimal() }
-        expect(BigDecimal(123456789123456789)) { JSONLong(123456789123456789).toDecimal() }
-        expect(BigDecimal(-9)) { JSONLong(-9).toDecimal() }
+        expect(123456789123456789.toBigDecimal()) { JSONLong(123456789123456789).toDecimal() }
+        expect((-9).toBigDecimal()) { JSONLong(-9).toDecimal() }
     }
 
     @Test fun `should implement toULong`() {

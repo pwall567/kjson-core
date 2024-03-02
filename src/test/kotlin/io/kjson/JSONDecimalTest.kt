@@ -2,7 +2,7 @@
  * @(#) JSONDecimalTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022 Peter Wall
+ * Copyright (c) 2021, 2022, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,7 +51,7 @@ class JSONDecimalTest {
 
     @Test fun `should create JSONDecimal from Long`() {
         JSONDecimal(123456789123456789).let {
-            expect(BigDecimal(123456789123456789)) { it.value }
+            expect(123456789123456789.toBigDecimal()) { it.value }
             expect("123456789123456789") { it.toJSON() }
             expect<JSONValue>(JSONLong(123456789123456789)) { it }
         }
@@ -59,7 +59,7 @@ class JSONDecimalTest {
 
     @Test fun `should create JSONDecimal from Int`() {
         JSONDecimal(12345).let {
-            expect(BigDecimal(12345)) { it.value }
+            expect(12345.toBigDecimal()) { it.value }
             expect("12345") { it.toJSON() }
             expect<JSONValue>(JSONInt(12345)) { it }
         }
@@ -79,19 +79,19 @@ class JSONDecimalTest {
         }
         assertSame(JSONDecimal.ZERO, JSONDecimal.of(0))
         JSONDecimal.of(23456).let {
-            expect(BigDecimal("23456")) { it.value }
+            expect("23456".toBigDecimal()) { it.value }
             expect("23456") { it.toJSON() }
             expect(JSONDecimal("23456")) { it }
         }
         assertSame(JSONDecimal.ZERO, JSONDecimal.of(0L))
         JSONDecimal.of(9876543210).let {
-            expect(BigDecimal("9876543210")) { it.value }
+            expect("9876543210".toBigDecimal()) { it.value }
             expect("9876543210") { it.toJSON() }
             expect(JSONDecimal("9876543210")) { it }
         }
         assertSame(JSONDecimal.ZERO, JSONDecimal.of("0"))
         JSONDecimal.of("333.5").let {
-            expect(BigDecimal("333.5")) { it.value }
+            expect("333.5".toBigDecimal()) { it.value }
             expect("333.5") { it.toJSON() }
             expect(JSONDecimal("333.5")) { it }
         }
@@ -258,9 +258,9 @@ class JSONDecimalTest {
 
     @Test fun `should implement toDecimal`() {
         expect(BigDecimal.ZERO) { JSONDecimal.ZERO.toDecimal() }
-        expect(BigDecimal(12345)) { JSONDecimal(12345).toDecimal() }
-        expect(BigDecimal(-9)) { JSONDecimal(-9).toDecimal() }
-        expect(BigDecimal("567.89")) { JSONDecimal("567.89").toDecimal() }
+        expect(12345.toBigDecimal()) { JSONDecimal(12345).toDecimal() }
+        expect((-9).toBigDecimal()) { JSONDecimal(-9).toDecimal() }
+        expect("567.89".toBigDecimal()) { JSONDecimal("567.89").toDecimal() }
     }
 
     @Test fun `should implement toULong`() {

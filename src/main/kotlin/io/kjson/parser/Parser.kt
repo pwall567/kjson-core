@@ -2,7 +2,7 @@
  * @(#) Parser.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,6 @@
  */
 
 package io.kjson.parser
-
-import java.math.BigDecimal
 
 import io.kjson.JSONArray
 import io.kjson.JSONBoolean
@@ -203,7 +201,7 @@ object Parser {
                     // too big for long - drop through to BigDecimal
                 }
             }
-            return JSONDecimal.of(BigDecimal(tm.getString(numberStart, tm.index)))
+            return JSONDecimal.of(tm.getString(numberStart, tm.index).toBigDecimal())
         }
 
         throw ParseException(ILLEGAL_SYNTAX, pointer)

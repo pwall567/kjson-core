@@ -2,7 +2,7 @@
  * @(#) JSONTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,8 +32,6 @@ import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.test.expect
-
-import java.math.BigDecimal
 
 import io.kjson.JSON.asArray
 import io.kjson.JSON.asArrayOrError
@@ -87,8 +85,8 @@ class JSONTest {
         expect(JSONInt(54321)) { testInt }
         val testLong = JSON.of(2233445566778899)
         expect(JSONLong(2233445566778899)) { testLong }
-        val testDecimal = JSON.of(BigDecimal("99.999"))
-        expect(JSONDecimal(BigDecimal("99.999"))) { testDecimal }
+        val testDecimal = JSON.of("99.999".toBigDecimal())
+        expect(JSONDecimal("99.999".toBigDecimal())) { testDecimal }
         val testString = JSON.of("Hello!")
         expect(JSONString("Hello!")) { testString }
     }
@@ -163,7 +161,7 @@ class JSONTest {
         expect("0") { JSONInt(0).displayValue() }
         expect("12345") { JSONInt(12345).displayValue() }
         expect("1234567812345678") { JSONLong(1234567812345678).displayValue() }
-        expect("0.123") { JSONDecimal(BigDecimal("0.123")).displayValue() }
+        expect("0.123") { JSONDecimal("0.123".toBigDecimal()).displayValue() }
     }
 
     @Test fun `should return displayValue for boolean`() {
@@ -201,7 +199,7 @@ class JSONTest {
         expect("0") { JSONInt(0).elidedValue() }
         expect("12345") { JSONInt(12345).elidedValue() }
         expect("1234567812345678") { JSONLong(1234567812345678).elidedValue() }
-        expect("0.123") { JSONDecimal(BigDecimal("0.123")).elidedValue() }
+        expect("0.123") { JSONDecimal("0.123".toBigDecimal()).elidedValue() }
     }
 
     @Test fun `should return elidedValue for boolean`() {
@@ -361,7 +359,7 @@ class JSONTest {
         expect(12345) { jsonLong.asInt }
         expect(12345) { jsonLong.asIntOrNull }
         expect(12345) { jsonLong.asIntOrError(key = 27) }
-        val jsonDecimal = JSONDecimal(BigDecimal("123.0000"))
+        val jsonDecimal = JSONDecimal("123.0000".toBigDecimal())
         expect(123) { jsonDecimal.asInt }
         expect(123) { jsonDecimal.asIntOrNull }
         expect(123) { jsonDecimal.asIntOrError("aaa") }
@@ -386,7 +384,7 @@ class JSONTest {
             expect(jsonArray) { it.value }
             expect("Node not correct type (Int), was [ ... ]") { it.message }
         }
-        val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
+        val jsonDecimal = JSONDecimal("123.5000".toBigDecimal())
         assertNull(jsonDecimal.asIntOrNull)
         assertFailsWith<JSONTypeException> { jsonDecimal.asInt }.let {
             expect("Node") { it.nodeName }
@@ -418,7 +416,7 @@ class JSONTest {
         expect(1234567812345678) { jsonLong.asLong }
         expect(1234567812345678) { jsonLong.asLongOrNull }
         expect(1234567812345678) { jsonLong.asLongOrError("long integer", 999) }
-        val jsonDecimal = JSONDecimal(BigDecimal("9876543219876543.0000"))
+        val jsonDecimal = JSONDecimal("9876543219876543.0000".toBigDecimal())
         expect(9876543219876543) { jsonDecimal.asLong }
         expect(9876543219876543) { jsonDecimal.asLongOrNull }
         expect(9876543219876543) { jsonDecimal.asLongOrError(key = 6, nodeName = "Property") }
@@ -442,7 +440,7 @@ class JSONTest {
             expect(jsonObject) { it.value }
             expect("Node not correct type (Long), was { ... }") { it.message }
         }
-        val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
+        val jsonDecimal = JSONDecimal("123.5000".toBigDecimal())
         assertNull(jsonDecimal.asLongOrNull)
         assertFailsWith<JSONTypeException> { jsonDecimal.asLong }.let {
             expect("Node") { it.nodeName }
@@ -475,7 +473,7 @@ class JSONTest {
         expect(12345) { jsonLong.asShort }
         expect(12345) { jsonLong.asShortOrNull }
         expect(12345) { jsonLong.asShortOrError(key = "key") }
-        val jsonDecimal = JSONDecimal(BigDecimal("123.0000"))
+        val jsonDecimal = JSONDecimal("123.0000".toBigDecimal())
         expect(123) { jsonDecimal.asShort }
         expect(123) { jsonDecimal.asShortOrNull }
         expect(123) { jsonDecimal.asShortOrError("short", 1) }
@@ -500,7 +498,7 @@ class JSONTest {
             expect(jsonArray) { it.value }
             expect("Node not correct type (Short), was [ ... ]") { it.message }
         }
-        val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
+        val jsonDecimal = JSONDecimal("123.5000".toBigDecimal())
         assertNull(jsonDecimal.asShortOrNull)
         assertFailsWith<JSONTypeException> { jsonDecimal.asShort }.let {
             expect("Node") { it.nodeName }
@@ -533,7 +531,7 @@ class JSONTest {
         expect(123) { jsonLong.asByte }
         expect(123) { jsonLong.asByteOrNull }
         expect(123) { jsonLong.asByteOrError("b", "c", "d") }
-        val jsonDecimal = JSONDecimal(BigDecimal("123.0000"))
+        val jsonDecimal = JSONDecimal("123.0000".toBigDecimal())
         expect(123) { jsonDecimal.asByte }
         expect(123) { jsonDecimal.asByteOrNull }
         expect(123) { jsonDecimal.asByteOrError("byte", "test4") }
@@ -558,7 +556,7 @@ class JSONTest {
             expect(jsonArray) { it.value }
             expect("Node not correct type (Byte), was [ ... ]") { it.message }
         }
-        val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
+        val jsonDecimal = JSONDecimal("123.5000".toBigDecimal())
         assertNull(jsonDecimal.asByteOrNull)
         assertFailsWith<JSONTypeException> { jsonDecimal.asByte }.let {
             expect("Node") { it.nodeName }
@@ -591,7 +589,7 @@ class JSONTest {
         expect(12345.toULong()) { jsonLong.asULong }
         expect(12345.toULong()) { jsonLong.asULongOrNull }
         expect(12345.toULong()) { jsonLong.asULongOrError(key = 27) }
-        val jsonDecimal = JSONDecimal(BigDecimal("123.0000"))
+        val jsonDecimal = JSONDecimal("123.0000".toBigDecimal())
         expect(123.toULong()) { jsonDecimal.asULong }
         expect(123.toULong()) { jsonDecimal.asULongOrNull }
         expect(123.toULong()) { jsonDecimal.asULongOrError("whatever") }
@@ -616,7 +614,7 @@ class JSONTest {
             expect(jsonArray) { it.value }
             expect("Node not correct type (ULong), was [ ... ]") { it.message }
         }
-        val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
+        val jsonDecimal = JSONDecimal("123.5000".toBigDecimal())
         assertNull(jsonDecimal.asULongOrNull)
         assertFailsWith<JSONTypeException> { jsonDecimal.asULong }.let {
             expect("Node") { it.nodeName }
@@ -658,7 +656,7 @@ class JSONTest {
         expect(12345U) { jsonLong.asUInt }
         expect(12345U) { jsonLong.asUIntOrNull }
         expect(12345U) { jsonLong.asUIntOrError() }
-        val jsonDecimal = JSONDecimal(BigDecimal("123.0000"))
+        val jsonDecimal = JSONDecimal("123.0000".toBigDecimal())
         expect(123U) { jsonDecimal.asUInt }
         expect(123U) { jsonDecimal.asUIntOrNull }
         expect(123U) { jsonDecimal.asUIntOrError("unsigned int", "property", "Property") }
@@ -683,7 +681,7 @@ class JSONTest {
             expect(jsonArray) { it.value }
             expect("Node not correct type (UInt), was [ ... ]") { it.message }
         }
-        val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
+        val jsonDecimal = JSONDecimal("123.5000".toBigDecimal())
         assertNull(jsonDecimal.asUIntOrNull)
         assertFailsWith<JSONTypeException> { jsonDecimal.asUInt }.let {
             expect("Node") { it.nodeName }
@@ -725,7 +723,7 @@ class JSONTest {
         expect(45678U) { jsonLong.asUShort }
         expect(45678U) { jsonLong.asUShortOrNull }
         expect(45678U) { jsonLong.asUShortOrError() }
-        val jsonDecimal = JSONDecimal(BigDecimal("1234.0000"))
+        val jsonDecimal = JSONDecimal("1234.0000".toBigDecimal())
         expect(1234U) { jsonDecimal.asUShort }
         expect(1234U) { jsonDecimal.asUShortOrNull }
         expect(1234U) { jsonDecimal.asUShortOrError(key = "it") }
@@ -750,7 +748,7 @@ class JSONTest {
             expect(jsonArray) { it.value }
             expect("Node not correct type (UShort), was [ ... ]") { it.message }
         }
-        val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
+        val jsonDecimal = JSONDecimal("123.5000".toBigDecimal())
         assertNull(jsonDecimal.asUShortOrNull)
         assertFailsWith<JSONTypeException> { jsonDecimal.asUShort }.let {
             expect("Node") { it.nodeName }
@@ -792,7 +790,7 @@ class JSONTest {
         expect(234U) { jsonLong.asUByte }
         expect(234U) { jsonLong.asUByteOrNull }
         expect(234U) { jsonLong.asUByteOrError() }
-        val jsonDecimal = JSONDecimal(BigDecimal("123.0000"))
+        val jsonDecimal = JSONDecimal("123.0000".toBigDecimal())
         expect(123U) { jsonDecimal.asUByte }
         expect(123U) { jsonDecimal.asUByteOrNull }
         expect(123U) { jsonDecimal.asUByteOrError("type", "key", "name") }
@@ -817,7 +815,7 @@ class JSONTest {
             expect(jsonArray) { it.value }
             expect("Node not correct type (UByte), was [ ... ]") { it.message }
         }
-        val jsonDecimal = JSONDecimal(BigDecimal("123.5000"))
+        val jsonDecimal = JSONDecimal("123.5000".toBigDecimal())
         assertNull(jsonDecimal.asUByteOrNull)
         assertFailsWith<JSONTypeException> { jsonDecimal.asUByte }.let {
             expect("Node") { it.nodeName }
@@ -851,18 +849,27 @@ class JSONTest {
     }
 
     @Test fun `should return asDecimal for number types`() {
-        val jsonInt = JSONInt(8)
-        expect(BigDecimal(8)) { jsonInt.asDecimal }
-        expect(BigDecimal(8)) { jsonInt.asDecimalOrNull }
-        expect(BigDecimal(8)) { jsonInt.asDecimalOrError("a", "b", "c") }
-        val jsonLong = JSONLong(1234567812345678)
-        expect(BigDecimal(1234567812345678)) { jsonLong.asDecimal }
-        expect(BigDecimal(1234567812345678)) { jsonLong.asDecimalOrNull }
-        expect(BigDecimal(1234567812345678)) { jsonLong.asDecimalOrError(key = 9) }
-        val jsonDecimal = JSONDecimal(BigDecimal("123.45678"))
-        expect(BigDecimal("123.45678")) { jsonDecimal.asDecimal }
-        expect(BigDecimal("123.45678")) { jsonDecimal.asDecimalOrNull }
-        expect(BigDecimal("123.45678")) { jsonDecimal.asDecimalOrError() }
+        8.let {
+            val result = it.toBigDecimal()
+            val jsonInt = JSONInt(it)
+            expect(result) { jsonInt.asDecimal }
+            expect(result) { jsonInt.asDecimalOrNull }
+            expect(result) { jsonInt.asDecimalOrError("a", "b", "c") }
+        }
+        1234567812345678.let {
+            val result = it.toBigDecimal()
+            val jsonLong = JSONLong(it)
+            expect(result) { jsonLong.asDecimal }
+            expect(result) { jsonLong.asDecimalOrNull }
+            expect(result) { jsonLong.asDecimalOrError(key = 9) }
+        }
+        "123.45678".let {
+            val result = it.toBigDecimal()
+            val jsonDecimal = JSONDecimal(result)
+            expect(result) { jsonDecimal.asDecimal }
+            expect(result) { jsonDecimal.asDecimalOrNull }
+            expect(result) { jsonDecimal.asDecimalOrError() }
+        }
     }
 
     @Test fun `should fail on attempt to get asDecimal of other types`() {

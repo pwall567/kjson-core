@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [Unreleased]
+### Changed
+- several: switched to more idiomatic Kotlin
+
 ## [7.2] - 2024-02-18
 ### Changed
 - `JSONObject`, `JSONArray`: switched to delegation pattern

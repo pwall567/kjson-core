@@ -34,8 +34,6 @@ import kotlin.test.assertTrue
 import kotlin.test.expect
 import kotlinx.coroutines.runBlocking
 
-import java.math.BigDecimal
-
 import io.kjson.testutil.CoOutputCapture
 import io.kjson.testutil.OutputCapture
 
@@ -137,14 +135,14 @@ class JSONObjectTest {
             add("first", 123)
             add("second", "dummy")
             add("third", 123456789123456789)
-            add("fourth", BigDecimal("0.123"))
+            add("fourth", "0.123".toBigDecimal())
             add("fifth", true)
         }
         expect(5) { json.size }
         expect(JSONInt(123)) { json["first"] }
         expect(JSONString("dummy")) { json["second"] }
         expect(JSONLong(123456789123456789)) { json["third"] }
-        expect(JSONDecimal(BigDecimal("0.123"))) { json["fourth"] }
+        expect(JSONDecimal("0.123".toBigDecimal())) { json["fourth"] }
         expect(JSONBoolean.TRUE) { json["fifth"] }
     }
 
@@ -479,7 +477,7 @@ class JSONObjectTest {
             add("first", 123)
             add("second", "dummy")
             add("third", 123456789123456789)
-            add("fourth", BigDecimal("0.123"))
+            add("fourth", "0.123".toBigDecimal())
             add("fifth", true)
         }
 
@@ -487,7 +485,7 @@ class JSONObjectTest {
             add("first", 123)
             add("second", "dummy")
             add("third", 123456789123456789)
-            add("fourth", BigDecimal("0.123"))
+            add("fourth", "0.123".toBigDecimal())
             add("fifth", true)
             add("sixth", null)
         }

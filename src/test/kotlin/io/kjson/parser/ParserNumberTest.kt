@@ -2,7 +2,7 @@
  * @(#) ParserNumberTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2021, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -144,37 +144,37 @@ class ParserNumberTest {
     @Test fun `should parse positive decimal`() {
         val result1 = Parser.parse("12340.0")
         assertTrue(result1 is JSONDecimal)
-        expect(0) { result1.value.compareTo(BigDecimal("12340")) }
+        expect(0) { result1.value.compareTo("12340".toBigDecimal()) }
         val result2 = Parser.parse("1e200")
         assertTrue(result2 is JSONDecimal)
-        expect(0) { result2.value.compareTo(BigDecimal("1e200")) }
+        expect(0) { result2.value.compareTo("1e200".toBigDecimal()) }
         val result3 = Parser.parse("27e-60")
         assertTrue(result3 is JSONDecimal)
-        expect(0) { result3.value.compareTo(BigDecimal("27e-60")) }
+        expect(0) { result3.value.compareTo("27e-60".toBigDecimal()) }
         val result4 = Parser.parse("0.1e-48")
         assertTrue(result4 is JSONDecimal)
-        expect(0) { result4.value.compareTo(BigDecimal("0.1e-48")) }
+        expect(0) { result4.value.compareTo("0.1e-48".toBigDecimal()) }
         val result5 = Parser.parse("9223372036854775808")
         assertTrue(result5 is JSONDecimal)
-        expect(0) { result5.value.compareTo(BigDecimal("9223372036854775808")) }
+        expect(0) { result5.value.compareTo("9223372036854775808".toBigDecimal()) }
     }
 
     @Test fun `should parse negative decimal`() {
         val result1 = Parser.parse("-12340.0")
         assertTrue(result1 is JSONDecimal)
-        expect(0) { result1.value.compareTo(BigDecimal("-12340")) }
+        expect(0) { result1.value.compareTo("-12340".toBigDecimal()) }
         val result2 = Parser.parse("-1e200")
         assertTrue(result2 is JSONDecimal)
-        expect(0) { result2.value.compareTo(BigDecimal("-1e200")) }
+        expect(0) { result2.value.compareTo("-1e200".toBigDecimal()) }
         val result3 = Parser.parse("-27e-60")
         assertTrue(result3 is JSONDecimal)
-        expect(0) { result3.value.compareTo(BigDecimal("-27e-60")) }
+        expect(0) { result3.value.compareTo("-27e-60".toBigDecimal()) }
         val result4 = Parser.parse("-0.1e-48")
         assertTrue(result4 is JSONDecimal)
-        expect(0) { result4.value.compareTo(BigDecimal("-0.1e-48")) }
+        expect(0) { result4.value.compareTo("-0.1e-48".toBigDecimal()) }
         val result5 = Parser.parse("-9223372036854775809")
         assertTrue(result5 is JSONDecimal)
-        expect(0) { result5.value.compareTo(BigDecimal("-9223372036854775809")) }
+        expect(0) { result5.value.compareTo("-9223372036854775809".toBigDecimal()) }
     }
 
 }

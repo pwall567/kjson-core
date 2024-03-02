@@ -2,7 +2,7 @@
  * @(#) JSONDecimal.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,11 +34,11 @@ import java.math.BigDecimal
  */
 class JSONDecimal(override val value: BigDecimal) : JSONNumber(), JSONPrimitive<BigDecimal> {
 
-    constructor(str: String): this(BigDecimal(str))
+    constructor(str: String): this(str.toBigDecimal())
 
-    constructor(long: Long): this(BigDecimal(long))
+    constructor(long: Long): this(long.toBigDecimal())
 
-    constructor(int: Int): this(BigDecimal(int))
+    constructor(int: Int): this(int.toBigDecimal())
 
     /**
      * Convert to a JSON string.
@@ -221,18 +221,18 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumber(), JSONPrimitive<
         /** A [JSONDecimal] of 0. */
         val ZERO = JSONDecimal(BigDecimal.ZERO)
 
-        private val MIN_LONG = BigDecimal(Long.MIN_VALUE)
-        private val MAX_LONG = BigDecimal(Long.MAX_VALUE)
-        private val MIN_INT = BigDecimal(Int.MIN_VALUE)
-        private val MAX_INT = BigDecimal(Int.MAX_VALUE)
-        private val MIN_SHORT = BigDecimal(Short.MIN_VALUE.toInt())
-        private val MAX_SHORT = BigDecimal(Short.MAX_VALUE.toInt())
-        private val MIN_BYTE = BigDecimal(Byte.MIN_VALUE.toInt())
-        private val MAX_BYTE = BigDecimal(Byte.MAX_VALUE.toInt())
+        private val MIN_LONG = Long.MIN_VALUE.toBigDecimal()
+        private val MAX_LONG = Long.MAX_VALUE.toBigDecimal()
+        private val MIN_INT = Int.MIN_VALUE.toBigDecimal()
+        private val MAX_INT = Int.MAX_VALUE.toBigDecimal()
+        private val MIN_SHORT = Short.MIN_VALUE.toInt().toBigDecimal()
+        private val MAX_SHORT = Short.MAX_VALUE.toInt().toBigDecimal()
+        private val MIN_BYTE = Byte.MIN_VALUE.toInt().toBigDecimal()
+        private val MAX_BYTE = Byte.MAX_VALUE.toInt().toBigDecimal()
         private val MAX_ULONG = MAX_LONG + MAX_LONG + BigDecimal.ONE
-        private val MAX_UINT = BigDecimal(UInt.MAX_VALUE.toLong())
-        private val MAX_USHORT = BigDecimal(UShort.MAX_VALUE.toInt())
-        private val MAX_UBYTE = BigDecimal(UByte.MAX_VALUE.toInt())
+        private val MAX_UINT = UInt.MAX_VALUE.toLong().toBigDecimal()
+        private val MAX_USHORT = UShort.MAX_VALUE.toInt().toBigDecimal()
+        private val MAX_UBYTE = UByte.MAX_VALUE.toInt().toBigDecimal()
 
         /**
          * Create a [JSONDecimal] from a [BigDecimal].
