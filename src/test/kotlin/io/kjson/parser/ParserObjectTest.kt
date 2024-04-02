@@ -27,7 +27,7 @@ package io.kjson.parser
 
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
+import kotlin.test.assertIs
 import kotlin.test.expect
 
 import io.kjson.JSON.asInt
@@ -47,46 +47,46 @@ class ParserObjectTest {
 
     @Test fun `should parse empty object`() {
         val result = Parser.parse("{}")
-        assertTrue(result is JSONObject)
+        assertIs<JSONObject>(result)
         expect(0) { result.size }
     }
 
     @Test fun `should ignore BOM if present`() {
         val result = Parser.parse("\uFEFF{}")
-        assertTrue(result is JSONObject)
+        assertIs<JSONObject>(result)
         expect(0) { result.size }
     }
 
     @Test fun `should parse simple object`() {
         val result = Parser.parse("""{"first":123,"second":"Hi there!"}""")
-        assertTrue(result is JSONObject)
+        assertIs<JSONObject>(result)
         expect(2) { result.size }
         val first = result["first"]
-        assertTrue(first is JSONInt)
+        assertIs<JSONInt>(first)
         expect(123) { first.value }
         val second = result["second"]
-        assertTrue(second is JSONString)
+        assertIs<JSONString>(second)
         expect("Hi there!") { second.value }
     }
 
     @Test fun `should parse nested object`() {
         val result = Parser.parse("""{"first":123,"second":{"a":[{"aa":0}]}}""")
-        assertTrue(result is JSONObject)
+        assertIs<JSONObject>(result)
         expect(2) { result.size }
         val first = result["first"]
-        assertTrue(first is JSONInt)
+        assertIs<JSONInt>(first)
         expect(123) { first.value }
         val second = result["second"]
-        assertTrue(second is JSONObject)
+        assertIs<JSONObject>(second)
         expect(1) { second.size }
         val a = second["a"]
-        assertTrue(a is JSONArray)
+        assertIs<JSONArray>(a)
         expect(1) { a.size }
         val item = a[0]
-        assertTrue(item is JSONObject)
+        assertIs<JSONObject>(item)
         expect(1) { item.size }
         val aa = item["aa"]
-        assertTrue(aa is JSONInt)
+        assertIs<JSONInt>(aa)
         expect(0) { aa.value }
     }
 
@@ -117,10 +117,10 @@ class ParserObjectTest {
     @Test fun `should allow trailing comma with option objectTrailingComma`() {
         val options = ParseOptions(objectTrailingComma = true)
         val result = Parser.parse("""{"first":123,}""", options)
-        assertTrue(result is JSONObject)
+        assertIs<JSONObject>(result)
         expect(1) { result.size }
         val first = result["first"]
-        assertTrue(first is JSONInt)
+        assertIs<JSONInt>(first)
         expect(123) { first.value }
     }
 
@@ -135,10 +135,10 @@ class ParserObjectTest {
     @Test fun `should allow missing quotes around key with option objectKeyUnquoted`() {
         val options = ParseOptions(objectKeyUnquoted = true)
         val result = Parser.parse("{first:123}", options)
-        assertTrue(result is JSONObject)
+        assertIs<JSONObject>(result)
         expect(1) { result.size }
         val first = result["first"]
-        assertTrue(first is JSONInt)
+        assertIs<JSONInt>(first)
         expect(123) { first.value }
     }
 
@@ -197,7 +197,7 @@ class ParserObjectTest {
         val allowed = """{"a":""".repeat(options.maximumNestingDepth) + '1' + "}".repeat(options.maximumNestingDepth)
         var result = Parser.parse(allowed, options)
         for (i in 0 until options.maximumNestingDepth) {
-            assertTrue(result is JSONObject)
+            assertIs<JSONObject>(result)
             result = result["a"]
         }
         expect(JSONInt(1)) { result }

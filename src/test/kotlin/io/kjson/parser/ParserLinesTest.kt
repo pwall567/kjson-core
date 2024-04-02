@@ -26,13 +26,13 @@
 package io.kjson.parser
 
 import kotlin.test.Test
-import kotlin.test.assertTrue
 import kotlin.test.expect
+import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 
 import io.kjson.JSON.asInt
 import io.kjson.JSONArray
 import io.kjson.JSONObject
-import kotlin.test.assertFailsWith
 
 class ParserLinesTest {
 
@@ -40,7 +40,7 @@ class ParserLinesTest {
         val result = Parser.parseLines("""{"a":999}""")
         expect(1) { result.size }
         with(result[0]) {
-            assertTrue(this is JSONObject)
+            assertIs<JSONObject>(this)
             expect(1) { size }
             expect(999) { this["a"].asInt }
         }
@@ -50,12 +50,12 @@ class ParserLinesTest {
         val result = Parser.parseLines("{\"a\":999}\n{\"b\":888}")
         expect(2) { result.size }
         with(result[0]) {
-            assertTrue(this is JSONObject)
+            assertIs<JSONObject>(this)
             expect(1) { size }
             expect(999) { this["a"].asInt }
         }
         with(result[1]) {
-            assertTrue(this is JSONObject)
+            assertIs<JSONObject>(this)
             expect(1) { size }
             expect(888) { this["b"].asInt }
         }
@@ -65,12 +65,12 @@ class ParserLinesTest {
         val result = Parser.parseLines("{\"a\":999}{\"b\":888}")
         expect(2) { result.size }
         with(result[0]) {
-            assertTrue(this is JSONObject)
+            assertIs<JSONObject>(this)
             expect(1) { size }
             expect(999) { this["a"].asInt }
         }
         with(result[1]) {
-            assertTrue(this is JSONObject)
+            assertIs<JSONObject>(this)
             expect(1) { size }
             expect(888) { this["b"].asInt }
         }
@@ -85,7 +85,7 @@ class ParserLinesTest {
         val result = Parser.parseLines("[123,456]")
         expect(1) { result.size }
         with(result[0]) {
-            assertTrue(this is JSONArray)
+            assertIs<JSONArray>(this)
             expect(123) { this[0].asInt }
             expect(456) { this[1].asInt }
         }
@@ -95,13 +95,13 @@ class ParserLinesTest {
         val result = Parser.parseLines("[123,456]\n[789]")
         expect(2) { result.size }
         with(result[0]) {
-            assertTrue(this is JSONArray)
+            assertIs<JSONArray>(this)
             expect(2) { size }
             expect(123) { this[0].asInt }
             expect(456) { this[1].asInt }
         }
         with(result[1]) {
-            assertTrue(this is JSONArray)
+            assertIs<JSONArray>(this)
             expect(1) { size }
             expect(789) { this[0].asInt }
         }
@@ -111,7 +111,7 @@ class ParserLinesTest {
         val result = Parser.parseLines("\uFEFF{}")
         expect(1) { result.size }
         with(result[0]) {
-            assertTrue(this is JSONObject)
+            assertIs<JSONObject>(this)
             expect(0) { size }
         }
     }

@@ -2,7 +2,7 @@
  * @(#) JSONStructure.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2022, 2023 Peter Wall
+ * Copyright (c) 2022, 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,19 +27,20 @@ package io.kjson
 
 import java.math.BigDecimal
 
-import io.kjson.JSON.asArrayOrError
-import io.kjson.JSON.asBooleanOrError
-import io.kjson.JSON.asByteOrError
-import io.kjson.JSON.asDecimalOrError
-import io.kjson.JSON.asIntOrError
-import io.kjson.JSON.asLongOrError
-import io.kjson.JSON.asObjectOrError
-import io.kjson.JSON.asShortOrError
-import io.kjson.JSON.asStringOrError
-import io.kjson.JSON.asUByteOrError
-import io.kjson.JSON.asUIntOrError
-import io.kjson.JSON.asULongOrError
-import io.kjson.JSON.asUShortOrError
+import io.kjson.JSON.asArrayOr
+import io.kjson.JSON.asBooleanOr
+import io.kjson.JSON.asByteOr
+import io.kjson.JSON.asDecimalOr
+import io.kjson.JSON.asIntOr
+import io.kjson.JSON.asLongOr
+import io.kjson.JSON.asObjectOr
+import io.kjson.JSON.asShortOr
+import io.kjson.JSON.asStringOr
+import io.kjson.JSON.asUByteOr
+import io.kjson.JSON.asUIntOr
+import io.kjson.JSON.asULongOr
+import io.kjson.JSON.asUShortOr
+import io.kjson.JSON.typeError
 
 /**
  * A sealed interface to specify the [JSONValue] classes that represent structured types (array and object).
@@ -70,66 +71,66 @@ sealed interface JSONStructure<K: Any> : JSONValue {
     /**
      * Get the nominated value os a [String], or throw a [JSONTypeException] if it is of the wrong type.
      */
-    fun getString(key: K): String = get(key).asStringOrError(key = key)
+    fun getString(key: K): String = get(key).asStringOr { typeError("String", key) }
 
     /**
      * Get the nominated value os a [Long], or throw a [JSONTypeException] if it is of the wrong type.
      */
-    fun getLong(key: K): Long = get(key).asLongOrError(key = key)
+    fun getLong(key: K): Long = get(key).asLongOr { typeError("Long", key) }
 
     /**
      * Get the nominated value os a [Int], or throw a [JSONTypeException] if it is of the wrong type.
      */
-    fun getInt(key: K): Int = get(key).asIntOrError(key = key)
+    fun getInt(key: K): Int = get(key).asIntOr { typeError("Int", key) }
 
     /**
      * Get the nominated value os a [Short], or throw a [JSONTypeException] if it is of the wrong type.
      */
-    fun getShort(key: K): Short = get(key).asShortOrError(key = key)
+    fun getShort(key: K): Short = get(key).asShortOr { typeError("Short", key) }
 
     /**
      * Get the nominated value os a [Byte], or throw a [JSONTypeException] if it is of the wrong type.
      */
-    fun getByte(key: K): Byte = get(key).asByteOrError(key = key)
+    fun getByte(key: K): Byte = get(key).asByteOr { typeError("Byte", key) }
 
     /**
      * Get the nominated value os a [ULong], or throw a [JSONTypeException] if it is of the wrong type.
      */
-    fun getULong(key: K): ULong = get(key).asULongOrError(key = key)
+    fun getULong(key: K): ULong = get(key).asULongOr { typeError("ULong", key) }
 
     /**
      * Get the nominated value os a [UInt], or throw a [JSONTypeException] if it is of the wrong type.
      */
-    fun getUInt(key: K): UInt = get(key).asUIntOrError(key = key)
+    fun getUInt(key: K): UInt = get(key).asUIntOr { typeError("UInt", key) }
 
     /**
      * Get the nominated value os a [UShort], or throw a [JSONTypeException] if it is of the wrong type.
      */
-    fun getUShort(key: K): UShort = get(key).asUShortOrError(key = key)
+    fun getUShort(key: K): UShort = get(key).asUShortOr { typeError("UShort", key) }
 
     /**
      * Get the nominated value os a [UByte], or throw a [JSONTypeException] if it is of the wrong type.
      */
-    fun getUByte(key: K): UByte = get(key).asUByteOrError(key = key)
+    fun getUByte(key: K): UByte = get(key).asUByteOr { typeError("UByte", key) }
 
     /**
      * Get the nominated value os a [BigDecimal], or throw a [JSONTypeException] if it is of the wrong type.
      */
-    fun getDecimal(key: K): BigDecimal = get(key).asDecimalOrError(key = key)
+    fun getDecimal(key: K): BigDecimal = get(key).asDecimalOr { typeError("BigDecimal", key) }
 
     /**
      * Get the nominated value os a [Boolean], or throw a [JSONTypeException] if it is of the wrong type.
      */
-    fun getBoolean(key: K): Boolean = get(key).asBooleanOrError(key = key)
+    fun getBoolean(key: K): Boolean = get(key).asBooleanOr { typeError("Boolean", key) }
 
     /**
      * Get the nominated value os a [JSONArray], or throw a [JSONTypeException] if it is of the wrong type.
      */
-    fun getArray(key: K): JSONArray = get(key).asArrayOrError(key = key)
+    fun getArray(key: K): JSONArray = get(key).asArrayOr { typeError("JSONArray", key) }
 
     /**
      * Get the nominated value os a [JSONObject], or throw a [JSONTypeException] if it is of the wrong type.
      */
-    fun getObject(key: K): JSONObject = get(key).asObjectOrError(key = key)
+    fun getObject(key: K): JSONObject = get(key).asObjectOr { typeError("JSONObject", key) }
 
 }

@@ -2,8 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## [Unreleased]
+## [7.3] - 2024-04-01
 ### Changed
+- `JSON`: added `asXxxxOr()` functions
+- `JSONStructure`: switched to use `asXxxxOr()` functions
 - several: switched to more idiomatic Kotlin
 
 ## [7.2] - 2024-02-18

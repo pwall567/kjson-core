@@ -26,8 +26,8 @@
 package io.kjson
 
 import kotlin.test.Test
+import kotlin.test.assertIs
 import kotlin.test.assertSame
-import kotlin.test.assertTrue
 import kotlin.test.expect
 import kotlinx.coroutines.runBlocking
 
@@ -51,7 +51,7 @@ class JSONBooleanTest {
 
     @Test fun `should handle JSONBoolean in an array`() {
         val test1 = JSON.parse("[12,true,false]")
-        assertTrue(test1 is JSONArray)
+        assertIs<JSONArray>(test1)
         expect(3) { test1.size }
         expect(JSONInt(12)) { test1[0] }
         expect(JSONBoolean.TRUE) { test1[1] }
@@ -60,7 +60,7 @@ class JSONBooleanTest {
 
     @Test fun `should handle JSONBoolean in an object`() {
         val test1 = JSON.parse("""{"a":true,"b":false}""")
-        assertTrue(test1 is JSONObject)
+        assertIs<JSONObject>(test1)
         expect(2) { test1.size }
         expect(JSONBoolean.TRUE) { test1["a"] }
         expect(JSONBoolean.FALSE) { test1["b"] }

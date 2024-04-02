@@ -33,6 +33,7 @@ import kotlin.test.expect
 
 import io.kjson.JSONBoolean
 import io.kjson.JSONObject
+import kotlin.test.assertIs
 
 class ParserKeywordTest {
 
@@ -42,25 +43,25 @@ class ParserKeywordTest {
 
     @Test fun `should parse true`() {
         val result = Parser.parse("true")
-        assertTrue(result is JSONBoolean)
+        assertIs<JSONBoolean>(result)
         assertTrue(result.value)
     }
 
     @Test fun `should parse false`() {
         val result = Parser.parse("false")
-        assertTrue(result is JSONBoolean)
+        assertIs<JSONBoolean>(result)
         assertFalse(result.value)
     }
 
     @Test fun `should parse keywords in object`() {
         val result = Parser.parse("""{"aaa":true,"bbb":false,"ccc":null}""")
-        assertTrue(result is JSONObject)
+        assertIs<JSONObject>(result)
         expect(3) { result.size }
         val aaa = result["aaa"]
-        assertTrue(aaa is JSONBoolean)
+        assertIs<JSONBoolean>(aaa)
         assertTrue(aaa.value)
         val bbb = result["bbb"]
-        assertTrue(bbb is JSONBoolean)
+        assertIs<JSONBoolean>(bbb)
         assertFalse(bbb.value)
         assertNull(result["ccc"])
     }

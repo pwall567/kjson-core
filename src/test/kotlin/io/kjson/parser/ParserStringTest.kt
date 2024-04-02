@@ -27,7 +27,7 @@ package io.kjson.parser
 
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
+import kotlin.test.assertIs
 import kotlin.test.expect
 
 import io.kjson.JSONString
@@ -38,19 +38,19 @@ class ParserStringTest {
 
     @Test fun `should parse simple string`() {
         val result = Parser.parse("\"simple\"")
-        assertTrue(result is JSONString)
+        assertIs<JSONString>(result)
         expect("simple") { result.value }
     }
 
     @Test fun `should parse string with escape sequences`() {
         val result = Parser.parse("\"tab\\tnewline\\nquote\\\" \"")
-        assertTrue(result is JSONString)
+        assertIs<JSONString>(result)
         expect("tab\tnewline\nquote\" ") { result.value }
     }
 
     @Test fun `should parse string with unicode escape sequences`() {
         val result = Parser.parse("\"mdash \\u2014\"")
-        assertTrue(result is JSONString)
+        assertIs<JSONString>(result)
         expect("mdash \u2014") { result.value }
     }
 

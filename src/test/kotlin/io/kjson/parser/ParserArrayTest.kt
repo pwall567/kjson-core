@@ -27,7 +27,7 @@ package io.kjson.parser
 
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
+import kotlin.test.assertIs
 import kotlin.test.expect
 
 import io.kjson.JSONArray
@@ -42,20 +42,20 @@ class ParserArrayTest {
 
     @Test fun `should parse empty array`() {
         val result = Parser.parse("[]")
-        assertTrue(result is JSONArray)
+        assertIs<JSONArray>(result)
         expect(0) { result.size }
     }
 
     @Test fun `should parse array of string`() {
         val result = Parser.parse("""["simple"]""")
-        assertTrue(result is JSONArray)
+        assertIs<JSONArray>(result)
         expect(1) { result.size }
         expect(JSONString("simple")) { result[0] }
     }
 
     @Test fun `should parse array of two strings`() {
         val result = Parser.parse("""["Hello","world"]""")
-        assertTrue(result is JSONArray)
+        assertIs<JSONArray>(result)
         expect(2) { result.size }
         expect(JSONString("Hello")) { result[0] }
         expect(JSONString("world")) { result[1] }
@@ -63,11 +63,11 @@ class ParserArrayTest {
 
     @Test fun `should parse array of arrays`() {
         val result = Parser.parse("""["Hello",["world","universe"]]""")
-        assertTrue(result is JSONArray)
+        assertIs<JSONArray>(result)
         expect(2) { result.size }
         expect(JSONString("Hello")) { result[0] }
         val inner = result[1]
-        assertTrue(inner is JSONArray)
+        assertIs<JSONArray>(inner)
         expect(2) { inner.size }
         expect(JSONString("world")) { inner[0] }
         expect(JSONString("universe")) { inner[1] }
@@ -84,7 +84,7 @@ class ParserArrayTest {
     @Test fun `should allow trailing comma with option arrayTrailingComma`() {
         val options = ParseOptions(arrayTrailingComma = true)
         val result = Parser.parse("""["simple",]""", options)
-        assertTrue(result is JSONArray)
+        assertIs<JSONArray>(result)
         expect(1) { result.size }
         expect(JSONString("simple")) { result[0] }
     }
@@ -110,7 +110,7 @@ class ParserArrayTest {
         val allowed = "[".repeat(options.maximumNestingDepth) + '1' + "]".repeat(options.maximumNestingDepth)
         var result = Parser.parse(allowed, options)
         for (i in 0 until options.maximumNestingDepth) {
-            assertTrue(result is JSONArray)
+            assertIs<JSONArray>(result)
             result = result[0]
         }
         expect(JSONInt(1)) { result }

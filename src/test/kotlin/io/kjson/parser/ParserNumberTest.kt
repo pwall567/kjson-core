@@ -27,8 +27,8 @@ package io.kjson.parser
 
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 import kotlin.test.assertSame
-import kotlin.test.assertTrue
 import kotlin.test.expect
 
 import java.math.BigDecimal
@@ -80,100 +80,100 @@ class ParserNumberTest {
 
     @Test fun `should parse positive integers`() {
         val result1 = Parser.parse("123")
-        assertTrue(result1 is JSONInt)
+        assertIs<JSONInt>(result1)
         expect(123) { result1.value }
         val result2 = Parser.parse("5678900")
-        assertTrue(result2 is JSONInt)
+        assertIs<JSONInt>(result2)
         expect(5678900) { result2.value }
         val result3 = Parser.parse("2147483647")
-        assertTrue(result3 is JSONInt)
+        assertIs<JSONInt>(result3)
         expect(2147483647) { result3.value }
     }
 
     @Test fun `should parse negative integers`() {
         val result1 = Parser.parse("-1")
-        assertTrue(result1 is JSONInt)
+        assertIs<JSONInt>(result1)
         expect(-1) { result1.value }
         val result2 = Parser.parse("-876543")
-        assertTrue(result2 is JSONInt)
+        assertIs<JSONInt>(result2)
         expect(-876543) { result2.value }
         val result3 = Parser.parse("-2147483648")
-        assertTrue(result3 is JSONInt)
+        assertIs<JSONInt>(result3)
         expect(-2147483648) { result3.value }
     }
 
     @Test fun `should parse positive long integers`() {
         val result1 = Parser.parse("1234567890000")
-        assertTrue(result1 is JSONLong)
+        assertIs<JSONLong>(result1)
         expect(1234567890000) { result1.value }
         val result2 = Parser.parse("567895678956789")
-        assertTrue(result2 is JSONLong)
+        assertIs<JSONLong>(result2)
         expect(567895678956789) { result2.value }
         val result3 = Parser.parse("2147483648")
-        assertTrue(result3 is JSONLong)
+        assertIs<JSONLong>(result3)
         expect(2147483648) { result3.value }
         val result4 = Parser.parse("9223372036854775807")
-        assertTrue(result4 is JSONLong)
+        assertIs<JSONLong>(result4)
         expect(9223372036854775807) { result4.value }
     }
 
     @Test fun `should parse negative long integers`() {
         val result1 = Parser.parse("-1234567890000")
-        assertTrue(result1 is JSONLong)
+        assertIs<JSONLong>(result1)
         expect(-1234567890000) { result1.value }
         val result2 = Parser.parse("-567895678956789")
-        assertTrue(result2 is JSONLong)
+        assertIs<JSONLong>(result2)
         expect(-567895678956789) { result2.value }
         val result3 = Parser.parse("-2147483649")
-        assertTrue(result3 is JSONLong)
+        assertIs<JSONLong>(result3)
         expect(-2147483649) { result3.value }
         val result4 = Parser.parse("-9223372036854775808")
-        assertTrue(result4 is JSONLong)
+        assertIs<JSONLong>(result4)
         expect(-9223372036854775807 - 1) { result4.value }
     }
 
     @Test fun `should parse decimal`() {
         val result1 = Parser.parse("0.0")
-        assertTrue(result1 is JSONDecimal)
+        assertIs<JSONDecimal>(result1)
         expect(0) { result1.value.compareTo(BigDecimal.ZERO) }
         val result2 = Parser.parse("0.00")
-        assertTrue(result2 is JSONDecimal)
+        assertIs<JSONDecimal>(result2)
         expect(0) { result2.value.compareTo(BigDecimal.ZERO) }
     }
 
     @Test fun `should parse positive decimal`() {
         val result1 = Parser.parse("12340.0")
-        assertTrue(result1 is JSONDecimal)
+        assertIs<JSONDecimal>(result1)
         expect(0) { result1.value.compareTo("12340".toBigDecimal()) }
         val result2 = Parser.parse("1e200")
-        assertTrue(result2 is JSONDecimal)
+        assertIs<JSONDecimal>(result2)
         expect(0) { result2.value.compareTo("1e200".toBigDecimal()) }
         val result3 = Parser.parse("27e-60")
-        assertTrue(result3 is JSONDecimal)
+        assertIs<JSONDecimal>(result3)
         expect(0) { result3.value.compareTo("27e-60".toBigDecimal()) }
         val result4 = Parser.parse("0.1e-48")
-        assertTrue(result4 is JSONDecimal)
+        assertIs<JSONDecimal>(result4)
         expect(0) { result4.value.compareTo("0.1e-48".toBigDecimal()) }
         val result5 = Parser.parse("9223372036854775808")
-        assertTrue(result5 is JSONDecimal)
+        assertIs<JSONDecimal>(result5)
         expect(0) { result5.value.compareTo("9223372036854775808".toBigDecimal()) }
     }
 
     @Test fun `should parse negative decimal`() {
         val result1 = Parser.parse("-12340.0")
-        assertTrue(result1 is JSONDecimal)
+        assertIs<JSONDecimal>(result1)
         expect(0) { result1.value.compareTo("-12340".toBigDecimal()) }
         val result2 = Parser.parse("-1e200")
-        assertTrue(result2 is JSONDecimal)
+        assertIs<JSONDecimal>(result2)
         expect(0) { result2.value.compareTo("-1e200".toBigDecimal()) }
         val result3 = Parser.parse("-27e-60")
-        assertTrue(result3 is JSONDecimal)
+        assertIs<JSONDecimal>(result3)
         expect(0) { result3.value.compareTo("-27e-60".toBigDecimal()) }
         val result4 = Parser.parse("-0.1e-48")
-        assertTrue(result4 is JSONDecimal)
+        assertIs<JSONDecimal>(result4)
         expect(0) { result4.value.compareTo("-0.1e-48".toBigDecimal()) }
         val result5 = Parser.parse("-9223372036854775809")
-        assertTrue(result5 is JSONDecimal)
+        assertIs<JSONDecimal>(result5)
         expect(0) { result5.value.compareTo("-9223372036854775809".toBigDecimal()) }
     }
 

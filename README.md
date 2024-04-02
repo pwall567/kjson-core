@@ -409,9 +409,9 @@ It takes the following parameters:
 Its use is best illustrated by example:
 ```kotlin
     if (node !is JSONString)
-        node.typeError("string", "/person/surname", "Surname")
+        node.typeError("String", "/person/surname", "Surname")
 ```
-This will produce an exception like the one shown in the description of `JSONTypeException`.
+This will produce an exception like the one shown in the description of [`JSONTypeException`](#jsontypeexception).
 
 The conversion may be combined with the error reporting using the `asXxxxOrError()` functions:
 
@@ -437,11 +437,12 @@ The `asArrayOrError()` and `asObjectOrError()` functions return `JSONArray` and 
 of course be used as the underlying implementation types (`List` and `Map`).
 
 The functions all take the same parameters as the `typeError()` function (which they all call if the type is not
-correct).
+correct), but in the case of these functions, the `target` parameter also has a default value, a string representing the
+target type.
 
-Using these functions, the above example becomes:
+Using these functions, the above example (for the use of `typeError`) may be written:
 ```kotlin
-    node.asStringOrError("string", "/person/surname", "Surname")
+    node.asStringOrError(key = "/person/surname", nodeName = "Surname")
 ```
 
 #### Extension Values
@@ -477,12 +478,49 @@ To simplify casting a `JSONValue` to the expected type, the `JSON` object provid
 | `JSONValue?.asObject`        | `JSONObject`  | throw `JSONTypeException`           |
 | `JSONValue?.asObjectOrNull`  | `JSONObject?` | return `null`                       |
 
-The `JSONTypeException` will use the default value `"Node"` for the `nodeName`, and the class name of the
-target type as the `target`.
-The `key` will be `null`.
+The [`JSONTypeException`](#jsontypeexception) will use the default value `"Node"` for the `nodeName`, and the class name
+of the target type as the default for `target`.
+The default value for `key` is `null`.
 
-The same note on the return types of the `asXxxxOrError()` functions also applies to the results of these extension
-values.
+As with the `asXxxxOrError()` functions, the extension values representing a simple value return the actual value type,
+not the `JSONValue` subtype (_i.e._ `asInt` returns `Int`, not `JSONInt`), but the `asArrayOrError()` and
+`asObjectOrError()` functions return `JSONArray` and `JSONObject` respectively.
+
+#### Extension Functions
+
+A further way of casting a `JSONValue` to the expected type is provided by the `asXxxxOr` functions:
+
+| Extension Function         | Result type  |
+|----------------------------|--------------|
+| `JSONValue?.asStringOr()`  | `String`     |
+| `JSONValue?.asLongOr()`    | `Long`       |
+| `JSONValue?.asIntOr()`     | `Int`        |
+| `JSONValue?.asShortOr()`   | `Short`      |
+| `JSONValue?.asByteOr()`    | `Byte`       |
+| `JSONValue?.asULongOr()`   | `ULong`      |
+| `JSONValue?.asUIntOr()`    | `UInt`       |
+| `JSONValue?.asUShortOr()`  | `UShort`     |
+| `JSONValue?.asUByteOr()`   | `UByte`      |
+| `JSONValue?.asDecimalOr()` | `BigDecimal` |
+| `JSONValue?.asBooleanOr()` | `Boolean`    |
+| `JSONValue?.asArrayOr()`   | `JSONArray`  |
+| `JSONValue?.asObjectOr()`  | `JSONObject` |
+
+The functions all take a single parameter &ndash; a lambda with the `JSONValue?` as the receiver which will be invoked
+if the `JSONValue?` is not the correct type.
+This may be used to provide a default value, silently ignoring the type error, but more commonly it will be used to
+throw an exception.
+For example:
+```kotlin
+    node.asStringOr { typeError(target = "string", key = "/person/surname", nodeName = "Surname") }
+```
+
+The advantage of using these functions as compared to `asXxxxOrError()`, is that these functions are inline, and the
+code to set up the parameters and call a separate function will not be executed if the node is of the correct type.
+
+Again, as with the `asXxxxOrError()` functions, the extension functions returning a simple value return the actual value
+type, not the `JSONValue` subtype, and the `asArrayOr()` and `asObjectOr()` functions return `JSONArray` and
+`JSONObject` respectively.
 
 ## JSON Lines
 
@@ -602,25 +640,25 @@ The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram
 
 ## Dependency Specification
 
-The latest version of the library is 7.2, and it may be obtained from the Maven Central repository.
+The latest version of the library is 7.3, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>7.2</version>
+      <version>7.3</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:7.2"
+    implementation "io.kjson:kjson-core:7.3"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:7.2")
+    implementation("io.kjson:kjson-core:7.3")
 ```
 
 Peter Wall
 
-2024-02-18
+2024-04-01

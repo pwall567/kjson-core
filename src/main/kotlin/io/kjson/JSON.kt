@@ -2,7 +2,7 @@
  * @(#) JSON.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -320,6 +320,97 @@ object JSON {
     /** The value of the receiver [JSONValue] as a [JSONObject] or `null`.  */
     val JSONValue?.asObjectOrNull: JSONObject?
         get() = this as? JSONObject
+
+    /**
+     * Get the receiver [JSONValue] as a [String] if compatible, or if not, return the result of the evaluation of the
+     * lambda (which may supply an alternative or throw an exception).
+     */
+    inline fun JSONValue?.asStringOr(alternative: JSONValue?.() -> String): String =
+            if (this is JSONString) value else alternative()
+
+    /**
+     * Get the receiver [JSONValue] as a [Long] if compatible, or if not, return the result of the evaluation of the
+     * lambda (which may supply an alternative or throw an exception).
+     */
+    inline fun JSONValue?.asLongOr(alternative: JSONValue?.() -> Long): Long =
+            if (this is JSONNumber && isLong()) toLong() else alternative()
+
+    /**
+     * Get the receiver [JSONValue] as an [Int] if compatible, or if not, return the result of the evaluation of the
+     * lambda (which may supply an alternative or throw an exception).
+     */
+    inline fun JSONValue?.asIntOr(alternative: JSONValue?.() -> Int): Int =
+            if (this is JSONNumber && isInt()) toInt() else alternative()
+
+    /**
+     * Get the receiver [JSONValue] as a [Short] if compatible, or if not, return the result of the evaluation of the
+     * lambda (which may supply an alternative or throw an exception).
+     */
+    inline fun JSONValue?.asShortOr(alternative: JSONValue?.() -> Short): Short =
+            if (this is JSONNumber && isShort()) toShort() else alternative()
+
+    /**
+     * Get the receiver [JSONValue] as a [Byte] if compatible, or if not, return the result of the evaluation of the
+     * lambda (which may supply an alternative or throw an exception).
+     */
+    inline fun JSONValue?.asByteOr(alternative: JSONValue?.() -> Byte): Byte =
+            if (this is JSONNumber && isByte()) toByte() else alternative()
+
+    /**
+     * Get the receiver [JSONValue] as a [ULong] if compatible, or if not, return the result of the evaluation of the
+     * lambda (which may supply an alternative or throw an exception).
+     */
+    inline fun JSONValue?.asULongOr(alternative: JSONValue?.() -> ULong): ULong =
+            if (this is JSONNumber && isULong()) toULong() else alternative()
+
+    /**
+     * Get the receiver [JSONValue] as a [UInt] if compatible, or if not, return the result of the evaluation of the
+     * lambda (which may supply an alternative or throw an exception).
+     */
+    inline fun JSONValue?.asUIntOr(alternative: JSONValue?.() -> UInt): UInt =
+            if (this is JSONNumber && isUInt()) toUInt() else alternative()
+
+    /**
+     * Get the receiver [JSONValue] as a [UShort] if compatible, or if not, return the result of the evaluation of the
+     * lambda (which may supply an alternative or throw an exception).
+     */
+    inline fun JSONValue?.asUShortOr(alternative: JSONValue?.() -> UShort): UShort =
+            if (this is JSONNumber && isUShort()) toUShort() else alternative()
+
+    /**
+     * Get the receiver [JSONValue] as a [UByte] if compatible, or if not, return the result of the evaluation of the
+     * lambda (which may supply an alternative or throw an exception).
+     */
+    inline fun JSONValue?.asUByteOr(alternative: JSONValue?.() -> UByte): UByte =
+            if (this is JSONNumber && isUByte()) toUByte() else alternative()
+
+    /**
+     * Get the receiver [JSONValue] as a [BigDecimal] if compatible, or if not, return the result of the evaluation of
+     * the lambda (which may supply an alternative or throw an exception).
+     */
+    inline fun JSONValue?.asDecimalOr(alternative: JSONValue?.() -> BigDecimal): BigDecimal =
+            if (this is JSONNumber) toDecimal() else alternative()
+
+    /**
+     * Get the receiver [JSONValue] as a [Boolean] if compatible, or if not, return the result of the evaluation of the
+     * lambda (which may supply an alternative or throw an exception).
+     */
+    inline fun JSONValue?.asBooleanOr(alternative: JSONValue?.() -> Boolean): Boolean =
+            if (this is JSONBoolean) value else alternative()
+
+    /**
+     * Get the receiver [JSONValue] as a [JSONArray] if compatible, or if not, return the result of the evaluation of
+     * the lambda (which may supply an alternative or throw an exception).
+     */
+    inline fun JSONValue?.asArrayOr(alternative: JSONValue?.() -> JSONArray): JSONArray =
+            if (this is JSONArray) this else alternative()
+
+    /**
+     * Get the receiver [JSONValue] as a [JSONObject] if compatible, or if not, return the result of the evaluation of
+     * the lambda (which may supply an alternative or throw an exception).
+     */
+    inline fun JSONValue?.asObjectOr(alternative: JSONValue?.() -> JSONObject): JSONObject =
+            if (this is JSONObject) this else alternative()
 
     /**
      * Get the receiver [JSONValue] as a [String], or throw a [JSONTypeException] if incorrect).

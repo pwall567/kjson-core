@@ -70,15 +70,19 @@ class JSONValueTest {
         return JSONInt(222)
     }
 
-    private fun getType(jsonValue: JSONValue?): String = when (jsonValue) {
-        null -> "null"
-        is JSONInt -> "int"
-        is JSONLong -> "long"
-        is JSONDecimal -> "decimal"
-        is JSONString -> "string"
-        is JSONBoolean -> "boolean"
-        is JSONArray -> "array"
-        is JSONObject -> "object"
+    companion object {
+
+        private fun getType(jsonValue: JSONValue?): String = when (jsonValue) {
+            null -> "null"
+            is JSONInt -> "int"
+            is JSONLong -> "long"
+            is JSONDecimal -> "decimal"
+            is JSONString -> "string"
+            is JSONBoolean -> "boolean"
+            is JSONArray -> "array"
+            is JSONObject -> "object"
+        }
+
     }
 
 }
