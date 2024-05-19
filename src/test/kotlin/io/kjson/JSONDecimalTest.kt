@@ -286,25 +286,25 @@ class JSONDecimalTest {
 
     @Test fun `should format JSONDecimal using output`() {
         val capture = OutputCapture(16)
-        JSONDecimal.ZERO.output(capture)
+        JSONDecimal.ZERO.outputTo(capture)
         expect("0") { capture.toString() }
         capture.reset()
-        JSONDecimal(12345).output(capture)
+        JSONDecimal(12345).outputTo(capture)
         expect("12345") { capture.toString() }
         capture.reset()
-        JSONDecimal("-527.5").output(capture)
+        JSONDecimal("-527.5").outputTo(capture)
         expect("-527.5") { capture.toString() }
     }
 
     @Test fun `should format JSONDecimal using coOutput`() = runBlocking {
         val capture = CoOutputCapture(16)
-        JSONDecimal.ZERO.coOutput(capture)
+        JSONDecimal.ZERO.coOutputTo(capture)
         expect("0") { capture.toString() }
         capture.reset()
-        JSONDecimal(12345).coOutput(capture)
+        JSONDecimal(12345).coOutputTo(capture)
         expect("12345") { capture.toString() }
         capture.reset()
-        JSONDecimal("-527.5").coOutput(capture)
+        JSONDecimal("-527.5").coOutputTo(capture)
         expect("-527.5") { capture.toString() }
     }
 

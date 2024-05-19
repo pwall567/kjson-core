@@ -29,6 +29,7 @@ import java.math.BigDecimal
 import java.util.function.IntConsumer
 
 import io.kjson.parser.Parser
+import io.kjson.util.getIntProperty
 import net.pwall.json.JSONFunctions.appendString
 import net.pwall.json.JSONFunctions.displayString
 import net.pwall.util.CoOutput
@@ -40,6 +41,15 @@ import net.pwall.util.output
  * @author  Peter Wall
  */
 object JSON {
+
+    /** The default output buffer size for `toJSON()` operations (`JSONArray` and `JSONObject`) */
+    var defaultOutputBuilderSize = getIntProperty("io.kjson.defaultOutputBuilderSize", 2048)
+        set(value) {
+            if (value in 16..(256 * 1024))
+                field = value
+            else
+                throw JSONException("Stringify initial allocation size invalid - $value")
+        }
 
     /**
      * Create a [JSONInt] from an [Int] value.
@@ -120,22 +130,46 @@ object JSON {
      * Output the receiver [JSONValue] as a JSON string (`"null"` if the receiver is `null`) to an [IntConsumer] (a
      * character at a time).
      */
+    fun JSONValue?.outputTo(out: IntConsumer) {
+        if (this == null)
+            out.accept("null")
+        else
+            outputTo(out)
+    }
+
+    /**
+     * Output the receiver [JSONValue] as a JSON string (`"null"` if the receiver is `null`) to an [IntConsumer] (a
+     * character at a time).
+     */
+    @Deprecated("renamed to outputTo", ReplaceWith("outputTo(out)", "io.kjson.JSON.outputTo"))
     fun JSONValue?.output(out: IntConsumer) {
         if (this == null)
             out.accept("null")
         else
-            output(out)
+            outputTo(out)
     }
 
     /**
      * Output the receiver [JSONValue] as a JSON string (`"null"` if the receiver is `null`) to a [CoOutput] (a
      * character at a time).
      */
+    suspend fun JSONValue?.coOutputTo(out: CoOutput) {
+        if (this == null)
+            out.output("null")
+        else
+            coOutputTo(out)
+    }
+
+    /**
+     * Output the receiver [JSONValue] as a JSON string (`"null"` if the receiver is `null`) to a [CoOutput] (a
+     * character at a time).
+     */
+    @Deprecated("renamed to coOutputTo", ReplaceWith("coOutputTo(out)", "io.kjson.JSON.coOutputTo"))
     suspend fun JSONValue?.coOutput(out: CoOutput) {
         if (this == null)
             out.output("null")
         else
-            coOutput(out)
+            coOutputTo(out)
     }
 
     /**
@@ -413,7 +447,7 @@ object JSON {
             if (this is JSONObject) this else alternative()
 
     /**
-     * Get the receiver [JSONValue] as a [String], or throw a [JSONTypeException] if incorrect).
+     * Get the receiver [JSONValue] as a [String], or throw a [JSONTypeException] if incorrect.
      */
     fun JSONValue?.asStringOrError(
         target: String = "String",
@@ -422,7 +456,7 @@ object JSON {
     ): String = if (this is JSONString) value else typeError(target, key, nodeName)
 
     /**
-     * Get the receiver [JSONValue] as a [Long], or throw a [JSONTypeException] if incorrect).
+     * Get the receiver [JSONValue] as a [Long], or throw a [JSONTypeException] if incorrect.
      */
     fun JSONValue?.asLongOrError(
         target: String = "Long",
@@ -431,7 +465,7 @@ object JSON {
     ): Long = if (this is JSONNumber && isLong()) toLong() else typeError(target, key, nodeName)
 
     /**
-     * Get the receiver [JSONValue] as an [Int], or throw a [JSONTypeException] if incorrect).
+     * Get the receiver [JSONValue] as an [Int], or throw a [JSONTypeException] if incorrect.
      */
     fun JSONValue?.asIntOrError(
         target: String = "Int",
@@ -440,7 +474,7 @@ object JSON {
     ): Int = if (this is JSONNumber && isInt()) toInt() else typeError(target, key, nodeName)
 
     /**
-     * Get the receiver [JSONValue] as a [Short], or throw a [JSONTypeException] if incorrect).
+     * Get the receiver [JSONValue] as a [Short], or throw a [JSONTypeException] if incorrect.
      */
     fun JSONValue?.asShortOrError(
         target: String = "Short",
@@ -449,7 +483,7 @@ object JSON {
     ): Short = if (this is JSONNumber && isShort()) toShort() else typeError(target, key, nodeName)
 
     /**
-     * Get the receiver [JSONValue] as a [Byte], or throw a [JSONTypeException] if incorrect).
+     * Get the receiver [JSONValue] as a [Byte], or throw a [JSONTypeException] if incorrect.
      */
     fun JSONValue?.asByteOrError(
         target: String = "Byte",
@@ -458,7 +492,7 @@ object JSON {
     ): Byte = if (this is JSONNumber && isByte()) toByte() else typeError(target, key, nodeName)
 
     /**
-     * Get the receiver [JSONValue] as a [ULong], or throw a [JSONTypeException] if incorrect).
+     * Get the receiver [JSONValue] as a [ULong], or throw a [JSONTypeException] if incorrect.
      */
     fun JSONValue?.asULongOrError(
         target: String = "ULong",
@@ -467,7 +501,7 @@ object JSON {
     ): ULong = if (this is JSONNumber && isULong()) toULong() else typeError(target, key, nodeName)
 
     /**
-     * Get the receiver [JSONValue] as a [UInt], or throw a [JSONTypeException] if incorrect).
+     * Get the receiver [JSONValue] as a [UInt], or throw a [JSONTypeException] if incorrect.
      */
     fun JSONValue?.asUIntOrError(
         target: String = "UInt",
@@ -476,7 +510,7 @@ object JSON {
     ): UInt = if (this is JSONNumber && isUInt()) toUInt() else typeError(target, key, nodeName)
 
     /**
-     * Get the receiver [JSONValue] as a [UShort], or throw a [JSONTypeException] if incorrect).
+     * Get the receiver [JSONValue] as a [UShort], or throw a [JSONTypeException] if incorrect.
      */
     fun JSONValue?.asUShortOrError(
         target: String = "UShort",
@@ -485,7 +519,7 @@ object JSON {
     ): UShort = if (this is JSONNumber && isUShort()) toUShort() else typeError(target, key, nodeName)
 
     /**
-     * Get the receiver [JSONValue] as a [UByte], or throw a [JSONTypeException] if incorrect).
+     * Get the receiver [JSONValue] as a [UByte], or throw a [JSONTypeException] if incorrect.
      */
     fun JSONValue?.asUByteOrError(
         target: String = "UByte",
@@ -494,7 +528,7 @@ object JSON {
     ): UByte = if (this is JSONNumber && isUByte()) toUByte() else typeError(target, key, nodeName)
 
     /**
-     * Get the receiver [JSONValue] as a [BigDecimal], or throw a [JSONTypeException] if incorrect).
+     * Get the receiver [JSONValue] as a [BigDecimal], or throw a [JSONTypeException] if incorrect.
      */
     fun JSONValue?.asDecimalOrError(
         target: String = "BigDecimal",
@@ -503,7 +537,7 @@ object JSON {
     ): BigDecimal = if (this is JSONNumber) toDecimal() else typeError(target, key, nodeName)
 
     /**
-     * Get the receiver [JSONValue] as a [Boolean], or throw a [JSONTypeException] if incorrect).
+     * Get the receiver [JSONValue] as a [Boolean], or throw a [JSONTypeException] if incorrect.
      */
     fun JSONValue?.asBooleanOrError(
         target: String = "Boolean",
@@ -512,7 +546,7 @@ object JSON {
     ): Boolean = if (this is JSONBoolean) value else typeError(target, key, nodeName)
 
     /**
-     * Get the receiver [JSONValue] as a [JSONArray], or throw a [JSONTypeException] if incorrect).
+     * Get the receiver [JSONValue] as a [JSONArray], or throw a [JSONTypeException] if incorrect.
      */
     fun JSONValue?.asArrayOrError(
         target: String = "JSONArray",
@@ -521,7 +555,7 @@ object JSON {
     ): JSONArray = if (this is JSONArray) this else typeError(target, key, nodeName)
 
     /**
-     * Get the receiver [JSONValue] as a [JSONObject], or throw a [JSONTypeException] if incorrect).
+     * Get the receiver [JSONValue] as a [JSONObject], or throw a [JSONTypeException] if incorrect.
      */
     fun JSONValue?.asObjectOrError(
         target: String = "JSONObject",

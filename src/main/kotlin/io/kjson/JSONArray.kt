@@ -29,8 +29,8 @@ import java.math.BigDecimal
 import java.util.function.IntConsumer
 
 import io.kjson.JSON.appendTo
-import io.kjson.JSON.coOutput
-import io.kjson.JSON.output
+import io.kjson.JSON.coOutputTo
+import io.kjson.JSON.outputTo
 import io.kjson.util.AbstractBuilder
 import net.pwall.util.CoOutput
 import net.pwall.util.CoOutputFlushable
@@ -72,6 +72,18 @@ class JSONArray internal constructor (private val array: Array<out JSONValue?>, 
     /**
      * Append in JSON Lines form to an [Appendable].
      */
+    fun appendJSONLinesTo(a: Appendable) {
+        var i = 0
+        while (i < size) {
+            array[i++].appendTo(a)
+            a.append('\n')
+        }
+    }
+
+    /**
+     * Append in JSON Lines form to an [Appendable].
+     */
+    @Deprecated("renamed to appendJSONLinesTo", ReplaceWith("appendJSONLinesTo(a)"))
     fun appendJSONLines(a: Appendable) {
         var i = 0
         while (i < size) {
@@ -83,22 +95,52 @@ class JSONArray internal constructor (private val array: Array<out JSONValue?>, 
     /**
      * Convert to a JSON string.
      */
-    override fun toJSON(): String = if (isEmpty()) "[]" else buildString { appendTo(this) }
+    override fun toJSON(): String {
+        if (isEmpty())
+            return "[]"
+        val sb = StringBuilder(JSON.defaultOutputBuilderSize)
+        appendTo(sb)
+        return sb.toString()
+    }
 
     /**
      * Convert to a string in JSON Lines form.
      */
-    fun toJSONLines(): String = if (isEmpty()) "" else buildString { appendJSONLines(this) }
+    fun toJSONLines(): String {
+        if (isEmpty())
+            return "[]"
+        val sb = StringBuilder(JSON.defaultOutputBuilderSize)
+        appendJSONLinesTo(sb)
+        return sb.toString()
+    }
 
     /**
      * Output as a JSON string to an [IntConsumer].
      */
+    override fun outputTo(out: IntConsumer) {
+        out.accept('['.code)
+        if (isNotEmpty()) {
+            var i = 0
+            while (true) {
+                array[i].outputTo(out)
+                if (++i >= size)
+                    break
+                out.accept(','.code)
+            }
+        }
+        out.accept(']'.code)
+    }
+
+    /**
+     * Output as a JSON string to an [IntConsumer].
+     */
+    @Deprecated("renamed to outputTo", ReplaceWith("outputTo(out)"))
     override fun output(out: IntConsumer) {
         out.accept('['.code)
         if (isNotEmpty()) {
             var i = 0
             while (true) {
-                array[i].output(out)
+                array[i].outputTo(out)
                 if (++i >= size)
                     break
                 out.accept(','.code)
@@ -110,10 +152,22 @@ class JSONArray internal constructor (private val array: Array<out JSONValue?>, 
     /**
      * Output in JSON Lines form to an [IntConsumer].
      */
+    fun outputJSONLinesTo(out: IntConsumer) {
+        var i = 0
+        while (i < size) {
+            array[i++].outputTo(out)
+            out.accept('\n'.code)
+        }
+    }
+
+    /**
+     * Output in JSON Lines form to an [IntConsumer].
+     */
+    @Deprecated("renamed to outputJSONLinesTo", ReplaceWith("outputJSONLinesTo(out)"))
     fun outputJSONLines(out: IntConsumer) {
         var i = 0
         while (i < size) {
-            array[i++].output(out)
+            array[i++].outputTo(out)
             out.accept('\n'.code)
         }
     }
@@ -121,12 +175,30 @@ class JSONArray internal constructor (private val array: Array<out JSONValue?>, 
     /**
      * Output as a JSON string to a [CoOutput].
      */
+    override suspend fun coOutputTo(out: CoOutput) {
+        out.output('[')
+        if (isNotEmpty()) {
+            var i = 0
+            while (true) {
+                array[i].coOutputTo(out)
+                if (++i >= size)
+                    break
+                out.output(',')
+            }
+        }
+        out.output(']')
+    }
+
+    /**
+     * Output as a JSON string to a [CoOutput].
+     */
+    @Deprecated("renamed to coOutputTo(out)", ReplaceWith("coOutputTo(out)"))
     override suspend fun coOutput(out: CoOutput) {
         out.output('[')
         if (isNotEmpty()) {
             var i = 0
             while (true) {
-                array[i].coOutput(out)
+                array[i].coOutputTo(out)
                 if (++i >= size)
                     break
                 out.output(',')
@@ -138,10 +210,24 @@ class JSONArray internal constructor (private val array: Array<out JSONValue?>, 
     /**
      * Output in JSON lines form to a [CoOutput].
      */
+    suspend fun coOutputJSONLinesTo(out: CoOutput) {
+        var i = 0
+        while (i < size) {
+            array[i++].coOutputTo(out)
+            out.output('\n')
+            if (out is CoOutputFlushable)
+                out.flush()
+        }
+    }
+
+    /**
+     * Output in JSON lines form to a [CoOutput].
+     */
+    @Deprecated("renamed to coOutputJSONLinesTo", ReplaceWith("coOutputJSONLinesTo(out)"))
     suspend fun coOutputJSONLines(out: CoOutput) {
         var i = 0
         while (i < size) {
-            array[i++].coOutput(out)
+            array[i++].coOutputTo(out)
             out.output('\n')
             if (out is CoOutputFlushable)
                 out.flush()
@@ -162,26 +248,26 @@ class JSONArray internal constructor (private val array: Array<out JSONValue?>, 
     /**
      * Get a sub-list of the array.
      */
-    override fun subList(fromIndex: Int, toIndex: Int): JSONArray {
-        if (fromIndex == toIndex)
-            return EMPTY
-        if (fromIndex == 0)
-            return JSONArray(array, toIndex)
-        return JSONArray(array.copyOfRange(fromIndex, toIndex), toIndex - fromIndex)
+    override fun subList(fromIndex: Int, toIndex: Int): JSONArray = when (fromIndex) {
+        toIndex -> EMPTY
+        0 -> JSONArray(array, toIndex)
+        else -> JSONArray(array.copyOfRange(fromIndex, toIndex), toIndex - fromIndex)
     }
 
     /**
      * Apply a function to each item in the array.
      */
     fun forEachItem(func: (JSONValue?) -> Unit) {
-        repeat(size) { func(array[it]) }
+        for (i in indices)
+            func(array[i])
     }
 
     /**
      * Apply a function to each item in the array, supplying the index.
      */
     fun forEachItemIndexed(func: (Int, JSONValue?) -> Unit) {
-        repeat(size) { func(it, array[it]) }
+        for (i in indices)
+            func(i, array[i])
     }
 
     /**

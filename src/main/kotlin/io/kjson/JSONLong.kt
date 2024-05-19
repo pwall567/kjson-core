@@ -45,13 +45,36 @@ class JSONLong(override val value: Long) : JSONNumber(), JSONPrimitive<Long> {
     override fun appendTo(a: Appendable) = IntOutput.appendLong(a, value)
 
     /**
+     * Convert to a JSON string.
+     */
+    override fun toJSON(): String {
+        if (value == 0L)
+            return "0"
+        val sb = StringBuilder(20)
+        appendTo(sb)
+        return sb.toString()
+    }
+
+    /**
      * Output as a JSON string to an [IntConsumer].
      */
+    override fun outputTo(out: IntConsumer) = IntOutput.outputLong(value, out)
+
+    /**
+     * Output as a JSON string to an [IntConsumer].
+     */
+    @Deprecated("renamed to outputTo", ReplaceWith("outputTo(out)"))
     override fun output(out: IntConsumer) = IntOutput.outputLong(value, out)
 
     /**
      * Output as a JSON string to a [CoOutput].
      */
+    override suspend fun coOutputTo(out: CoOutput) = out.outputLong(value)
+
+    /**
+     * Output as a JSON string to a [CoOutput].
+     */
+    @Deprecated("renamed to coOutputTo", ReplaceWith("coOutputTo(out)"))
     override suspend fun coOutput(out: CoOutput) = out.outputLong(value)
 
     /**

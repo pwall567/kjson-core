@@ -2,6 +2,18 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [Unreleased]
+### Added
+- `SystemProperty`: system property access utilities
+### Changed
+- `JSON`: added `defaultOutputBuilderSize` property
+- `JSONString`: added `build { }` function
+- `JSONValue` (and implementing classes): renamed `output` to `outputTo`, `coOutput` to `coOutputTo`; deprecated
+  previous versions
+- `JSONArray`: renamed `outputJSONLines` to `outputJSONLinesTo`, `coOutputJSONLines` to `coOutputJSONLinesTo`,
+  `appendJSONLines` to `appendJSONLinesTo`; deprecated previous versions
+- several: small performance tweaks
+
 ## [7.3] - 2024-04-01
 ### Changed
 - `JSON`: added `asXxxxOr()` functions

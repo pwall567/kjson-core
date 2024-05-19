@@ -2,7 +2,7 @@
  * @(#) JSONString.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -52,6 +52,17 @@ class JSONString(override val value: String) : JSONPrimitive<String>, CharSequen
     override fun subSequence(startIndex: Int, endIndex: Int) = JSONString(value.substring(startIndex, endIndex))
 
     /**
+     * Convert to a JSON string.
+     */
+    override fun toJSON(): String {
+        if (value.isEmpty())
+            return ""
+        val sb = StringBuilder(((value.length * 9) shr 3) + 2) // 12.5% extra for escape sequences, plus 2 for quotes
+        appendTo(sb)
+        return sb.toString()
+    }
+
+    /**
      * Append as a JSON string to an [Appendable].
      */
     override fun appendTo(a: Appendable) = JSONFunctions.appendString(a, value, false)
@@ -59,11 +70,23 @@ class JSONString(override val value: String) : JSONPrimitive<String>, CharSequen
     /**
      * Output as a JSON string to an [IntConsumer].
      */
+    override fun outputTo(out: IntConsumer) = JSONFunctions.outputString(value, false, out)
+
+    /**
+     * Output as a JSON string to an [IntConsumer].
+     */
+    @Deprecated("renamed to outputTo", ReplaceWith("outputTo(out)"))
     override fun output(out: IntConsumer) = JSONFunctions.outputString(value, false, out)
 
     /**
      * Output as a JSON string to a [CoOutput].
      */
+    override suspend fun coOutputTo(out: CoOutput) = out.outputString(value, false)
+
+    /**
+     * Output as a JSON string to a [CoOutput].
+     */
+    @Deprecated("renamed to coOutputTo", ReplaceWith("coOutputTo(out)"))
     override suspend fun coOutput(out: CoOutput) = out.outputString(value, false)
 
     /**
@@ -99,6 +122,11 @@ class JSONString(override val value: String) : JSONPrimitive<String>, CharSequen
          * Create a [JSONString] from the given [CharSequence].
          */
         fun of(s: CharSequence): JSONString = if (s.isEmpty()) EMPTY else JSONString(s.toString())
+
+        /**
+         * Create a [JSONString] by appending to a [StringBuilder].
+         */
+        fun build(block: StringBuilder.() -> Unit): JSONString = of(StringBuilder().apply(block))
 
     }
 

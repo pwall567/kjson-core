@@ -183,25 +183,25 @@ class JSONIntTest {
 
     @Test fun `should format JSONInt using output`() {
         val capture = OutputCapture(16)
-        JSONInt.ZERO.output(capture)
+        JSONInt.ZERO.outputTo(capture)
         expect("0") { capture.toString() }
         capture.reset()
-        JSONInt(1234567).output(capture)
+        JSONInt(1234567).outputTo(capture)
         expect("1234567") { capture.toString() }
         capture.reset()
-        JSONInt(-888).output(capture)
+        JSONInt(-888).outputTo(capture)
         expect("-888") { capture.toString() }
     }
 
     @Test fun `should format JSONInt using coOutput`() = runBlocking {
         val capture = CoOutputCapture(16)
-        JSONInt.ZERO.coOutput(capture)
+        JSONInt.ZERO.coOutputTo(capture)
         expect("0") { capture.toString() }
         capture.reset()
-        JSONInt(1234567).coOutput(capture)
+        JSONInt(1234567).coOutputTo(capture)
         expect("1234567") { capture.toString() }
         capture.reset()
-        JSONInt(-888).coOutput(capture)
+        JSONInt(-888).coOutputTo(capture)
         expect("-888") { capture.toString() }
     }
 

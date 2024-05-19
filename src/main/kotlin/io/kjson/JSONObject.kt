@@ -29,8 +29,8 @@ import java.math.BigDecimal
 import java.util.function.IntConsumer
 
 import io.kjson.JSON.appendTo
-import io.kjson.JSON.coOutput
-import io.kjson.JSON.output
+import io.kjson.JSON.coOutputTo
+import io.kjson.JSON.outputTo
 import io.kjson.util.AbstractBuilder
 import net.pwall.json.JSONCoFunctions.outputString
 import net.pwall.json.JSONFunctions
@@ -72,11 +72,38 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
     /**
      * Convert to a JSON string.
      */
-    override fun toJSON(): String = if (isEmpty()) "{}" else buildString { appendTo(this) }
+    override fun toJSON(): String {
+        if (isEmpty())
+            return "{}"
+        val sb = StringBuilder(JSON.defaultOutputBuilderSize)
+        appendTo(sb)
+        return sb.toString()
+    }
 
     /**
      * Output as a JSON string to an [IntConsumer].
      */
+    override fun outputTo(out: IntConsumer) {
+        out.accept('{'.code)
+        if (isNotEmpty()) {
+            var i = 0
+            while (true) {
+                val property = array[i]
+                JSONFunctions.outputString(property.key, false, out)
+                out.accept(':'.code)
+                property.value.outputTo(out)
+                if (++i >= size)
+                    break
+                out.accept(','.code)
+            }
+        }
+        out.accept('}'.code)
+    }
+
+    /**
+     * Output as a JSON string to an [IntConsumer].
+     */
+    @Deprecated("renamed to outputTo", ReplaceWith("outputTo(out)"))
     override fun output(out: IntConsumer) {
         out.accept('{'.code)
         if (isNotEmpty()) {
@@ -85,7 +112,7 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
                 val property = array[i]
                 JSONFunctions.outputString(property.key, false, out)
                 out.accept(':'.code)
-                property.value.output(out)
+                property.value.outputTo(out)
                 if (++i >= size)
                     break
                 out.accept(','.code)
@@ -97,6 +124,27 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
     /**
      * Output as a JSON string to a [CoOutput].
      */
+    override suspend fun coOutputTo(out: CoOutput) {
+        out.output('{')
+        if (isNotEmpty()) {
+            var i = 0
+            while (true) {
+                val property = array[i]
+                out.outputString(property.key, false)
+                out.output(':')
+                property.value.coOutputTo(out)
+                if (++i >= size)
+                    break
+                out.output(',')
+            }
+        }
+        out.output('}')
+    }
+
+    /**
+     * Output as a JSON string to a [CoOutput].
+     */
+    @Deprecated("renamed to coOutputTo", ReplaceWith("coOutputTo(out)"))
     override suspend fun coOutput(out: CoOutput) {
         out.output('{')
         if (isNotEmpty()) {
@@ -105,7 +153,7 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
                 val property = array[i]
                 out.outputString(property.key, false)
                 out.output(':')
-                property.value.coOutput(out)
+                property.value.coOutputTo(out)
                 if (++i >= size)
                     break
                 out.output(',')
@@ -125,8 +173,8 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
      * [JSONValue]`?`).
      */
     fun forEachEntry(func: (String, JSONValue?) -> Unit) {
-        repeat(size) {
-            val entry = array[it]
+        for (i in indices) {
+            val entry = array[i]
             func(entry.key, entry.value)
         }
     }
@@ -135,7 +183,8 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
      * Perform a function with each property name in turn (the function takes a single parameters, the name [String]).
      */
     fun forEachKey(func: (String) -> Unit) {
-        repeat(size) { func(array[it].key) }
+        for (i in indices)
+            func(array[i].key)
     }
 
     /**
@@ -143,7 +192,8 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
      * [JSONValue]`?`).
      */
     fun forEachValue(func: (JSONValue?) -> Unit) {
-        repeat(size) { func(array[it].value) }
+        for (i in indices)
+            func(array[i].value)
     }
 
     /**
@@ -186,15 +236,18 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
      * Get a `JSONObject` containing the set of [Property]s bounded by `fromIndex` (inclusive) and `toIndex`
      * (exclusive).
      */
-    override fun subList(fromIndex: Int, toIndex: Int): JSONObject {
-        val list: List<Property> = ImmutableList(array, size)
-        return fromProperties(list.subList(fromIndex, toIndex))
+    override fun subList(fromIndex: Int, toIndex: Int): JSONObject = when (fromIndex) {
+        toIndex -> EMPTY
+        0 -> JSONObject(array, toIndex)
+        else -> JSONObject(array.copyOfRange(fromIndex, toIndex), toIndex - fromIndex)
     }
 
     /**
      * A class to represent a property (name-value pair).
      */
     class Property(key: String, value: JSONValue?) : ImmutableMapEntry<String, JSONValue?>(key, value) {
+
+        constructor(pair: Pair<String, JSONValue?>) : this(pair.first, pair.second)
 
         val name: String
             get() = key
@@ -210,31 +263,25 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
          * Create a [JSONObject] from a `vararg` list of [Pair]s of name and value.
          */
         fun of(vararg items: Pair<String, JSONValue?>): JSONObject =
-            if (items.isEmpty()) EMPTY else Array(items.size) { i ->
-                items[i].let { Property(it.first, it.second) }
-            }.let { JSONObject(it, it.size) }
+                if (items.isEmpty()) EMPTY else JSONObject(Array(items.size) { i -> Property(items[i]) }, items.size)
 
         /**
          * Create a [JSONObject] from a [Map].
          */
         fun from(map: Map<String, JSONValue?>): JSONObject = if (map.isEmpty()) EMPTY else
-            map.entries.map { Property(it.key, it.value) }.toTypedArray().let {
-                JSONObject(it, it.size)
-            }
+                JSONObject(map.entries.map { Property(it.key, it.value) }.toTypedArray(), map.size)
 
         /**
          * Create a [JSONObject] from a [List] of [Pair]s of name and value.
          */
         fun from(list: List<Pair<String, JSONValue?>>): JSONObject =
-            if (list.isEmpty()) EMPTY else Array(list.size) { i ->
-                list[i].let { Property(it.first, it.second) }
-            }.let { JSONObject(it, it.size) }
+                if (list.isEmpty()) EMPTY else JSONObject(Array(list.size) { i -> Property(list[i]) }, list.size)
 
         /**
          * Create a [JSONObject] from a [List] of [Property].
          */
         fun fromProperties(list: List<Property>): JSONObject =
-            if (list.isEmpty()) EMPTY else JSONObject(list.toTypedArray(), list.size)
+                if (list.isEmpty()) EMPTY else JSONObject(list.toTypedArray(), list.size)
 
         /**
          * Create a [JSONObject] by applying the supplied [block] to a [Builder], and then taking the result.

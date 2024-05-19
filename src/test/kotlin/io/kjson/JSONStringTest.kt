@@ -2,7 +2,7 @@
  * @(#) JSONStringTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2021, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -69,20 +69,34 @@ class JSONStringTest {
 
     @Test fun `should format JSONString using output`() {
         val capture = OutputCapture(16)
-        JSONString.EMPTY.output(capture)
+        JSONString.EMPTY.outputTo(capture)
         expect("\"\"") { capture.toString() }
         capture.reset()
-        JSONString("Kia ora").output(capture)
+        JSONString("Kia ora").outputTo(capture)
         expect("\"Kia ora\"") { capture.toString() }
     }
 
     @Test fun `should format JSONString using coOutput`() = runBlocking {
         val capture = CoOutputCapture(16)
-        JSONString.EMPTY.coOutput(capture)
+        JSONString.EMPTY.coOutputTo(capture)
         expect("\"\"") { capture.toString() }
         capture.reset()
-        JSONString("Kia ora").coOutput(capture)
+        JSONString("Kia ora").coOutputTo(capture)
         expect("\"Kia ora\"") { capture.toString() }
+    }
+
+    @Test fun `should build a JSONString using build function`() {
+        val json = JSONString.build {
+            append('C')
+            append("able")
+            append(99)
+        }
+        expect(JSONString("Cable99")) { json }
+    }
+
+    @Test fun `should return EMPTY when using build function with no content`() {
+        val json = JSONString.build {}
+        assertSame(JSONString.EMPTY, json)
     }
 
 }

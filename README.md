@@ -40,9 +40,9 @@ The `JSONValue` interface specifies four functions:
   each element)
 - `toJSON()` &ndash; this outputs the value in syntactically-correct JSON (a default implementation makes use of the
   above `appendTo()` function)
-- `output()` &ndash; this outputs the JSON text form of the object using an `IntConsumer` (similar to `appendTo()`, but
-  allowing a greater choice of output mechanism)
-- `coOutput()` (suspend function) &ndash; non-blocking version of `output()`, suitable for use in a coroutine-based
+- `outputTo()` &ndash; this outputs the JSON text form of the object using an `IntConsumer` (similar to `appendTo()`,
+  but allowing a greater choice of output mechanism)
+- `coOutputTo()` (suspend function) &ndash; non-blocking version of `outputTo()`, suitable for use in a coroutine-based
   environment
 
 `JSONValue` is a sealed interface and the implementing classes are limited to:
@@ -560,13 +560,13 @@ allowed between tokens of JSON data, the newline (if present) will be ignored.
 In most cases, JSON Lines data will be output as individual objects using `appendTo()` or `toJSON()`.
 If an entire `JSONArray` is required to be output in JSON Lines format, there are four additional functions for this
 purpose:
-- `appendJSONLines()` &ndash; this appends the JSON Lines form of the `JSONArray` to a specified `Appendable`, _e.g._ a
-  `Writer`
-- `toJSONLines()` &ndash; this converts the `JSONArray` to a `String` in JSON Lines format
-- `outputJSONLines()` &ndash; this outputs the JSON Lines form of the `JSONArray` using an `IntConsumer` (similar to
-  `appendJSONLines()`, but allowing a greater choice of output mechanism)
-- `coOutputJSONLines()` (suspend function) &ndash; non-blocking version of `outputJSONLines()`, suitable for use in a
-  coroutine-based environment
+- `appendJSONLinesTo()` &ndash; this appends the JSON Lines form of the `JSONArray` to a specified `Appendable`, _e.g._
+  a `Writer`
+- `toJSONLinesTo()` &ndash; this converts the `JSONArray` to a `String` in JSON Lines format
+- `outputJSONLinesTo()` &ndash; this outputs the JSON Lines form of the `JSONArray` using an `IntConsumer` (similar to
+  `appendJSONLinesTo()`, but allowing a greater choice of output mechanism)
+- `coOutputJSONLinesTo()` (suspend function) &ndash; non-blocking version of `outputJSONLinesTo()`, suitable for use in
+  a coroutine-based environment
 
 The functions all add a single newline after each item in the `JSONArray` for human readability reasons, even though (as
 noted above) this is not strictly necessary.
@@ -661,4 +661,4 @@ The latest version of the library is 7.3, and it may be obtained from the Maven 
 
 Peter Wall
 
-2024-04-01
+2024-05-18

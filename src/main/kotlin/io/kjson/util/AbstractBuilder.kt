@@ -2,7 +2,7 @@
  * @(#) AbstractBuilder.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,16 +46,17 @@ abstract class AbstractBuilder<T>(private var array: Array<T?>?) {
     protected fun internalAdd(value: T?) {
         var validArray = checkArray()
         val len = validArray.size
-        if (count >= len)
-            validArray = validArray.copyOf(len + len.coerceAtMost(4096)).also { array = it }
+        if (count >= len) {
+            validArray = validArray.copyOf(len + len.coerceAtMost(4096))
+            array = validArray
+        }
         validArray[count++] = value
     }
 
     protected fun internalRemove(index: Int) {
-        checkArray().let {
-            System.arraycopy(it, index + 1, it, index, count - index)
-            count--
-        }
+        val validArray = checkArray()
+        System.arraycopy(validArray, index + 1, validArray, index, count - index)
+        count--
     }
 
     protected fun invalidate() {

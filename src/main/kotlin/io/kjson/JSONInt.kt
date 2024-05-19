@@ -45,13 +45,36 @@ class JSONInt(override val value: Int) : JSONNumber(), JSONPrimitive<Int> {
     override fun appendTo(a: Appendable) = IntOutput.appendInt(a, value)
 
     /**
+     * Convert to a JSON string.
+     */
+    override fun toJSON(): String {
+        if (value == 0)
+            return "0"
+        val sb = StringBuilder(11)
+        appendTo(sb)
+        return sb.toString()
+    }
+
+    /**
      * Output as a JSON string to an [IntConsumer].
      */
+    override fun outputTo(out: IntConsumer) = IntOutput.outputInt(value, out)
+
+    /**
+     * Output as a JSON string to an [IntConsumer].
+     */
+    @Deprecated("renamed to outputTo", ReplaceWith("outputTo(out)"))
     override fun output(out: IntConsumer) = IntOutput.outputInt(value, out)
 
     /**
      * Output as a JSON string to a [CoOutput].
      */
+    override suspend fun coOutputTo(out: CoOutput) = out.outputInt(value)
+
+    /**
+     * Output as a JSON string to a [CoOutput].
+     */
+    @Deprecated("renamed to coOutputTo", ReplaceWith("coOutputTo(out)"))
     override suspend fun coOutput(out: CoOutput) = out.outputInt(value)
 
     /**

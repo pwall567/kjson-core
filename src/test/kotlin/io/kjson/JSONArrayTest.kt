@@ -148,14 +148,14 @@ class JSONArrayTest {
     @Test fun `should format JSONArray using output`() {
         val capture = OutputCapture(64)
         JSONArray.from(listOf(JSONString("Hello"), JSONInt(123), JSONBoolean.TRUE,
-                JSONDecimal("1.5".toBigDecimal()), null, JSONLong(0))).output(capture)
+                JSONDecimal("1.5".toBigDecimal()), null, JSONLong(0))).outputTo(capture)
         expect("[\"Hello\",123,true,1.5,null,0]") { capture.toString() }
     }
 
     @Test fun `should format JSONArray using coOutput`() = runBlocking {
         val capture = CoOutputCapture(64)
         JSONArray.from(listOf(JSONString("Hello"), JSONInt(123), JSONBoolean.TRUE,
-                JSONDecimal("1.5".toBigDecimal()), null, JSONLong(0))).coOutput(capture)
+                JSONDecimal("1.5".toBigDecimal()), null, JSONLong(0))).coOutputTo(capture)
         expect("[\"Hello\",123,true,1.5,null,0]") { capture.toString() }
     }
 
@@ -205,7 +205,7 @@ class JSONArrayTest {
     @Test fun `should append in JSON Lines format`() {
         val json = createJSONLines()
         val sb = StringBuilder()
-        json.appendJSONLines(sb)
+        json.appendJSONLinesTo(sb)
         expect("{\"a\":1,\"b\":2}\n{\"a\":21,\"b\":34}\n{\"a\":55,\"b\":66}\n") { sb.toString() }
     }
 
@@ -216,13 +216,13 @@ class JSONArrayTest {
 
     @Test fun `should output JSON Lines using output`() {
         val capture = OutputCapture(64)
-        createJSONLines().outputJSONLines(capture)
+        createJSONLines().outputJSONLinesTo(capture)
         expect("{\"a\":1,\"b\":2}\n{\"a\":21,\"b\":34}\n{\"a\":55,\"b\":66}\n") { capture.toString() }
     }
 
     @Test fun `should output JSON Lines using coOutput`() = runBlocking {
         val capture = CoOutputCapture(64)
-        createJSONLines().coOutputJSONLines(capture)
+        createJSONLines().coOutputJSONLinesTo(capture)
         expect("{\"a\":1,\"b\":2}\n{\"a\":21,\"b\":34}\n{\"a\":55,\"b\":66}\n") { capture.toString() }
     }
 

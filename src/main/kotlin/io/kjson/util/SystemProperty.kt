@@ -1,8 +1,8 @@
 /*
- * @(#) JSONValue.kt
+ * @(#) Property.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2024 Peter Wall
+ * Copyright (c) 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,51 +23,18 @@
  * SOFTWARE.
  */
 
-package io.kjson
+package io.kjson.util
 
-import java.util.function.IntConsumer
-
-import io.kjson.JSON.accept
-import net.pwall.util.CoOutput
-import net.pwall.util.output
+import io.kjson.JSONException
 
 /**
- * Interface to represent a JSON value.
- *
- * @author  Peter Wall
+ * Get the named system property and convert to `Int` (with default).
  */
-sealed interface JSONValue {
-
-    /**
-     * Append as a JSON string to an [Appendable].
-     */
-    fun appendTo(a: Appendable)
-
-    /**
-     * Convert to a JSON string.
-     */
-    fun toJSON(): String
-
-    /**
-     * Output as a JSON string to an [IntConsumer].
-     */
-    fun outputTo(out: IntConsumer) = out.accept(toJSON())
-
-    /**
-     * Output as a JSON string to an [IntConsumer].
-     */
-    @Deprecated("renamed to outputTo", ReplaceWith("outputTo(out)"))
-    fun output(out: IntConsumer) = out.accept(toJSON())
-
-    /**
-     * Output as a JSON string to a [CoOutput].
-     */
-    suspend fun coOutputTo(out: CoOutput) = out.output(toJSON())
-
-    /**
-     * Output as a JSON string to a [CoOutput].
-     */
-    @Deprecated("renamed to coOutputTo", ReplaceWith("coOutputTo(out)"))
-    suspend fun coOutput(out: CoOutput) = out.output(toJSON())
-
+fun getIntProperty(propertyName: String, defaultValue: Int): Int {
+    val property = System.getProperty(propertyName) ?: return defaultValue
+    return try {
+        property.toInt()
+    } catch (_: NumberFormatException) {
+        throw JSONException("System property $propertyName invalid - $property")
+    }
 }

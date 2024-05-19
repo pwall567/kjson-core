@@ -68,19 +68,19 @@ class JSONBooleanTest {
 
     @Test fun `should format JSONBoolean using output`() {
         val capture = OutputCapture(8)
-        JSONBoolean.TRUE.output(capture)
+        JSONBoolean.TRUE.outputTo(capture)
         expect("true") { capture.toString() }
         capture.reset()
-        JSONBoolean.FALSE.output(capture)
+        JSONBoolean.FALSE.outputTo(capture)
         expect("false") { capture.toString() }
     }
 
     @Test fun `should format JSONBoolean using coOutput`() = runBlocking {
         val capture = CoOutputCapture(8)
-        JSONBoolean.TRUE.coOutput(capture)
+        JSONBoolean.TRUE.coOutputTo(capture)
         expect("true") { capture.toString() }
         capture.reset()
-        JSONBoolean.FALSE.coOutput(capture)
+        JSONBoolean.FALSE.coOutputTo(capture)
         expect("false") { capture.toString() }
     }
 

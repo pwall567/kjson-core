@@ -209,25 +209,25 @@ class JSONLongTest {
 
     @Test fun `should format JSONLong using output`() {
         val capture = OutputCapture(32)
-        JSONLong.ZERO.output(capture)
+        JSONLong.ZERO.outputTo(capture)
         expect("0") { capture.toString() }
         capture.reset()
-        JSONLong(1234567890123456789).output(capture)
+        JSONLong(1234567890123456789).outputTo(capture)
         expect("1234567890123456789") { capture.toString() }
         capture.reset()
-        JSONLong(-998877665544332211).output(capture)
+        JSONLong(-998877665544332211).outputTo(capture)
         expect("-998877665544332211") { capture.toString() }
     }
 
     @Test fun `should format JSONLong using coOutput`() = runBlocking {
         val capture = CoOutputCapture(32)
-        JSONLong.ZERO.coOutput(capture)
+        JSONLong.ZERO.coOutputTo(capture)
         expect("0") { capture.toString() }
         capture.reset()
-        JSONLong(1234567890123456789).coOutput(capture)
+        JSONLong(1234567890123456789).coOutputTo(capture)
         expect("1234567890123456789") { capture.toString() }
         capture.reset()
-        JSONLong(-998877665544332211).coOutput(capture)
+        JSONLong(-998877665544332211).coOutputTo(capture)
         expect("-998877665544332211") { capture.toString() }
     }
 

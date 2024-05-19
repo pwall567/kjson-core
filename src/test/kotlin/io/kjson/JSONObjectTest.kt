@@ -231,19 +231,19 @@ class JSONObjectTest {
 
     @Test fun `should format JSONObject using output`() {
         val capture = OutputCapture(64)
-        JSONObject.EMPTY.output(capture)
+        JSONObject.EMPTY.outputTo(capture)
         expect("{}") { capture.toString() }
         capture.reset()
-        simpleObject.output(capture)
+        simpleObject.outputTo(capture)
         expect("""{"abc":12345,"def":"X"}""") { capture.toString() }
     }
 
     @Test fun `should format JSONObject using coOutput`() = runBlocking {
         val capture = CoOutputCapture(64)
-        JSONObject.EMPTY.coOutput(capture)
+        JSONObject.EMPTY.coOutputTo(capture)
         expect("{}") { capture.toString() }
         capture.reset()
-        simpleObject.coOutput(capture)
+        simpleObject.coOutputTo(capture)
         expect("""{"abc":12345,"def":"X"}""") { capture.toString() }
     }
 
