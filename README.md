@@ -141,6 +141,16 @@ characters to escape sequences on output.
 
 The `String` value may be accessed by the property `value` (which will never be `null`).
 
+A `JSONString` may be constructed dynamically using the `build {}` function, which takes as a lambda parameter an
+extension function on `StringBuilder`; anything appended to the `StringBuilder` will become part of the `JSONStrong`.
+For example:
+```kotlin
+    val jsonString = JSONString.build {
+        append("Number = ")
+        append(number)
+    }
+```
+
 `JSONString` also implements the `CharSequence` interface, which allows access to all the functionality of that
 interface without having to extract the `value` property.
 The `subSequence()` function will return a new `JSONString`.
@@ -640,25 +650,25 @@ The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram
 
 ## Dependency Specification
 
-The latest version of the library is 7.3, and it may be obtained from the Maven Central repository.
+The latest version of the library is 7.4, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>7.3</version>
+      <version>7.4</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:7.3"
+    implementation "io.kjson:kjson-core:7.4"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:7.3")
+    implementation("io.kjson:kjson-core:7.4")
 ```
 
 Peter Wall
 
-2024-05-18
+2024-05-19

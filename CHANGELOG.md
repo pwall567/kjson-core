@@ -2,7 +2,7 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## [Unreleased]
+## [7.4] - 2024-05-19
 ### Added
 - `SystemProperty`: system property access utilities
 ### Changed
