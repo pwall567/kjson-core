@@ -2,6 +2,13 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [Unreleased]
+### Added
+- `build.yml`: converted project to GitHub Actions
+### Changed
+- `Parser`: minor restructure
+- `README.md`: minor clarifications
+
 ## [7.4] - 2024-05-19
 ### Added
 - `SystemProperty`: system property access utilities

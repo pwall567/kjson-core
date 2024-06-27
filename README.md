@@ -169,8 +169,11 @@ for structured types, that is, arrays and objects.
 It specifies a single value `size` (`Int`) which gives the number of entries in the array or object, and the functions
 `isEmpty()` and `isNotEmpty()` which (unsurprisingly) return `true` or `false` respectively if the structure is empty.
 
-It also provides convenience functions to both get a member of the structure and convert it to the required type (`K` is
-`Int` for `JSONArray` or `String` for `JSONObject`):
+`JSONStructure` is a parameterised interface, where the parameter `K` is the type of the value to locate entries in the
+structure, _i.e._ `Int` for `JSONArray` or `String` for `JSONObject`.
+
+It also provides convenience functions to both get a member of the structure (using a key of the parameter type `K`) and
+convert it to the required type:
 
 | Function        | Converts the value to... |
 |-----------------|--------------------------|
@@ -198,7 +201,7 @@ The `JSONArray` class implements the `List<JSONValue?>` interface, and all the f
 to navigate the array (indexing via `array[n]`, `contains(obj)`, `iterator()` _etc._).
 The `subList()` function will return a new `JSONArray`.
 
-The class also implements the [`JSONStructure`](#jsonstructure) interface.
+The class also implements the [`JSONStructure`](#jsonstructure) interface with a parameter type of `Int`.
 
 The constructor for `JSONArray` is not publicly accessible, but an `of()` function is available in the
 `companion object`, and a `build` function and the `Builder` nested class allow arrays to be constructed dynamically.
@@ -223,7 +226,7 @@ but the additional functions are optimised for the specific implementation detai
 
 The `JSONObject` class implements the `Map<String, JSONValue?>` interface, and all the functions of that interface are
 available to navigate the object (retrieval via `structure["name"]`, `containsKey("name")`, `entries` _etc._).
-The class also implements the [`JSONStructure`](#jsonstructure) interface.
+The class also implements the [`JSONStructure`](#jsonstructure) interface with a parameter type of `String`.
 
 The original order of the input is maintained on parsing or on the programmatic creation of a `JSONObject`, and to take
 advantage of this sequential ordering of properties, the `JSONObject` class also implements the `List<Property>`

@@ -30,6 +30,7 @@ import io.kjson.JSONBoolean
 import io.kjson.JSONDecimal
 import io.kjson.JSONInt
 import io.kjson.JSONLong
+import io.kjson.JSONNumber
 import io.kjson.JSONObject
 import io.kjson.JSONString
 import io.kjson.JSONValue
@@ -89,74 +90,13 @@ object Parser {
     private fun parse(tm: TextMatcher, options: ParseOptions, pointer: String, depth: Int): JSONValue? {
         if (depth > options.maximumNestingDepth)
             throw ParseException(MAX_DEPTH_EXCEEDED)
-
         tm.skip(JSONFunctions::isSpaceCharacter)
 
-        if (tm.match('{')) {
-            val builder = JSONObject.Builder()
-            tm.skip(JSONFunctions::isSpaceCharacter)
-            if (!tm.match('}')) {
-                while (true) {
-                    val key = when {
-                        tm.match('"') -> parseString(tm, pointer)
-                        options.objectKeyUnquoted && tm.matchIdentifier() -> tm.result
-                        else -> throw ParseException(ILLEGAL_KEY, pointer)
-                    }
-                    tm.skip(JSONFunctions::isSpaceCharacter)
-                    if (!tm.match(':'))
-                        throw ParseException(MISSING_COLON, pointer)
-                    val value = parse(tm, options, "$pointer/$key", depth + 1)
-                    if (builder.containsKey(key)) {
-                        when (options.objectKeyDuplicate) {
-                            ParseOptions.DuplicateKeyOption.ERROR -> duplicateKeyError(key, pointer)
-                            ParseOptions.DuplicateKeyOption.TAKE_FIRST -> {}
-                            ParseOptions.DuplicateKeyOption.TAKE_LAST -> {
-                                builder.remove(key)
-                                builder.add(key, value)
-                            }
-                            ParseOptions.DuplicateKeyOption.CHECK_IDENTICAL -> {
-                                if (value != builder.get(key))
-                                    duplicateKeyError(key, pointer)
-                            }
-                        }
-                    }
-                    else
-                        builder.add(key, value)
-                    tm.skip(JSONFunctions::isSpaceCharacter)
-                    if (!tm.match(','))
-                        break
-                    tm.skip(JSONFunctions::isSpaceCharacter)
-                    if (options.objectTrailingComma && tm.match('}')) {
-                        tm.revert()
-                        break
-                    }
-                }
-                if (!tm.match('}'))
-                    throw ParseException(MISSING_CLOSING_BRACE, pointer)
-            }
-            return builder.build()
-        }
+        if (tm.match('{'))
+            return parseObject(tm, options, pointer, depth)
 
-        if (tm.match('[')) {
-            val builder = JSONArray.Builder()
-            tm.skip(JSONFunctions::isSpaceCharacter)
-            if (!tm.match(']')) {
-                while (true) {
-                    builder.add(parse(tm, options, "$pointer/${builder.size}", depth + 1))
-                    tm.skip(JSONFunctions::isSpaceCharacter)
-                    if (!tm.match(','))
-                        break
-                    tm.skip(JSONFunctions::isSpaceCharacter)
-                    if (options.arrayTrailingComma && tm.match(']')) {
-                        tm.revert()
-                        break
-                    }
-                }
-                if (!tm.match(']'))
-                    throw ParseException(MISSING_CLOSING_BRACKET, pointer)
-            }
-            return builder.build()
-        }
+        if (tm.match('['))
+            return parseArray(tm, options, pointer, depth)
 
         if (tm.match('"'))
             return JSONString(parseString(tm, pointer))
@@ -170,32 +110,96 @@ object Parser {
         if (tm.match("null"))
             return null
 
+        return parseNumber(tm, pointer) ?: throw ParseException(ILLEGAL_SYNTAX, pointer)
+    }
+
+    private fun parseObject(tm: TextMatcher, options: ParseOptions, pointer: String, depth: Int) = JSONObject.build {
+        tm.skip(JSONFunctions::isSpaceCharacter)
+        if (!tm.match('}')) {
+            while (true) {
+                val key = when {
+                    tm.match('"') -> parseString(tm, pointer)
+                    options.objectKeyUnquoted && tm.matchIdentifier() -> tm.result
+                    else -> throw ParseException(ILLEGAL_KEY, pointer)
+                }
+                tm.skip(JSONFunctions::isSpaceCharacter)
+                if (!tm.match(':'))
+                    throw ParseException(MISSING_COLON, pointer)
+                val value = parse(tm, options, "$pointer/$key", depth + 1)
+                if (containsKey(key)) {
+                    when (options.objectKeyDuplicate) {
+                        ParseOptions.DuplicateKeyOption.ERROR -> duplicateKeyError(key, pointer)
+                        ParseOptions.DuplicateKeyOption.TAKE_FIRST -> {}
+                        ParseOptions.DuplicateKeyOption.TAKE_LAST -> {
+                            remove(key)
+                            add(key, value)
+                        }
+                        ParseOptions.DuplicateKeyOption.CHECK_IDENTICAL -> {
+                            if (value != get(key))
+                                duplicateKeyError(key, pointer)
+                        }
+                    }
+                }
+                else
+                    add(key, value)
+                tm.skip(JSONFunctions::isSpaceCharacter)
+                if (!tm.match(','))
+                    break
+                tm.skip(JSONFunctions::isSpaceCharacter)
+                if (options.objectTrailingComma && tm.match('}'))
+                    return@build
+            }
+            if (!tm.match('}'))
+                throw ParseException(MISSING_CLOSING_BRACE, pointer)
+        }
+    }
+
+    private fun parseArray(tm: TextMatcher, options: ParseOptions, pointer: String, depth: Int) = JSONArray.build {
+        tm.skip(JSONFunctions::isSpaceCharacter)
+        if (!tm.match(']')) {
+            while (true) {
+                add(parse(tm, options, "$pointer/$size", depth + 1))
+                tm.skip(JSONFunctions::isSpaceCharacter)
+                if (!tm.match(','))
+                    break
+                tm.skip(JSONFunctions::isSpaceCharacter)
+                if (options.arrayTrailingComma && tm.match(']'))
+                    return@build
+            }
+            if (!tm.match(']'))
+                throw ParseException(MISSING_CLOSING_BRACKET, pointer)
+        }
+    }
+
+    private fun parseString(tm: TextMatcher, pointer: String): String = try {
+        JSONFunctions.parseString(tm)
+    }
+    catch (iae: IllegalArgumentException) {
+        throw ParseException(iae.message ?: "Error parsing JSON string", pointer)
+    }
+
+    private fun parseNumber(tm: TextMatcher, pointer: String): JSONNumber? {
         val numberStart = tm.index
         val negative = tm.match('-')
         if (tm.matchDec()) {
             val integerLength = tm.resultLength
             if (integerLength > 1 && tm.resultChar == '0')
                 throw ParseException(ILLEGAL_NUMBER, pointer)
-            var floating = false
             if (tm.match('.')) {
-                floating = true
                 if (!tm.matchDec())
                     throw ParseException(ILLEGAL_NUMBER, pointer)
+                skipExponent(tm, pointer)
             }
-            if (tm.match { it == 'e' || it == 'E' }) {
-                floating = true
-                tm.match { it == '-' || it == '+' } // ignore the result, just step the index
-                if (!tm.matchDec())
-                    throw ParseException(ILLEGAL_NUMBER, pointer)
-            }
-            if (!floating) {
+            else if (!skipExponent(tm, pointer)) {
+                // no decimal point or "e"/"E" - try JSONInt or JSONLong
                 if (integerLength < MAX_INTEGER_DIGITS_LENGTH)
                     return JSONInt.of(tm.getResultInt(negative))
                 try {
                     val result = tm.getResultLong(negative)
-                    if (result >= Int.MIN_VALUE && result <= Int.MAX_VALUE)
-                        return JSONInt.of(result.toInt())
-                    return JSONLong.of(result)
+                    return if (result >= Int.MIN_VALUE && result <= Int.MAX_VALUE)
+                        JSONInt.of(result.toInt())
+                    else
+                        JSONLong.of(result)
                 }
                 catch (_: NumberFormatException) {
                     // too big for long - drop through to BigDecimal
@@ -203,16 +207,16 @@ object Parser {
             }
             return JSONDecimal.of(tm.getString(numberStart, tm.index).toBigDecimal())
         }
-
-        throw ParseException(ILLEGAL_SYNTAX, pointer)
+        return null
     }
 
-    private fun parseString(tm: TextMatcher, pointer: String): String = try {
-            JSONFunctions.parseString(tm)
-        }
-        catch (iae: IllegalArgumentException) {
-            throw ParseException(iae.message ?: "Error parsing JSON string", pointer)
-        }
+    private fun skipExponent(tm: TextMatcher, pointer: String): Boolean = if (tm.match { it == 'e' || it == 'E' }) {
+        tm.match { it == '-' || it == '+' } // ignore the result, just step the index
+        if (!tm.matchDec())
+            throw ParseException(ILLEGAL_NUMBER, pointer)
+        true
+    } else
+        false
 
     private fun duplicateKeyError(key: String, pointer: String): Nothing {
         throw ParseException("$DUPLICATE_KEY \"$key\"", pointer)
