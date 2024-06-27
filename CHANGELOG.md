@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 - `Parser`: minor restructure
 - `README.md`: minor clarifications
+### Removed
+- `.travis.yml`
 
 ## [7.4] - 2024-05-19
 ### Added
