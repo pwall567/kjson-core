@@ -19,4 +19,4 @@ jobs:
         java-version: '8'
         cache: maven
     - name: Build with mvn package
-      run: mvn -B package
+      run: mvn -B --no-transfer-progress package
