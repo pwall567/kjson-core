@@ -2,9 +2,9 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## [Unreleased]
+## [7.5] - 2024-06-30
 ### Added
-- `build.yml`: converted project to GitHub Actions
+- `build.yml`, `deploy.yml`: converted project to GitHub Actions
 ### Changed
 - `Parser`: minor restructure
 - `README.md`: minor clarifications
