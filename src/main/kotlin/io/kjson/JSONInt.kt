@@ -175,6 +175,8 @@ class JSONInt(override val value: Int) : JSONNumber(), JSONPrimitive<Int> {
     /**
      * Convert the value to [Char].
      */
+    @Deprecated("Direct conversion to Char is deprecated. Use toInt().toChar() or Char constructor instead.",
+            replaceWith = ReplaceWith("this.toInt().toChar()"))
     override fun toChar(): Char = value.toChar()
 
     /**

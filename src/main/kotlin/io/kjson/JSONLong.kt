@@ -175,6 +175,8 @@ class JSONLong(override val value: Long) : JSONNumber(), JSONPrimitive<Long> {
     /**
      * Convert the value to [Char].
      */
+    @Deprecated("Direct conversion to Char is deprecated. Use toInt().toChar() or Char constructor instead.",
+            replaceWith = ReplaceWith("this.toInt().toChar()"))
     override fun toChar(): Char = value.toInt().toChar()
 
     /**

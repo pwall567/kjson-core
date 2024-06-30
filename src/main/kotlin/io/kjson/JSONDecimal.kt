@@ -151,7 +151,9 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumber(), JSONPrimitive<
     /**
      * Convert the value to [Char].
      */
-    override fun toChar(): Char = value.toChar()
+    @Deprecated("Direct conversion to Char is deprecated. Use toInt().toChar() or Char constructor instead.",
+            replaceWith = ReplaceWith("this.toInt().toChar()"))
+    override fun toChar(): Char = value.toInt().toChar()
 
     /**
      * Convert the value to [Short].
