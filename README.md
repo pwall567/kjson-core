@@ -287,6 +287,10 @@ The exception also includes a property `key` (of type `Any?`) which is used to p
 the error, for example a [`JSONPointer`](https://github.com/pwall567/kjson-pointer) or a property name.
 When the key is provided, it will be appended to the message, as "`, at {key}`".
 
+Starting from version 8.1 of this library, `JSONException` has been extracted to a separate library &ndash;
+[`kjson-exception`](https://github.com/pwall567/kjson-exception) &ndash; so that it may be included in other projects
+independent from this library
+
 ### `JSONTypeException`
 
 A common error case arises when a `JSONValue` is found to be of the wrong type, for example, when a `JSONArray` is
@@ -653,25 +657,25 @@ The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram
 
 ## Dependency Specification
 
-The latest version of the library is 8.0, and it may be obtained from the Maven Central repository.
+The latest version of the library is 8.1, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>8.0</version>
+      <version>8.1</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:8.0"
+    implementation "io.kjson:kjson-core:8.1"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:8.0")
+    implementation("io.kjson:kjson-core:8.1")
 ```
 
 Peter Wall
 
-2024-07-01
+2024-07-03

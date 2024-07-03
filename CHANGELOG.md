@@ -2,9 +2,15 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [8.1] - 2024-07-03
+### Changed
+- `JSONTypeException`, `ParseException`, `pom.xml`: switched to use `kjson-exception`
+### Removed
+- `JSONException`
+
 ## [8.0] - 2024-07-01
 ### Changed
-- `pom.xml`, `deploy.yml`: tidied up following conversion to GitHub Actions
+- `build.xml`, `deploy.yml`: tidied up following conversion to GitHub Actions
 - `pom.xml`: updated Kotlin version to 1.9.24
 - `JSONInt`, `JSONLong`, `JSONDecimal`: modify for deprecation in Kotlin 1.9.x
   (These would not normally be breaking changes, but the major version should have been updated for version 7.4 because

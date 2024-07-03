@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>kjson-core</artifactId>
-  <version>8.0</version>
+  <version>8.1</version>
   <name>JSON Kotlin core functionality</name>
   <description>JSON Kotlin core functionality</description>
   <packaging>jar</packaging>
@@ -60,6 +60,11 @@
   </pluginRepositories>
 
   <dependencies>
+    <dependency>
+      <groupId>io.kjson</groupId>
+      <artifactId>kjson-exception</artifactId>
+      <version>1.1</version>
+    </dependency>
     <dependency>
       <groupId>net.pwall.json</groupId>
       <artifactId>json-functions</artifactId>

@@ -2,7 +2,7 @@
  * @(#) ParseException.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2021, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,4 +33,12 @@ import io.kjson.parser.ParserConstants.rootPointer
  *
  * @author  Peter Wall
  */
-class ParseException(val text: String, val pointer: String = rootPointer) : JSONException(text, pointer)
+class ParseException(
+    text: String,
+    override val key: String = rootPointer,
+) : JSONException(text, key) {
+
+    val pointer: String
+        get() = key
+
+}

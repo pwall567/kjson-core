@@ -37,5 +37,5 @@ class JSONTypeException(
     val nodeName: String = "Node",
     val target: String,
     val value: JSONValue?,
-    val key: Any? = null,
+    key: Any? = null,
 ) : JSONException("$nodeName not correct type ($target), was ${value.displayValue()}", key)

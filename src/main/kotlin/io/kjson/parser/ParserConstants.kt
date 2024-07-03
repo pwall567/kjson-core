@@ -35,6 +35,7 @@ import io.kjson.util.LookupSet
 @Suppress("unused")
 object ParserConstants {
 
+    @Suppress("ConstPropertyName")
     const val rootPointer = ""
     const val BOM = '\uFEFF'
     const val MAX_INTEGER_DIGITS_LENGTH = 10
