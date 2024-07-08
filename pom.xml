@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>kjson-core</artifactId>
-  <version>8.1</version>
+  <version>8.2</version>
   <name>JSON Kotlin core functionality</name>
   <description>JSON Kotlin core functionality</description>
   <packaging>jar</packaging>
@@ -63,7 +63,7 @@
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-exception</artifactId>
-      <version>1.1</version>
+      <version>1.2</version>
     </dependency>
     <dependency>
       <groupId>net.pwall.json</groupId>
@@ -113,7 +113,7 @@
     <dependency>
       <groupId>org.jetbrains.kotlinx</groupId>
       <artifactId>kotlinx-coroutines-core</artifactId>
-      <version>1.7.2</version>
+      <version>1.8.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

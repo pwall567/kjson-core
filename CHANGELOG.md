@@ -2,6 +2,11 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [8.2] - 2024-07-08
+### Changed
+- `JSONObject`: added `forEachProperty()`
+- `pom.xml`: updated dependency version
+
 ## [8.1] - 2024-07-03
 ### Changed
 - `JSONTypeException`, `ParseException`, `pom.xml`: switched to use `kjson-exception`

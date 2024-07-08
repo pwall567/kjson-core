@@ -180,6 +180,14 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
     }
 
     /**
+     * Perform a function with each property in turn (the function takes a single parameter, the [Property]).
+     */
+    fun forEachProperty(func: (Property) -> Unit) {
+        for (i in indices)
+            func(array[i])
+    }
+
+    /**
      * Perform a function with each property name in turn (the function takes a single parameters, the name [String]).
      */
     fun forEachKey(func: (String) -> Unit) {

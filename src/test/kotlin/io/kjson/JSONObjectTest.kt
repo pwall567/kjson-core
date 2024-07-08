@@ -307,6 +307,35 @@ class JSONObjectTest {
         expect(5) { count }
     }
 
+    @Test fun `should iterate over object properties`() {
+        var count = 0
+        mixedObject.forEachProperty {
+            when (count++) {
+                0 -> {
+                    expect("first") { it.name }
+                    expect(JSONInt(123)) { it.value }
+                }
+                1 -> {
+                    expect("second") { it.name }
+                    expect(JSONString("dummy")) { it.value }
+                }
+                2 -> {
+                    expect("third") { it.name }
+                    expect(JSONLong(123456789123456789)) { it.value }
+                }
+                3 -> {
+                    expect("fourth") { it.name }
+                    expect(JSONDecimal("0.123")) { it.value }
+                }
+                4 -> {
+                    expect("fifth") { it.name }
+                    expect(JSONBoolean.TRUE) { it.value }
+                }
+            }
+        }
+        expect(5) { count }
+    }
+
     @Test fun `should iterate over object keys`() {
         var count = 0
         mixedObject.forEachKey {

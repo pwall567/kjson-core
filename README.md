@@ -256,6 +256,9 @@ the additional functions are optimised for the specific implementation details o
     jsonObject.forEachEntry { name, value ->
         println("Property $name = $value")
     }
+    jsonObject.forEachProperty { property ->
+        println("Property ${property.name} = ${property.value}")
+    }
     jsonObject.forEachKey {
         println("Property name = $it")
     }
@@ -657,25 +660,25 @@ The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram
 
 ## Dependency Specification
 
-The latest version of the library is 8.1, and it may be obtained from the Maven Central repository.
+The latest version of the library is 8.2, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>8.1</version>
+      <version>8.2</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:8.1"
+    implementation "io.kjson:kjson-core:8.2"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:8.1")
+    implementation("io.kjson:kjson-core:8.2")
 ```
 
 Peter Wall
 
-2024-07-03
+2024-07-08
