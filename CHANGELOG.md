@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [8.3] - 2024-07-12
+### Changed
+- `pom.xml`: updated dependency version
+
 ## [8.2] - 2024-07-08
 ### Changed
 - `JSONObject`: added `forEachProperty()`

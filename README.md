@@ -30,7 +30,7 @@ of Kotlin-specific functionality like controlled nullability.
 ## User Guide
 
 All JSON values are represented by Kotlin objects of type `JSONValue?` &ndash; that is, they are all instances of
-classes that implement the `JSONValue` interface, or in the case of the JSON "`null`" value they are `null`.
+classes that implement the `JSONValue` interface, or in the case of the JSON &ldquo;`null`&rdquo; value they are `null`.
 
 ### `JSONValue`
 
@@ -288,7 +288,7 @@ This is a derived class of `RuntimeException`, and the `message` property will c
 
 The exception also includes a property `key` (of type `Any?`) which is used to provide information on the location of
 the error, for example a [`JSONPointer`](https://github.com/pwall567/kjson-pointer) or a property name.
-When the key is provided, it will be appended to the message, as "`, at {key}`".
+When the key is provided, it will be appended to the message, as &ldquo;`, at {key}`&rdquo;.
 
 Starting from version 8.1 of this library, `JSONException` has been extracted to a separate library &ndash;
 [`kjson-exception`](https://github.com/pwall567/kjson-exception) &ndash; so that it may be included in other projects
@@ -305,12 +305,12 @@ the human-readable node name, the expected type, the actual value and an optiona
 
 The `JSONTypeException` constructor takes the following parameters:
 
-| Name       | Type         | Default  | Description                               |
-|------------|--------------|----------|-------------------------------------------|
-| `nodeName` | `String`     | `"Node"` | The name of the field, _e.g._ `"Surname"` |
-| `target`   | `String`     |          | The expected type, _e.g._ `"string"`      |
-| `value`    | `JSONValue?` |          | The actual value found                    |
-| `key`      | `Any?`       | `null`   | The "key" (the location in a structure)   |
+| Name       | Type         | Default  | Description                                         |
+|------------|--------------|----------|-----------------------------------------------------|
+| `nodeName` | `String`     | `"Node"` | The name of the field, _e.g._ `"Surname"`           |
+| `target`   | `String`     |          | The expected type, _e.g._ `"string"`                |
+| `value`    | `JSONValue?` |          | The actual value found                              |
+| `key`      | `Any?`       | `null`   | The &ldquo;key&rdquo; (the location in a structure) |
 
 For example, the following exception:
 ```kotlin
@@ -321,8 +321,8 @@ will result in this message (if an array was supplied in place of a string):
 Surname not correct type (string), was [ ... ], at /person/surname
 ```
 
-The actual value will be displayed using the [`displayValue()`](#human-friendly-output) function, and the "at" clause
-will be omitted if the `key` is `null` or stringifies to an empty string.
+The actual value will be displayed using the [`displayValue()`](#human-friendly-output) function, and the
+&ldquo;at&rdquo; clause will be omitted if the `key` is `null` or `key.toString()` returns an empty string.
 
 For a more convenient way of using this exception type, see [Error Reporting](#error-reporting) below.
 
@@ -337,15 +337,15 @@ The simplest way to parse JSON text is:
         val json = JSON.parse(text)
 ```
 
-The result will be of type `JSONValue?` &ndash; it will be `null` if the text consists of just the string "`null`" (with
-possible leading and trailing whitespace).
+The result will be of type `JSONValue?` &ndash; it will be `null` if the text consists of just the string
+&ldquo;`null`&rdquo; (with possible leading and trailing whitespace).
 
 If only non-null JSON values are expected:
 ```kotlin
         val json = JSON.parseNonNull(text)
 ```
 The result of this function will be of type `JSONValue` (no question mark) and an exception will be thrown if the JSON
-was "`null`".
+was &ldquo;`null`&rdquo;.
 
 If the JSON is expected to be an object (and it is an error if it is not):
 ```kotlin
@@ -377,8 +377,8 @@ The `JSON` object also provides a number of shortcut functions to create `JSONVa
 
 To simplify error reporting, the `JSON` object provides a `displayValue()` extension function on `JSONValue?` to create
 an abbreviated form of the value suitable for error messages.
-Arrays are displayed as `[ ... ]`, objects are displayed as `{ ... }`, and long strings are shortened with "` ... `" in
-the middle.
+Arrays are displayed as `[ ... ]`, objects are displayed as `{ ... }`, and long strings are shortened with
+&ldquo;` ... `&rdquo; in the middle.
 
 For example:
 ```kotlin
@@ -412,7 +412,7 @@ All elements with the specified name will be elided, wherever they occur in the 
 
 The elements to be elided may be specified as a `Collection` of element names to be excluded as shown above, or (less
 usefully) as a `Collection` of element names to be included (using the `include` parameter).
-The substitute string (default "`****`") may also be specified using the `substitute` parameter.
+The substitute string (default &ldquo;`****`&rdquo;) may also be specified using the `substitute` parameter.
 
 #### Error Reporting
 
@@ -420,11 +420,11 @@ To simplify the creation of a `JSONTypeException`, the `JSON` object includes th
 `JSONValue?`.
 It takes the following parameters:
 
-| Name       | Type     | Default  | Description                               |
-|------------|----------|----------|-------------------------------------------|
-| `target`   | `String` |          | The expected type, _e.g._ `"string"`      | 
-| `key`      | `Any?`   | `null`   | The "key" (the location in a structure)   |
-| `nodeName` | `String` | `"Node"` | The name of the field, _e.g._ `"Surname"` |
+| Name       | Type     | Default  | Description                                         |
+|------------|----------|----------|-----------------------------------------------------|
+| `target`   | `String` |          | The expected type, _e.g._ `"string"`                | 
+| `key`      | `Any?`   | `null`   | The &ldquo;key&rdquo; (the location in a structure) |
+| `nodeName` | `String` | `"Node"` | The name of the field, _e.g._ `"Surname"`           |
 
 Its use is best illustrated by example:
 ```kotlin
@@ -547,8 +547,8 @@ type, not the `JSONValue` subtype, and the `asArrayOr()` and `asObjectOr()` func
 The [JSON Lines](https://jsonlines.org/) specification allows multiple JSON values to be specified in a single stream of
 data, separated by newline (`\u000a`) characters.
 For example, events may be logged to a file as a sequence of objects on separate lines; the alternative would be to
-output a JSON array, but this would require a "`]`" terminator, complicating the shutdown of the process (particularly
-abnormal shutdown).
+output a JSON array, but this would require a &ldquo;`]`&rdquo; terminator, complicating the shutdown of the process
+(particularly abnormal shutdown).
 
 ```json lines
 {"time":"2023-06-24T12:24:10.321+10:00","eventType":"ACCOUNT_OPEN","accountNumber": "123456789"}
@@ -660,25 +660,25 @@ The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram
 
 ## Dependency Specification
 
-The latest version of the library is 8.2, and it may be obtained from the Maven Central repository.
+The latest version of the library is 8.3, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>8.2</version>
+      <version>8.3</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:8.2"
+    implementation "io.kjson:kjson-core:8.3"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:8.2")
+    implementation("io.kjson:kjson-core:8.3")
 ```
 
 Peter Wall
 
-2024-07-08
+2024-07-12

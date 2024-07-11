@@ -37,7 +37,7 @@ import io.kjson.JSON.toJSON
 class JSONValueTest {
 
     @Test fun `should use nullable functions`() {
-        var testNull: JSONValue? = null
+        var testNull: JSONValue? = createJSONValueNull()
         expect("null") { testNull.toJSON() }
         val sb = StringBuilder()
         testNull.appendTo(sb)
@@ -65,12 +65,12 @@ class JSONValueTest {
         expect("object") { getType(JSON.of("alpha" to JSON.of(0), "beta" to JSON.of(1))) }
     }
 
-    @Suppress("RedundantNullableReturnType")
-    private fun createJSONValue(): JSONValue? {
-        return JSONInt(222)
-    }
-
     companion object {
+
+        @Suppress("RedundantNullableReturnType")
+        private fun createJSONValue(): JSONValue? = JSONInt(222)
+
+        private fun createJSONValueNull(): JSONValue? = null
 
         private fun getType(jsonValue: JSONValue?): String = when (jsonValue) {
             null -> "null"
