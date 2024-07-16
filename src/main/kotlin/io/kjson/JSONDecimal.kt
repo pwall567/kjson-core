@@ -43,7 +43,7 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumber(), JSONPrimitive<
     /**
      * Convert to a JSON string.
      */
-    override fun toJSON(): String = value.toString()
+    override fun toJSON(): String = if (value == BigDecimal.ZERO) "0" else value.toString()
 
     /**
      * Append as a JSON string to an [Appendable].

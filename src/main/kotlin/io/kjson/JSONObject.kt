@@ -72,13 +72,12 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
     /**
      * Convert to a JSON string.
      */
-    override fun toJSON(): String {
-        if (isEmpty())
-            return "{}"
-        val sb = StringBuilder(JSON.defaultOutputBuilderSize)
-        appendTo(sb)
-        return sb.toString()
-    }
+    override fun toJSON(): String = if (isEmpty())
+        "{}"
+    else
+        buildString(JSON.defaultOutputBuilderSize) {
+            appendTo(this)
+        }
 
     /**
      * Output as a JSON string to an [IntConsumer].

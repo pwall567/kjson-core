@@ -209,9 +209,20 @@ class JSONArrayTest {
         expect("{\"a\":1,\"b\":2}\n{\"a\":21,\"b\":34}\n{\"a\":55,\"b\":66}\n") { sb.toString() }
     }
 
+    @Test fun `should append empty JSONArray in JSON Lines format`() {
+        val sb = StringBuilder()
+        JSONArray.EMPTY.appendJSONLinesTo(sb)
+        expect("") { sb.toString() }
+    }
+
     @Test fun `should create JSON Lines string`() {
         val json = createJSONLines()
         expect("{\"a\":1,\"b\":2}\n{\"a\":21,\"b\":34}\n{\"a\":55,\"b\":66}\n") { json.toJSONLines() }
+    }
+
+    @Test fun `should output empty string for toJSONLines of empty JSONArray`() {
+        val json = JSONArray.EMPTY
+        expect("") { json.toJSONLines() }
     }
 
     @Test fun `should output JSON Lines using output`() {

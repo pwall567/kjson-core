@@ -95,23 +95,18 @@ class JSONArray internal constructor (private val array: Array<out JSONValue?>, 
     /**
      * Convert to a JSON string.
      */
-    override fun toJSON(): String {
-        if (isEmpty())
-            return "[]"
-        val sb = StringBuilder(JSON.defaultOutputBuilderSize)
-        appendTo(sb)
-        return sb.toString()
-    }
+    override fun toJSON(): String = if (isEmpty())
+        "[]"
+    else
+        buildString(JSON.defaultOutputBuilderSize) {
+            appendTo(this)
+        }
 
     /**
      * Convert to a string in JSON Lines form.
      */
-    fun toJSONLines(): String {
-        if (isEmpty())
-            return "[]"
-        val sb = StringBuilder(JSON.defaultOutputBuilderSize)
-        appendJSONLinesTo(sb)
-        return sb.toString()
+    fun toJSONLines(): String = buildString(JSON.defaultOutputBuilderSize) {
+        appendJSONLinesTo(this)
     }
 
     /**

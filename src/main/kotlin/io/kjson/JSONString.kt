@@ -54,13 +54,12 @@ class JSONString(override val value: String) : JSONPrimitive<String>, CharSequen
     /**
      * Convert to a JSON string.
      */
-    override fun toJSON(): String {
-        if (value.isEmpty())
-            return ""
-        val sb = StringBuilder(((value.length * 9) shr 3) + 2) // 12.5% extra for escape sequences, plus 2 for quotes
-        appendTo(sb)
-        return sb.toString()
-    }
+    override fun toJSON(): String = if (value.isEmpty())
+        ""
+    else
+        buildString(((value.length * 9) shr 3) + 2) { // 12.5% extra for escape sequences, plus 2 for quotes
+            appendTo(this)
+        }
 
     /**
      * Append as a JSON string to an [Appendable].

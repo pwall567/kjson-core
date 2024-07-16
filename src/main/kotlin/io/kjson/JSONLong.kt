@@ -47,13 +47,12 @@ class JSONLong(override val value: Long) : JSONNumber(), JSONPrimitive<Long> {
     /**
      * Convert to a JSON string.
      */
-    override fun toJSON(): String {
-        if (value == 0L)
-            return "0"
-        val sb = StringBuilder(20)
-        appendTo(sb)
-        return sb.toString()
-    }
+    override fun toJSON(): String = if (value == 0L)
+        "0"
+    else
+        buildString(20) {
+            appendTo(this)
+        }
 
     /**
      * Output as a JSON string to an [IntConsumer].

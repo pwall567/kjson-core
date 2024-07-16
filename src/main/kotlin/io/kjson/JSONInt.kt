@@ -47,13 +47,12 @@ class JSONInt(override val value: Int) : JSONNumber(), JSONPrimitive<Int> {
     /**
      * Convert to a JSON string.
      */
-    override fun toJSON(): String {
-        if (value == 0)
-            return "0"
-        val sb = StringBuilder(11)
-        appendTo(sb)
-        return sb.toString()
-    }
+    override fun toJSON(): String = if (value == 0)
+        "0"
+    else
+        buildString(12) {
+            appendTo(this)
+        }
 
     /**
      * Output as a JSON string to an [IntConsumer].

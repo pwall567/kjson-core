@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [Unreleased]
+### Changed
+- `JSONArray`, `JSONDecimal`, `JSONInt`, `JSONLong`, `JSONObject`, `JSONString`: minor optimisation to `toJSON()`
+
 ## [8.3] - 2024-07-12
 ### Changed
 - `pom.xml`: updated dependency version
