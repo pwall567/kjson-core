@@ -29,7 +29,6 @@ package io.kjson
  * A sealed interface to specify the [JSONValue] classes that represent primitive values (that is, not structures).
  *
  * @author  Peter Wall
- * @param   T       the primitive value type
  */
 sealed interface JSONPrimitive<out T> : JSONValue {
 

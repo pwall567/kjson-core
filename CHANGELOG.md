@@ -2,9 +2,13 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## [Unreleased]
+## [9.0] - 2024-07-24
 ### Changed
 - `JSONArray`, `JSONDecimal`, `JSONInt`, `JSONLong`, `JSONObject`, `JSONString`: minor optimisation to `toJSON()`
+- `JSONObject`, `Parser`, `ParseOptions`: added duplicate key option (breaking change)
+- `JSON`: added `parseJSONValue()`, `parseJSONArray()` and `parseJSONObject()`
+- `JSONInt`, `JSONLong`: simplified `equals()` to avoid compiler problem
+- `JSONArray`, `JSONObject`: updated `equals()` for consistency
 
 ## [8.3] - 2024-07-12
 ### Changed

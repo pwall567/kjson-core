@@ -217,17 +217,13 @@ class JSONLong(override val value: Long) : JSONNumber(), JSONPrimitive<Long> {
      * Compare the value to another [JSONNumber] value.  [JSONNumber] objects with different types but the same value
      * are considered equal.
      */
-    override fun equals(other: Any?): Boolean {
-        if (this === other)
-            return true
-        if (other !is JSONNumber)
-            return false
-        return when (other) {
+    override fun equals(other: Any?): Boolean = if (this === other) true else
+        when (other) {
             is JSONInt -> value == other.value.toLong()
             is JSONLong -> value == other.value
             is JSONDecimal -> value.toBigDecimal().compareTo(other.value) == 0
+            else -> false
         }
-    }
 
     /**
      * Get the hash code for the [JSONNumber] value.  [JSONNumber] objects with different types but the same value will

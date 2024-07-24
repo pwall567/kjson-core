@@ -90,6 +90,9 @@ import io.kjson.JSON.asUShortOrError
 import io.kjson.JSON.asUShortOrNull
 import io.kjson.JSON.displayValue
 import io.kjson.JSON.elidedValue
+import io.kjson.JSON.parseJSONArray
+import io.kjson.JSON.parseJSONObject
+import io.kjson.JSON.parseJSONValue
 import io.kjson.JSON.typeError
 import net.pwall.json.format.Formatter
 import net.pwall.json.format.Formatter.unixLineSeparator
@@ -171,6 +174,29 @@ class JSONTest {
             expect(777) { this["aa"].asInt }
             expect(888) { this["bb"].asInt }
         }
+    }
+
+    @Test fun `should parse JSONValue using extension function`() {
+        val json = """{"one":1,"two":2}""".parseJSONValue()
+        assertIs<JSONObject>(json)
+        expect(2) { json.size }
+        expect(JSONInt(1)) { json["one"] }
+        expect(JSONInt(2)) { json["two"] }
+    }
+
+    @Test fun `should parse JSONArray using extension function`() {
+        val json = """["alpha","beta","gamma"]""".parseJSONArray()
+        expect(3) { json.size }
+        expect(JSONString("alpha")) { json[0] }
+        expect(JSONString("beta")) { json[1] }
+        expect(JSONString("gamma")) { json[2] }
+    }
+
+    @Test fun `should parse JSONObject using extension function`() {
+        val json = """{"one":1,"two":2}""".parseJSONObject()
+        expect(2) { json.size }
+        expect(JSONInt(1)) { json["one"] }
+        expect(JSONInt(2)) { json["two"] }
     }
 
     @Test fun `should return displayValue for number types`() {

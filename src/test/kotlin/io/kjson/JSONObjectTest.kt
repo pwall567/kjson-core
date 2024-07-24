@@ -498,6 +498,60 @@ class JSONObjectTest {
         expect(JSONInt(12345)) { bbb }
     }
 
+    @Test fun `should respect DuplicateKeyOption ERROR`() {
+        val builder = JSONObject.Builder(duplicateKeyOption = JSONObject.DuplicateKeyOption.ERROR)
+        builder.add("first", 111)
+        builder.add("second", 222)
+        assertFailsWith<JSONException> { builder.add("second", 333) }.let {
+            expect("Duplicate key - second") { it.message }
+        }
+    }
+
+    @Test fun `should respect DuplicateKeyOption TAKE_FIRST`() {
+        val builder = JSONObject.Builder(duplicateKeyOption = JSONObject.DuplicateKeyOption.TAKE_FIRST)
+        builder.add("first", 111)
+        builder.add("second", 222)
+        builder.add("second", 333)
+        with(builder.build()) {
+            expect(2) { size }
+            expect(JSONInt(111)) { this["first"] }
+            expect(JSONInt(222)) { this["second"] }
+        }
+    }
+
+    @Test fun `should respect DuplicateKeyOption TAKE_LAST`() {
+        val builder = JSONObject.Builder(duplicateKeyOption = JSONObject.DuplicateKeyOption.TAKE_LAST)
+        builder.add("first", 111)
+        builder.add("second", 222)
+        builder.add("second", 333)
+        with(builder.build()) {
+            expect(2) { size }
+            expect(JSONInt(111)) { this["first"] }
+            expect(JSONInt(333)) { this["second"] }
+        }
+    }
+
+    @Test fun `should respect DuplicateKeyOption CHECK_IDENTICAL`() {
+        val builder = JSONObject.Builder(duplicateKeyOption = JSONObject.DuplicateKeyOption.CHECK_IDENTICAL)
+        builder.add("first", 111)
+        builder.add("second", 222)
+        builder.add("second", 222)
+        with(builder.build()) {
+            expect(2) { size }
+            expect(JSONInt(111)) { this["first"] }
+            expect(JSONInt(222)) { this["second"] }
+        }
+    }
+
+    @Test fun `should fail on DuplicateKeyOption CHECK_IDENTICAL with different values`() {
+        val builder = JSONObject.Builder(duplicateKeyOption = JSONObject.DuplicateKeyOption.CHECK_IDENTICAL)
+        builder.add("first", 111)
+        builder.add("second", 222)
+        assertFailsWith<JSONException> { builder.add("second", 333) }.let {
+            expect("Duplicate key - second") { it.message }
+        }
+    }
+
     companion object {
 
         val simpleObject = JSONObject.of("abc" to JSONInt(12345), "def" to JSONString("X"))

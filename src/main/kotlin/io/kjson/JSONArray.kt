@@ -268,8 +268,8 @@ class JSONArray internal constructor (private val array: Array<out JSONValue?>, 
     /**
      * Compare the array to another value, applying the rule in Java for comparing `List`s.
      */
-    override fun equals(other: Any?): Boolean = this === other || other is List<*> && size == other.size &&
-            indices.all { array[it] == other[it] }
+    override fun equals(other: Any?): Boolean = this === other ||
+            other is List<*> && size == other.size && indices.all { array[it] == other[it] }
 
     /**
      * Get the hash code for the array, applying the rule in Java for `List` hash codes.

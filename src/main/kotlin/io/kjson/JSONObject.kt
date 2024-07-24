@@ -207,15 +207,12 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
      * Compare the object to another value, applying the rule in Java for comparing `Map`s, or the rule for comparing
      * `List`s.
      */
-    override fun equals(other: Any?): Boolean {
-        if (this === other)
-            return true
-        return when (other) {
+    override fun equals(other: Any?): Boolean = if (this === other) true else
+        when (other) {
             is Map<*, *> -> size == other.size && indices.all { other[array[it].name] == array[it].value }
             is List<*> -> size == other.size && indices.all { array[it] == other[it] }
             else -> false
         }
-    }
 
     /**
      * Get the hash code for the object, applying the rule in Java for `Map` hash codes.  Note that the Java rule for
@@ -291,16 +288,31 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
                 if (list.isEmpty()) EMPTY else JSONObject(list.toTypedArray(), list.size)
 
         /**
-         * Create a [JSONObject] by applying the supplied [block] to a [Builder], and then taking the result.
+         * Create a [JSONObject] by applying the supplied block to a [Builder], and then taking the result.
          */
-        fun build(block: Builder.() -> Unit): JSONObject = Builder(block = block).build()
+        fun build(
+            size: Int = 8,
+            duplicateKeyOption: DuplicateKeyOption = DuplicateKeyOption.ERROR,
+            errorKey: String? = null,
+            block: Builder.() -> Unit
+        ): JSONObject = Builder(size, duplicateKeyOption, errorKey, block).build()
 
     }
 
     /**
+     * Option for handling duplicate keys.
+     */
+    enum class DuplicateKeyOption { ERROR, TAKE_FIRST, TAKE_LAST, CHECK_IDENTICAL }
+
+    /**
      * [JSONObject] builder class.
      */
-    class Builder(size: Int = 8, block: Builder.() -> Unit = {}) : AbstractBuilder<Property>(arrayOfNulls(size)) {
+    class Builder(
+        size: Int = 8,
+        private val duplicateKeyOption: DuplicateKeyOption = DuplicateKeyOption.ERROR,
+        private val errorKey: String? = null,
+        block: Builder.() -> Unit = {}
+    ) : AbstractBuilder<Property>(arrayOfNulls(size)) {
 
         init {
             block()
@@ -315,10 +327,28 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
          * Add a [Property].
          */
         fun add(property: Property) {
-            // TODO consider configuration to allow duplicates
-            if (containsKey(property.key))
-                throw JSONException("Duplicate key - ${property.key}")
-            internalAdd(property)
+            val array = checkArray()
+            val index = ImmutableMap.findKey(array, size, property.key)
+            if (index >= 0) {
+                when (duplicateKeyOption) {
+                    DuplicateKeyOption.ERROR -> throwDuplicateKeyError(property)
+                    DuplicateKeyOption.TAKE_FIRST -> {}
+                    DuplicateKeyOption.TAKE_LAST -> {
+                        internalRemove(index)
+                        internalAdd(property)
+                    }
+                    DuplicateKeyOption.CHECK_IDENTICAL -> {
+                        if (array[index]?.value != property.value)
+                            throwDuplicateKeyError(property)
+                    }
+                }
+            }
+            else
+                internalAdd(property)
+        }
+
+        private fun throwDuplicateKeyError(property: Property): Nothing {
+            throw JSONException("Duplicate key - ${property.key}", errorKey)
         }
 
         /**

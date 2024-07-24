@@ -46,7 +46,6 @@ import io.kjson.JSON.typeError
  * A sealed interface to specify the [JSONValue] classes that represent structured types (array and object).
  *
  * @author  Peter Wall
- * @param   K       the key type (`Int` for [JSONArray] or `String` for [JSONObject])
  */
 sealed interface JSONStructure<K: Any> : JSONValue {
 

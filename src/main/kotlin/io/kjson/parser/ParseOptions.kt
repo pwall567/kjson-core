@@ -25,6 +25,7 @@
 
 package io.kjson.parser
 
+import io.kjson.JSONObject
 import io.kjson.parser.ParserErrors.MAX_DEPTH_ERROR
 
 /**
@@ -33,7 +34,7 @@ import io.kjson.parser.ParserErrors.MAX_DEPTH_ERROR
  * @author  Peter Wall
  */
 data class ParseOptions(
-    val objectKeyDuplicate: DuplicateKeyOption = DuplicateKeyOption.ERROR,
+    val objectKeyDuplicate: JSONObject.DuplicateKeyOption = JSONObject.DuplicateKeyOption.ERROR,
     val objectKeyUnquoted: Boolean = false,
     val objectTrailingComma: Boolean = false,
     val arrayTrailingComma: Boolean = false,
@@ -43,8 +44,6 @@ data class ParseOptions(
     init {
         require(maximumNestingDepth in 1..1200) { "$MAX_DEPTH_ERROR, was $maximumNestingDepth" }
     }
-
-    enum class DuplicateKeyOption { ERROR, TAKE_FIRST, TAKE_LAST, CHECK_IDENTICAL }
 
     companion object {
         val DEFAULT = ParseOptions()

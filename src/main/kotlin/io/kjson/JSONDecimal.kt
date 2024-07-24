@@ -194,8 +194,8 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumber(), JSONPrimitive<
      * Compare the value to another [JSONNumber] value.  [JSONNumber] objects with different types but the same value
      * are considered equal.
      */
-    override fun equals(other: Any?): Boolean =
-            this === other || other is JSONNumber && value.compareTo(other.toDecimal()) == 0
+    override fun equals(other: Any?): Boolean = this === other ||
+            other is JSONNumber && value.compareTo(other.toDecimal()) == 0
 
     /**
      * Get the hash code for the [JSONNumber] value.  [JSONNumber] objects with different types but the same value will

@@ -28,16 +28,17 @@ package io.kjson.parser
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlin.test.expect
 
 import io.kjson.JSON.asInt
 import io.kjson.JSON.asObject
 import io.kjson.JSONArray
+import io.kjson.JSONException
 import io.kjson.JSONInt
 import io.kjson.JSONObject
 import io.kjson.JSONString
 import io.kjson.parser.ParserConstants.rootPointer
-import io.kjson.parser.ParserErrors.DUPLICATE_KEY
 import io.kjson.parser.ParserErrors.ILLEGAL_KEY
 import io.kjson.parser.ParserErrors.MAX_DEPTH_EXCEEDED
 import io.kjson.parser.ParserErrors.MISSING_CLOSING_BRACE
@@ -143,33 +144,42 @@ class ParserObjectTest {
     }
 
     @Test fun `should throw exception on duplicate keys`() {
-        assertFailsWith<ParseException> { Parser.parse("""{"first":123,"first":456}""") }.let {
-            expect("$DUPLICATE_KEY \"first\"") { it.text }
-            expect("$DUPLICATE_KEY \"first\"") { it.message }
-            expect(rootPointer) { it.pointer }
+        assertFailsWith<JSONException> { Parser.parse("""{"first":123,"first":456}""") }.let {
+            expect("Duplicate key - first") { it.text }
+            expect("Duplicate key - first") { it.message }
+            expect("") { it.key }
         }
     }
 
     @Test fun `should throw exception on duplicate keys with option ERROR`() {
-        val options = ParseOptions(ParseOptions.DuplicateKeyOption.ERROR)
-        assertFailsWith<ParseException> { Parser.parse("""{"first":123,"first":456}""", options) }.let {
-            expect("$DUPLICATE_KEY \"first\"") { it.text }
-            expect("$DUPLICATE_KEY \"first\"") { it.message }
-            expect(rootPointer) { it.pointer }
+        val options = ParseOptions(JSONObject.DuplicateKeyOption.ERROR)
+        assertFailsWith<JSONException> { Parser.parse("""{"first":123,"first":456}""", options) }.let {
+            expect("Duplicate key - first") { it.text }
+            expect("Duplicate key - first") { it.message }
+            expect("") { it.key }
+        }
+    }
+
+    @Test fun `should throw exception with pointer on duplicate keys with option ERROR`() {
+        val options = ParseOptions(JSONObject.DuplicateKeyOption.ERROR)
+        assertFailsWith<JSONException> { Parser.parse("""{"abc":{"first":123,"first":456}}""", options) }.let {
+            expect("Duplicate key - first") { it.text }
+            expect("Duplicate key - first, at /abc") { it.message }
+            expect("/abc") { it.key }
         }
     }
 
     @Test fun `should throw exception on duplicate keys with option CHECK_IDENTICAL and different values`() {
-        val options = ParseOptions(ParseOptions.DuplicateKeyOption.CHECK_IDENTICAL)
-        assertFailsWith<ParseException> { Parser.parse("""{"first":123,"first":456}""", options) }.let {
-            expect("$DUPLICATE_KEY \"first\"") { it.text }
-            expect("$DUPLICATE_KEY \"first\"") { it.message }
-            expect(rootPointer) { it.pointer }
+        val options = ParseOptions(JSONObject.DuplicateKeyOption.CHECK_IDENTICAL)
+        assertFailsWith<JSONException> { Parser.parse("""{"first":123,"first":456}""", options) }.let {
+            expect("Duplicate key - first") { it.text }
+            expect("Duplicate key - first") { it.message }
+            expect("") { it.key }
         }
     }
 
     @Test fun `should take first on duplicate keys with option CHECK_IDENTICAL and same values`() {
-        val options = ParseOptions(ParseOptions.DuplicateKeyOption.CHECK_IDENTICAL)
+        val options = ParseOptions(JSONObject.DuplicateKeyOption.CHECK_IDENTICAL)
         Parser.parse("""{"first":123,"first":123}""", options).asObject.let {
             expect(1) { it.size }
             expect(123) { it["first"].asInt }
@@ -177,7 +187,7 @@ class ParserObjectTest {
     }
 
     @Test fun `should take first on duplicate keys with option TAKE_FIRST`() {
-        val options = ParseOptions(ParseOptions.DuplicateKeyOption.TAKE_FIRST)
+        val options = ParseOptions(JSONObject.DuplicateKeyOption.TAKE_FIRST)
         Parser.parse("""{"first":123,"first":456}""", options).asObject.let {
             expect(1) { it.size }
             expect(123) { it["first"].asInt }
@@ -185,7 +195,7 @@ class ParserObjectTest {
     }
 
     @Test fun `should take last on duplicate keys with option TAKE_LAST`() {
-        val options = ParseOptions(ParseOptions.DuplicateKeyOption.TAKE_LAST)
+        val options = ParseOptions(JSONObject.DuplicateKeyOption.TAKE_LAST)
         Parser.parse("""{"first":123,"first":456}""", options).asObject.let {
             expect(1) { it.size }
             expect(456) { it["first"].asInt }

@@ -39,7 +39,6 @@ import io.kjson.parser.ParserConstants.MAX_INTEGER_DIGITS_LENGTH
 import io.kjson.parser.ParserConstants.identifierContinuationSet
 import io.kjson.parser.ParserConstants.identifierStartSet
 import io.kjson.parser.ParserConstants.rootPointer
-import io.kjson.parser.ParserErrors.DUPLICATE_KEY
 import io.kjson.parser.ParserErrors.EXCESS_CHARS
 import io.kjson.parser.ParserErrors.ILLEGAL_KEY
 import io.kjson.parser.ParserErrors.ILLEGAL_NUMBER
@@ -113,7 +112,8 @@ object Parser {
         return parseNumber(tm, pointer) ?: throw ParseException(ILLEGAL_SYNTAX, pointer)
     }
 
-    private fun parseObject(tm: TextMatcher, options: ParseOptions, pointer: String, depth: Int) = JSONObject.build {
+    private fun parseObject(tm: TextMatcher, options: ParseOptions, pointer: String, depth: Int) =
+            JSONObject.build(duplicateKeyOption = options.objectKeyDuplicate, errorKey = pointer) {
         tm.skip(JSONFunctions::isSpaceCharacter)
         if (!tm.match('}')) {
             while (true) {
@@ -125,23 +125,7 @@ object Parser {
                 tm.skip(JSONFunctions::isSpaceCharacter)
                 if (!tm.match(':'))
                     throw ParseException(MISSING_COLON, pointer)
-                val value = parse(tm, options, "$pointer/$key", depth + 1)
-                if (containsKey(key)) {
-                    when (options.objectKeyDuplicate) {
-                        ParseOptions.DuplicateKeyOption.ERROR -> duplicateKeyError(key, pointer)
-                        ParseOptions.DuplicateKeyOption.TAKE_FIRST -> {}
-                        ParseOptions.DuplicateKeyOption.TAKE_LAST -> {
-                            remove(key)
-                            add(key, value)
-                        }
-                        ParseOptions.DuplicateKeyOption.CHECK_IDENTICAL -> {
-                            if (value != get(key))
-                                duplicateKeyError(key, pointer)
-                        }
-                    }
-                }
-                else
-                    add(key, value)
+                add(key, parse(tm, options, "$pointer/$key", depth + 1))
                 tm.skip(JSONFunctions::isSpaceCharacter)
                 if (!tm.match(','))
                     break
@@ -217,10 +201,6 @@ object Parser {
         true
     } else
         false
-
-    private fun duplicateKeyError(key: String, pointer: String): Nothing {
-        throw ParseException("$DUPLICATE_KEY \"$key\"", pointer)
-    }
 
     private fun TextMatcher.matchIdentifier(): Boolean = match { it in identifierStartSet } &&
             matchContinue { it in identifierContinuationSet }

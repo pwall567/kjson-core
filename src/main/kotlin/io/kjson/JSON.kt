@@ -29,6 +29,7 @@ import java.math.BigDecimal
 import java.util.function.IntConsumer
 
 import io.kjson.parser.Parser
+import io.kjson.parser.ParseOptions
 import io.kjson.util.getIntProperty
 import net.pwall.json.JSONFunctions.appendString
 import net.pwall.json.JSONFunctions.displayString
@@ -89,27 +90,63 @@ object JSON {
     /**
      * Parse a [String] to a [JSONValue] (or `null` if the string is `"null"`).
      */
-    fun parse(json: String): JSONValue? = Parser.parse(json)
+    fun parse(
+        json: String,
+        options: ParseOptions = ParseOptions.DEFAULT,
+    ): JSONValue? = Parser.parse(json, options)
 
     /**
      * Parse a [String] to a [JSONValue] (guaranteed non-null).
      */
-    fun parseNonNull(json: String): JSONValue = parse(json) ?: throw JSONException("JSON must not be \"null\"")
+    fun parseNonNull(
+        json: String,
+        options: ParseOptions = ParseOptions.DEFAULT,
+    ): JSONValue = parse(json, options) ?: throw JSONException("JSON must not be \"null\"")
 
     /**
      * Parse a [String] to a [JSONArray].
      */
-    fun parseArray(json: String): JSONArray = parse(json).asArray
+    fun parseArray(
+        json: String,
+        options: ParseOptions = ParseOptions.DEFAULT,
+    ): JSONArray = parse(json, options).asArray
 
     /**
      * Parse a [String] to a [JSONObject].
      */
-    fun parseObject(json: String): JSONObject = parse(json).asObject
+    fun parseObject(
+        json: String,
+        options: ParseOptions = ParseOptions.DEFAULT,
+    ): JSONObject = parse(json, options).asObject
 
     /**
      * Parse a [String] to a [JSONArray], where the input is in JSON Lines form.
      */
-    fun parseLines(jsonLines: String): JSONArray = Parser.parseLines(jsonLines)
+    fun parseLines(
+        jsonLines: String,
+        options: ParseOptions = ParseOptions.DEFAULT,
+    ): JSONArray = Parser.parseLines(jsonLines, options)
+
+    /**
+     * Parse the receiver [CharSequence] (_e.g._ [String]) to a (non-null) [JSONValue].
+     */
+    fun CharSequence.parseJSONValue(
+        options: ParseOptions = ParseOptions.DEFAULT,
+    ): JSONValue = parseNonNull(this.toString(), options)
+
+    /**
+     * Parse the receiver [CharSequence] (_e.g._ [String]) to a [JSONArray].
+     */
+    fun CharSequence.parseJSONArray(
+        options: ParseOptions = ParseOptions.DEFAULT,
+    ): JSONArray = parseArray(this.toString(), options)
+
+    /**
+     * Parse the receiver [CharSequence] (_e.g._ [String]) to a [JSONObject].
+     */
+    fun CharSequence.parseJSONObject(
+        options: ParseOptions = ParseOptions.DEFAULT,
+    ): JSONObject = parseObject(this.toString(), options)
 
     /**
      * Convert the receiver [JSONValue] to a JSON string (`"null"` if the receiver is `null`).
