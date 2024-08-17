@@ -283,13 +283,11 @@ class JSONArray internal constructor (private val array: Array<out JSONValue?>, 
 
     /** The value as a [JSONArray] (unnecessary when type is known statically). */
     @Deprecated("Unnecessary (value is known to be JSONArray)", ReplaceWith("this"))
-    val asArray: JSONArray
-        get() = this
+    val asArray: JSONArray get() = this
 
     /** The value as a [JSONArray] or `null` (unnecessary when type is known statically).  */
     @Deprecated("Unnecessary (value is known to be JSONArray)", ReplaceWith("this"))
-    val asArrayOrNull: JSONArray
-        get() = this
+    val asArrayOrNull: JSONArray get() = this
 
     companion object {
 
@@ -378,3 +376,8 @@ class JSONArray internal constructor (private val array: Array<out JSONValue?>, 
     }
 
 }
+
+/**
+ * Create a [JSONArray] from a `vararg` list of [JSONValue]s.
+ */
+fun JSONArray(vararg items: JSONValue?): JSONArray = JSONArray.of(*items)

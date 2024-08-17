@@ -53,13 +53,11 @@ enum class JSONBoolean(override val value: Boolean) : JSONPrimitive<Boolean> {
     override fun toString(): String = toJSON()
 
     /** The value as a [Boolean] (optimisation of the extension value in [JSON] when the type is known statically). */
-    val asBoolean: Boolean
-        get() = value
+    val asBoolean: Boolean get() = value
 
     /** The value as a [Boolean] or `null` (optimisation of the extension value in [JSON] when the type is known
      *  statically). */
-    val asBooleanOrNull: Boolean
-        get() = value
+    val asBooleanOrNull: Boolean get() = value
 
     companion object {
 

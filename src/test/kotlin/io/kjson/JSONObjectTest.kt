@@ -50,18 +50,214 @@ class JSONObjectTest {
         assertTrue(jsonObject.isNotEmpty())
     }
 
-    @Test fun `should create empty JSONObject using of`() {
-        val jsonObject = JSONObject.of()
-        expect(0) { jsonObject.size }
-        expect("{}") { jsonObject.toJSON() }
-        expect("{}") { jsonObject.toString() }
-        assertTrue(jsonObject.isEmpty())
-        assertFalse(jsonObject.isNotEmpty())
+    @Test fun `should create JSONObject using of with duplicateKeyOption`() {
+        for (duplicateKeyOption in JSONObject.DuplicateKeyOption.entries) {
+            val jsonObject = JSONObject.of(
+                "abc" to JSONInt(12345),
+                "def" to JSONString("X"),
+                duplicateKeyOption = duplicateKeyOption,
+            )
+            expect(2) { jsonObject.size }
+            expect(JSONInt(12345)) { jsonObject["abc"] }
+            expect(JSONString("X")) { jsonObject["def"] }
+            expect("""{"abc":12345,"def":"X"}""") { jsonObject.toJSON() }
+            expect("""{"abc":12345,"def":"X"}""") { jsonObject.toString() }
+            assertFalse(jsonObject.isEmpty())
+            assertTrue(jsonObject.isNotEmpty())
+        }
+    }
+
+    @Test fun `should report duplicate key error creating JSONObject using of`() {
+        assertFailsWith<JSONException> {
+            JSONObject.of("abc" to JSONInt(12345), "abc" to JSONString("X"))
+        }.let {
+            expect("Duplicate key - abc") { it.message }
+        }
+    }
+
+    @Test fun `should report duplicate key error creating JSONObject using of with duplicateKeyOption ERROR`() {
+        assertFailsWith<JSONException> {
+            JSONObject.of(
+                "abc" to JSONInt(12345),
+                "abc" to JSONString("X"),
+                duplicateKeyOption = JSONObject.DuplicateKeyOption.ERROR,
+            )
+        }.let {
+            expect("Duplicate key - abc") { it.message }
+        }
+    }
+
+    @Test fun `should accept first key creating JSONObject using of with duplicateKeyOption TAKE_FIRST`() {
+        val jsonObject = JSONObject.of(
+            "abc" to JSONInt(12345),
+            "abc" to JSONString("X"),
+            duplicateKeyOption = JSONObject.DuplicateKeyOption.TAKE_FIRST,
+        )
+        expect(1) { jsonObject.size }
+        expect(JSONInt(12345)) { jsonObject["abc"] }
+        expect("""{"abc":12345}""") { jsonObject.toJSON() }
+        expect("""{"abc":12345}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should accept last key creating JSONObject using of with duplicateKeyOption TAKE_LAST`() {
+        val jsonObject = JSONObject.of(
+            "abc" to JSONInt(12345),
+            "abc" to JSONString("X"),
+            duplicateKeyOption = JSONObject.DuplicateKeyOption.TAKE_LAST,
+        )
+        expect(1) { jsonObject.size }
+        expect(JSONString("X")) { jsonObject["abc"] }
+        expect("""{"abc":"X"}""") { jsonObject.toJSON() }
+        expect("""{"abc":"X"}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should accept matching duplicate creating JSONObject using of with CHECK_IDENTICAL`() {
+        val jsonObject = JSONObject.of(
+            "abc" to JSONInt(12345),
+            "abc" to JSONInt(12345),
+            duplicateKeyOption = JSONObject.DuplicateKeyOption.CHECK_IDENTICAL,
+        )
+        expect(1) { jsonObject.size }
+        expect(JSONInt(12345)) { jsonObject["abc"] }
+        expect("""{"abc":12345}""") { jsonObject.toJSON() }
+        expect("""{"abc":12345}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should report duplicate key error creating JSONObject using of with CHECK_IDENTICAL`() {
+        assertFailsWith<JSONException> {
+            JSONObject.of(
+                "abc" to JSONInt(12345),
+                "abc" to JSONString("X"),
+                duplicateKeyOption = JSONObject.DuplicateKeyOption.CHECK_IDENTICAL,
+            )
+        }.let {
+            expect("Duplicate key - abc") { it.message }
+        }
+    }
+
+    @Test fun `should create JSONObject using JSONObject function`() {
+        val jsonObject = JSONObject("abc" refersTo JSONInt(12345), "def" refersTo JSONString("X"))
+        expect(2) { jsonObject.size }
+        expect(JSONInt(12345)) { jsonObject["abc"] }
+        expect(JSONString("X")) { jsonObject["def"] }
+        expect("""{"abc":12345,"def":"X"}""") { jsonObject.toJSON() }
+        expect("""{"abc":12345,"def":"X"}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should create JSONObject using JSONObject function with duplicateKeyOption`() {
+        for (duplicateKeyOption in JSONObject.DuplicateKeyOption.entries) {
+            val jsonObject = JSONObject(
+                "abc" refersTo JSONInt(12345),
+                "def" refersTo JSONString("X"),
+                duplicateKeyOption = duplicateKeyOption
+            )
+            expect(2) { jsonObject.size }
+            expect(JSONInt(12345)) { jsonObject["abc"] }
+            expect(JSONString("X")) { jsonObject["def"] }
+            expect("""{"abc":12345,"def":"X"}""") { jsonObject.toJSON() }
+            expect("""{"abc":12345,"def":"X"}""") { jsonObject.toString() }
+            assertFalse(jsonObject.isEmpty())
+            assertTrue(jsonObject.isNotEmpty())
+        }
+    }
+
+    @Test fun `should report duplicate key error creating JSONObject using JSONObject function`() {
+        assertFailsWith<JSONException> {
+            JSONObject("abc" to JSONInt(12345), "abc" to JSONString("X"))
+        }.let {
+            expect("Duplicate key - abc") { it.message }
+        }
+    }
+
+    @Test fun `should report duplicate key error creating JSONObject using JSONObject function with option ERROR`() {
+        assertFailsWith<JSONException> {
+            JSONObject(
+                "abc" to JSONInt(12345),
+                "abc" to JSONString("X"),
+                duplicateKeyOption = JSONObject.DuplicateKeyOption.ERROR,
+            )
+        }.let {
+            expect("Duplicate key - abc") { it.message }
+        }
+    }
+
+    @Test fun `should accept first key creating JSONObject using JSONObject function with option TAKE_FIRST`() {
+        val jsonObject = JSONObject(
+            "abc" to JSONInt(12345),
+            "abc" to JSONString("X"),
+            duplicateKeyOption = JSONObject.DuplicateKeyOption.TAKE_FIRST,
+        )
+        expect(1) { jsonObject.size }
+        expect(JSONInt(12345)) { jsonObject["abc"] }
+        expect("""{"abc":12345}""") { jsonObject.toJSON() }
+        expect("""{"abc":12345}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should accept last key creating JSONObject using JSONObject function with option TAKE_LAST`() {
+        val jsonObject = JSONObject(
+            "abc" to JSONInt(12345),
+            "abc" to JSONString("X"),
+            duplicateKeyOption = JSONObject.DuplicateKeyOption.TAKE_LAST,
+        )
+        expect(1) { jsonObject.size }
+        expect(JSONString("X")) { jsonObject["abc"] }
+        expect("""{"abc":"X"}""") { jsonObject.toJSON() }
+        expect("""{"abc":"X"}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should accept matching duplicate creating JSONObject using JSONObject function with CHECK_IDENTICAL`() {
+        val jsonObject = JSONObject(
+            "abc" to JSONInt(12345),
+            "abc" to JSONInt(12345),
+            duplicateKeyOption = JSONObject.DuplicateKeyOption.CHECK_IDENTICAL,
+        )
+        expect(1) { jsonObject.size }
+        expect(JSONInt(12345)) { jsonObject["abc"] }
+        expect("""{"abc":12345}""") { jsonObject.toJSON() }
+        expect("""{"abc":12345}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should report duplicate key error creating JSONObject using JSONObject function with CHECK_IDENTICAL`() {
+        assertFailsWith<JSONException> {
+            JSONObject(
+                "abc" to JSONInt(12345),
+                "abc" to JSONString("X"),
+                duplicateKeyOption = JSONObject.DuplicateKeyOption.CHECK_IDENTICAL,
+            )
+        }.let {
+            expect("Duplicate key - abc") { it.message }
+        }
     }
 
     @Test fun `should create JSONObject using from Map`() {
         val map = mapOf<String, JSONValue?>("abc" to JSONInt(12345), "def" to JSONString("X"))
         val jsonObject = JSONObject.from(map)
+        expect(2) { jsonObject.size }
+        expect(JSONInt(12345)) { jsonObject["abc"] }
+        expect(JSONString("X")) { jsonObject["def"] }
+        expect("""{"abc":12345,"def":"X"}""") { jsonObject.toJSON() }
+        expect("""{"abc":12345,"def":"X"}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should create JSONObject using from Map extension function`() {
+        val map = mapOf<String, JSONValue?>("abc" to JSONInt(12345), "def" to JSONString("X"))
+        val jsonObject = map.toJSONObject()
         expect(2) { jsonObject.size }
         expect(JSONInt(12345)) { jsonObject["abc"] }
         expect(JSONString("X")) { jsonObject["def"] }
@@ -83,10 +279,84 @@ class JSONObjectTest {
         assertTrue(jsonObject.isNotEmpty())
     }
 
+    @Test fun `should create JSONObject using from List with duplicateKeyOption`() {
+        for (duplicateKeyOption in JSONObject.DuplicateKeyOption.entries) {
+            val list = listOf<Pair<String, JSONValue?>>("abc" to JSONInt(12345), "def" to JSONString("X"))
+            val jsonObject = JSONObject.from(list, duplicateKeyOption = duplicateKeyOption)
+            expect(2) { jsonObject.size }
+            expect(JSONInt(12345)) { jsonObject["abc"] }
+            expect(JSONString("X")) { jsonObject["def"] }
+            expect("""{"abc":12345,"def":"X"}""") { jsonObject.toJSON() }
+            expect("""{"abc":12345,"def":"X"}""") { jsonObject.toString() }
+            assertFalse(jsonObject.isEmpty())
+            assertTrue(jsonObject.isNotEmpty())
+        }
+    }
+
+    @Test fun `should report duplicate key error creating JSONObject using from List`() {
+        assertFailsWith<JSONException> {
+            val list = listOf<Pair<String, JSONValue?>>("abc" to JSONInt(12345), "abc" to JSONString("X"))
+            JSONObject.from(list)
+        }.let {
+            expect("Duplicate key - abc") { it.message }
+        }
+    }
+
+    @Test fun `should report duplicate key error creating JSONObject using from List with duplicateKeyOption ERROR`() {
+        assertFailsWith<JSONException> {
+            val list = listOf<Pair<String, JSONValue?>>("abc" to JSONInt(12345), "abc" to JSONString("X"))
+            JSONObject.from(list, duplicateKeyOption = JSONObject.DuplicateKeyOption.ERROR)
+        }.let {
+            expect("Duplicate key - abc") { it.message }
+        }
+    }
+
+    @Test fun `should accept first key creating JSONObject using from List with duplicateKeyOption TAKE_FIRST`() {
+        val list = listOf<Pair<String, JSONValue?>>("abc" to JSONInt(12345), "abc" to JSONString("X"))
+        val jsonObject = JSONObject.from(list, duplicateKeyOption = JSONObject.DuplicateKeyOption.TAKE_FIRST)
+        expect(1) { jsonObject.size }
+        expect(JSONInt(12345)) { jsonObject["abc"] }
+        expect("""{"abc":12345}""") { jsonObject.toJSON() }
+        expect("""{"abc":12345}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should accept last key creating JSONObject using from List with duplicateKeyOption TAKE_LAST`() {
+        val list = listOf<Pair<String, JSONValue?>>("abc" to JSONInt(12345), "abc" to JSONString("X"))
+        val jsonObject = JSONObject.from(list, duplicateKeyOption = JSONObject.DuplicateKeyOption.TAKE_LAST)
+        expect(1) { jsonObject.size }
+        expect(JSONString("X")) { jsonObject["abc"] }
+        expect("""{"abc":"X"}""") { jsonObject.toJSON() }
+        expect("""{"abc":"X"}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should accept matching duplicate creating JSONObject using from List with CHECK_IDENTICAL`() {
+        val list = listOf<Pair<String, JSONValue?>>("abc" to JSONInt(12345), "abc" to JSONInt(12345))
+        val jsonObject = JSONObject.from(list, duplicateKeyOption = JSONObject.DuplicateKeyOption.CHECK_IDENTICAL)
+        expect(1) { jsonObject.size }
+        expect(JSONInt(12345)) { jsonObject["abc"] }
+        expect("""{"abc":12345}""") { jsonObject.toJSON() }
+        expect("""{"abc":12345}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should report duplicate key error creating JSONObject using from List with CHECK_IDENTICAL`() {
+        val list = listOf<Pair<String, JSONValue?>>("abc" to JSONInt(12345), "abc" to JSONString("X"))
+        assertFailsWith<JSONException> {
+            JSONObject.from(list, duplicateKeyOption = JSONObject.DuplicateKeyOption.CHECK_IDENTICAL)
+        }.let {
+            expect("Duplicate key - abc") { it.message }
+        }
+    }
+
     @Test fun `should create JSONObject using fromProperties`() {
         val properties = listOf(
-            JSONObject.Property("abc", JSONInt(12345)),
-            JSONObject.Property("def", JSONString("X")),
+            "abc" refersTo JSONInt(12345),
+            "def" refersTo JSONString("X"),
         )
         val jsonObject = JSONObject.fromProperties(properties)
         expect(2) { jsonObject.size }
@@ -96,6 +366,223 @@ class JSONObjectTest {
         expect("""{"abc":12345,"def":"X"}""") { jsonObject.toString() }
         assertFalse(jsonObject.isEmpty())
         assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should create JSONObject using fromProperties with duplicateKeyOption`() {
+        for (duplicateKeyOption in JSONObject.DuplicateKeyOption.entries) {
+            val properties = listOf(
+                "abc" refersTo JSONInt(12345),
+                "def" refersTo JSONString("X"),
+            )
+            val jsonObject = JSONObject.fromProperties(properties, duplicateKeyOption = duplicateKeyOption)
+            expect(2) { jsonObject.size }
+            expect(JSONInt(12345)) { jsonObject["abc"] }
+            expect(JSONString("X")) { jsonObject["def"] }
+            expect("""{"abc":12345,"def":"X"}""") { jsonObject.toJSON() }
+            expect("""{"abc":12345,"def":"X"}""") { jsonObject.toString() }
+            assertFalse(jsonObject.isEmpty())
+            assertTrue(jsonObject.isNotEmpty())
+        }
+    }
+
+    @Test fun `should report duplicate key error creating JSONObject using fromProperties`() {
+        val properties = listOf(
+            "abc" refersTo JSONInt(12345),
+            "abc" refersTo JSONString("X"),
+        )
+        assertFailsWith<JSONException> {
+            JSONObject.fromProperties(properties)
+        }.let {
+            expect("Duplicate key - abc") { it.message }
+        }
+    }
+
+    @Test fun `should report duplicate key error creating JSONObject using fromProperties with option ERROR`() {
+        val properties = listOf(
+            "abc" refersTo JSONInt(12345),
+            "abc" refersTo JSONString("X"),
+        )
+        assertFailsWith<JSONException> {
+            JSONObject.fromProperties(properties, duplicateKeyOption = JSONObject.DuplicateKeyOption.ERROR)
+        }.let {
+            expect("Duplicate key - abc") { it.message }
+        }
+    }
+
+    @Test fun `should accept first key creating JSONObject using fromProperties with duplicateKeyOption TAKE_FIRST`() {
+        val properties = listOf(
+            "abc" refersTo JSONInt(12345),
+            "abc" refersTo JSONString("X"),
+        )
+        val jsonObject = JSONObject.fromProperties(
+            properties,
+            duplicateKeyOption = JSONObject.DuplicateKeyOption.TAKE_FIRST,
+        )
+        expect(1) { jsonObject.size }
+        expect(JSONInt(12345)) { jsonObject["abc"] }
+        expect("""{"abc":12345}""") { jsonObject.toJSON() }
+        expect("""{"abc":12345}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should accept last key creating JSONObject using fromProperties with duplicateKeyOption TAKE_LAST`() {
+        val properties = listOf(
+            "abc" refersTo JSONInt(12345),
+            "abc" refersTo JSONString("X"),
+        )
+        val jsonObject = JSONObject.fromProperties(
+            properties,
+            duplicateKeyOption = JSONObject.DuplicateKeyOption.TAKE_LAST,
+        )
+        expect(1) { jsonObject.size }
+        expect(JSONString("X")) { jsonObject["abc"] }
+        expect("""{"abc":"X"}""") { jsonObject.toJSON() }
+        expect("""{"abc":"X"}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should accept matching duplicate creating JSONObject using fromProperties with CHECK_IDENTICAL`() {
+        val properties = listOf(
+            "abc" refersTo JSONInt(12345),
+            "abc" refersTo JSONInt(12345),
+        )
+        val jsonObject = JSONObject.fromProperties(
+            properties,
+            duplicateKeyOption = JSONObject.DuplicateKeyOption.CHECK_IDENTICAL,
+        )
+        expect(1) { jsonObject.size }
+        expect(JSONInt(12345)) { jsonObject["abc"] }
+        expect("""{"abc":12345}""") { jsonObject.toJSON() }
+        expect("""{"abc":12345}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should report duplicate key error creating JSONObject using fromProperties with CHECK_IDENTICAL`() {
+        val properties = listOf(
+            "abc" refersTo JSONInt(12345),
+            "abc" refersTo JSONString("X"),
+        )
+        assertFailsWith<JSONException> {
+            JSONObject.fromProperties(
+                properties,
+                duplicateKeyOption = JSONObject.DuplicateKeyOption.CHECK_IDENTICAL,
+            )
+        }.let {
+            expect("Duplicate key - abc") { it.message }
+        }
+    }
+
+    @Test fun `should create JSONObject using extension function`() {
+        val properties = listOf(
+            JSONObject.Property("abc", JSONInt(12345)),
+            JSONObject.Property("def", JSONString("X")),
+        )
+        val jsonObject = properties.toJSONObject()
+        expect(2) { jsonObject.size }
+        expect(JSONInt(12345)) { jsonObject["abc"] }
+        expect(JSONString("X")) { jsonObject["def"] }
+        expect("""{"abc":12345,"def":"X"}""") { jsonObject.toJSON() }
+        expect("""{"abc":12345,"def":"X"}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should create JSONObject using extension function with duplicateKeyOption`() {
+        for (duplicateKeyOption in JSONObject.DuplicateKeyOption.entries) {
+            val properties = listOf(
+                JSONObject.Property("abc", JSONInt(12345)),
+                JSONObject.Property("def", JSONString("X")),
+            )
+            val jsonObject = properties.toJSONObject(duplicateKeyOption = duplicateKeyOption)
+            expect(2) { jsonObject.size }
+            expect(JSONInt(12345)) { jsonObject["abc"] }
+            expect(JSONString("X")) { jsonObject["def"] }
+            expect("""{"abc":12345,"def":"X"}""") { jsonObject.toJSON() }
+            expect("""{"abc":12345,"def":"X"}""") { jsonObject.toString() }
+            assertFalse(jsonObject.isEmpty())
+            assertTrue(jsonObject.isNotEmpty())
+        }
+    }
+
+    @Test fun `should report duplicate key error creating JSONObject using extension function`() {
+        val properties = listOf(
+            JSONObject.Property("abc", JSONInt(12345)),
+            JSONObject.Property("abc", JSONString("X")),
+        )
+        assertFailsWith<JSONException> {
+            properties.toJSONObject()
+        }.let {
+            expect("Duplicate key - abc") { it.message }
+        }
+    }
+
+    @Test fun `should report duplicate key error creating JSONObject using extension function with option ERROR`() {
+        val properties = listOf(
+            JSONObject.Property("abc", JSONInt(12345)),
+            JSONObject.Property("abc", JSONString("X")),
+        )
+        assertFailsWith<JSONException> {
+            properties.toJSONObject(duplicateKeyOption = JSONObject.DuplicateKeyOption.ERROR)
+        }.let {
+            expect("Duplicate key - abc") { it.message }
+        }
+    }
+
+    @Test fun `should accept first key creating JSONObject using extension function with TAKE_FIRST`() {
+        val properties = listOf(
+            JSONObject.Property("abc", JSONInt(12345)),
+            JSONObject.Property("abc", JSONString("X")),
+        )
+        val jsonObject = properties.toJSONObject(duplicateKeyOption = JSONObject.DuplicateKeyOption.TAKE_FIRST)
+        expect(1) { jsonObject.size }
+        expect(JSONInt(12345)) { jsonObject["abc"] }
+        expect("""{"abc":12345}""") { jsonObject.toJSON() }
+        expect("""{"abc":12345}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should accept last key creating JSONObject using extension function with  TAKE_LAST`() {
+        val properties = listOf(
+            JSONObject.Property("abc", JSONInt(12345)),
+            JSONObject.Property("abc", JSONString("X")),
+        )
+        val jsonObject = properties.toJSONObject(duplicateKeyOption = JSONObject.DuplicateKeyOption.TAKE_LAST)
+        expect(1) { jsonObject.size }
+        expect(JSONString("X")) { jsonObject["abc"] }
+        expect("""{"abc":"X"}""") { jsonObject.toJSON() }
+        expect("""{"abc":"X"}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should accept matching duplicate creating JSONObject using extension function with CHECK_IDENTICAL`() {
+        val properties = listOf(
+            JSONObject.Property("abc", JSONInt(12345)),
+            JSONObject.Property("abc", JSONInt(12345)),
+        )
+        val jsonObject = properties.toJSONObject(duplicateKeyOption = JSONObject.DuplicateKeyOption.CHECK_IDENTICAL)
+        expect(1) { jsonObject.size }
+        expect(JSONInt(12345)) { jsonObject["abc"] }
+        expect("""{"abc":12345}""") { jsonObject.toJSON() }
+        expect("""{"abc":12345}""") { jsonObject.toString() }
+        assertFalse(jsonObject.isEmpty())
+        assertTrue(jsonObject.isNotEmpty())
+    }
+
+    @Test fun `should report duplicate key error creating JSONObject using extension function with CHECK_IDENTICAL`() {
+        val properties = listOf(
+            JSONObject.Property("abc", JSONInt(12345)),
+            JSONObject.Property("abc", JSONString("X")),
+        )
+        assertFailsWith<JSONException> {
+            properties.toJSONObject(duplicateKeyOption = JSONObject.DuplicateKeyOption.CHECK_IDENTICAL)
+        }.let {
+            expect("Duplicate key - abc") { it.message }
+        }
     }
 
     @Test fun `should build JSONObject using Builder`() {

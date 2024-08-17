@@ -42,7 +42,9 @@ class JSONLong(override val value: Long) : JSONNumber(), JSONPrimitive<Long> {
     /**
      * Append as a JSON string to an [Appendable].
      */
-    override fun appendTo(a: Appendable) = IntOutput.appendLong(a, value)
+    override fun appendTo(a: Appendable) {
+        IntOutput.appendLong(a, value)
+    }
 
     /**
      * Convert to a JSON string.
@@ -57,24 +59,32 @@ class JSONLong(override val value: Long) : JSONNumber(), JSONPrimitive<Long> {
     /**
      * Output as a JSON string to an [IntConsumer].
      */
-    override fun outputTo(out: IntConsumer) = IntOutput.outputLong(value, out)
+    override fun outputTo(out: IntConsumer) {
+        IntOutput.outputLong(value, out)
+    }
 
     /**
      * Output as a JSON string to an [IntConsumer].
      */
     @Deprecated("renamed to outputTo", ReplaceWith("outputTo(out)"))
-    override fun output(out: IntConsumer) = IntOutput.outputLong(value, out)
+    override fun output(out: IntConsumer) {
+        IntOutput.outputLong(value, out)
+    }
 
     /**
      * Output as a JSON string to a [CoOutput].
      */
-    override suspend fun coOutputTo(out: CoOutput) = out.outputLong(value)
+    override suspend fun coOutputTo(out: CoOutput) {
+        out.outputLong(value)
+    }
 
     /**
      * Output as a JSON string to a [CoOutput].
      */
     @Deprecated("renamed to coOutputTo", ReplaceWith("coOutputTo(out)"))
-    override suspend fun coOutput(out: CoOutput) = out.outputLong(value)
+    override suspend fun coOutput(out: CoOutput) {
+        out.outputLong(value)
+    }
 
     /**
      * Return `true` if the value is integral (has no fractional part, or the fractional part is zero).
@@ -237,22 +247,18 @@ class JSONLong(override val value: Long) : JSONNumber(), JSONPrimitive<Long> {
     override fun toString(): String = value.toString()
 
     /** The value as a [Long] (optimisation of the extension value in [JSON] when the type is known statically). */
-    val asLong: Long
-        get() = value
+    val asLong: Long get() = value
 
     /** The value as a [Long] or `null` (optimisation of the extension value in [JSON] when the type is known
      *  statically). */
-    val asLongOrNull: Long
-        get() = value
+    val asLongOrNull: Long get() = value
 
     /** The value as a [Long] (optimisation of the extension value in [JSON] when the type is known statically). */
-    val asDecimal: BigDecimal
-        get() = value.toBigDecimal()
+    val asDecimal: BigDecimal get() = value.toBigDecimal()
 
     /** The value as a [Long] or `null` (optimisation of the extension value in [JSON] when the type is known
      *  statically). */
-    val asDecimalOrNull: BigDecimal
-        get() = value.toBigDecimal()
+    val asDecimalOrNull: BigDecimal get() = value.toBigDecimal()
 
     companion object {
 

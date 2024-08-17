@@ -157,8 +157,7 @@ object Parser {
 
     private fun parseString(tm: TextMatcher, pointer: String): String = try {
         JSONFunctions.parseString(tm)
-    }
-    catch (iae: IllegalArgumentException) {
+    } catch (iae: IllegalArgumentException) {
         throw ParseException(iae.message ?: "Error parsing JSON string", pointer)
     }
 
@@ -167,26 +166,27 @@ object Parser {
         val negative = tm.match('-')
         if (tm.matchDec()) {
             val integerLength = tm.resultLength
-            if (integerLength > 1 && tm.resultChar == '0')
-                throw ParseException(ILLEGAL_NUMBER, pointer)
-            if (tm.match('.')) {
-                if (!tm.matchDec())
-                    throw ParseException(ILLEGAL_NUMBER, pointer)
-                skipExponent(tm, pointer)
-            }
-            else if (!skipExponent(tm, pointer)) {
-                // no decimal point or "e"/"E" - try JSONInt or JSONLong
-                if (integerLength < MAX_INTEGER_DIGITS_LENGTH)
-                    return JSONInt.of(tm.getResultInt(negative))
-                try {
-                    val result = tm.getResultLong(negative)
-                    return if (result >= Int.MIN_VALUE && result <= Int.MAX_VALUE)
-                        JSONInt.of(result.toInt())
-                    else
-                        JSONLong.of(result)
+            when {
+                integerLength > 1 && tm.resultChar == '0' -> throw ParseException(ILLEGAL_NUMBER, pointer)
+                tm.match('.') -> {
+                    if (!tm.matchDec())
+                        throw ParseException(ILLEGAL_NUMBER, pointer)
+                    skipExponent(tm, pointer)
                 }
-                catch (_: NumberFormatException) {
-                    // too big for long - drop through to BigDecimal
+                !skipExponent(tm, pointer) -> {
+                    // no decimal point or "e"/"E" - try JSONInt or JSONLong
+                    if (integerLength < MAX_INTEGER_DIGITS_LENGTH)
+                        return JSONInt.of(tm.getResultInt(negative))
+                    try {
+                        val result = tm.getResultLong(negative)
+                        return if (result >= Int.MIN_VALUE && result <= Int.MAX_VALUE)
+                            JSONInt.of(result.toInt())
+                        else
+                            JSONLong.of(result)
+                    }
+                    catch (_: NumberFormatException) {
+                        // too big for long - drop through to BigDecimal
+                    }
                 }
             }
             return JSONDecimal.of(tm.getString(numberStart, tm.index).toBigDecimal())

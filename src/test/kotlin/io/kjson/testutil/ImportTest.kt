@@ -1,8 +1,8 @@
 /*
- * @(#) ParseException.kt
+ * @(#) ImportTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2024 Peter Wall
+ * Copyright (c) 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,21 +23,20 @@
  * SOFTWARE.
  */
 
-package io.kjson.parser
+package io.kjson.testutil
 
-import io.kjson.JSONException
-import io.kjson.parser.ParserConstants.rootPointer
+import kotlin.test.Test
+import kotlin.test.expect
 
-/**
- * An exception during the parsing process.
- *
- * @author  Peter Wall
- */
-class ParseException(
-    text: String,
-    override val key: String = rootPointer,
-) : JSONException(text, key) {
+import io.kjson.JSONInt
+import io.kjson.JSONValue
 
-    val pointer: String get() = key
+class ImportTest {
+
+    @Test fun `should import JSONValue once for both class and function`() {
+        val intValue1: JSONValue = JSONInt(123)
+        val intValue2 = JSONValue(123)
+        expect(intValue1) { intValue2 }
+    }
 
 }

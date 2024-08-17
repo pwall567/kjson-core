@@ -151,3 +151,18 @@ sealed class JSONNumber : Number(), JSONValue {
     abstract override fun hashCode(): Int
 
 }
+
+/**
+ * Construct a [JSONNumber] from an [Int].
+ */
+fun JSONNumber(int: Int): JSONNumber = JSONInt.of(int)
+
+/**
+ * Construct a [JSONNumber] from a [Long].
+ */
+fun JSONNumber(long: Long): JSONNumber = JSONLong.of(long)
+
+/**
+ * Construct a [JSONNumber] from a [BigDecimal].
+ */
+fun JSONNumber(decimal: BigDecimal): JSONNumber = JSONDecimal.of(decimal)

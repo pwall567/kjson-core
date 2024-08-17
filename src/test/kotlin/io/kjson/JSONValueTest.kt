@@ -26,6 +26,7 @@
 package io.kjson
 
 import kotlin.test.Test
+import kotlin.test.assertIs
 import kotlin.test.expect
 
 import java.math.BigDecimal
@@ -55,14 +56,25 @@ class JSONValueTest {
         expect("[123,321]") { test.toString() }
     }
 
-    @Test fun `should create JSONValue of correct type`() {
-        expect("int") { getType(JSON.of(123)) }
-        expect("long") { getType(JSON.of(0L)) }
-        expect("decimal") { getType(JSON.of(BigDecimal.ONE)) }
-        expect("string") { getType(JSON.of("hello")) }
-        expect("boolean") { getType(JSON.of(true)) }
-        expect("array") { getType(JSON.of(JSON.of(0), JSON.of(1))) }
-        expect("object") { getType(JSON.of("alpha" to JSON.of(0), "beta" to JSON.of(1))) }
+    @Test fun `should create JSONValue of correct type using of function`() {
+        assertIs<JSONInt>(JSON.of(123))
+        assertIs<JSONLong>(JSON.of(0L))
+        assertIs<JSONDecimal>(JSON.of(BigDecimal.ONE))
+        assertIs<JSONString>(JSON.of("hello"))
+        assertIs<JSONBoolean>(JSON.of(true))
+        assertIs<JSONArray>(JSON.of(JSONValue(0), JSONValue(1)))
+        assertIs<JSONObject>(JSON.of("alpha" to JSONValue(0), "beta" to JSONValue(1)))
+    }
+
+    @Test fun `should create JSONValue of correct type using JSONValue function`() {
+        assertIs<JSONInt>(JSONValue(123))
+        assertIs<JSONLong>(JSONValue(0L))
+        assertIs<JSONDecimal>(JSONValue(BigDecimal.ONE))
+        assertIs<JSONString>(JSONValue("hello"))
+        assertIs<JSONBoolean>(JSONValue(true))
+        assertIs<JSONArray>(JSONValue(JSONValue(0), JSONValue(1)))
+        assertIs<JSONObject>(JSONValue("alpha" to JSONValue(0), "beta" to JSONValue(1)))
+        assertIs<JSONObject>(JSONValue("alpha" refersTo  JSONValue(0), "beta" refersTo  JSONValue(1)))
     }
 
     companion object {
@@ -71,17 +83,6 @@ class JSONValueTest {
         private fun createJSONValue(): JSONValue? = JSONInt(222)
 
         private fun createJSONValueNull(): JSONValue? = null
-
-        private fun getType(jsonValue: JSONValue?): String = when (jsonValue) {
-            null -> "null"
-            is JSONInt -> "int"
-            is JSONLong -> "long"
-            is JSONDecimal -> "decimal"
-            is JSONString -> "string"
-            is JSONBoolean -> "boolean"
-            is JSONArray -> "array"
-            is JSONObject -> "object"
-        }
 
     }
 

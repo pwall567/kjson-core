@@ -210,13 +210,11 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumber(), JSONPrimitive<
 
     /** The value as a [BigDecimal] (optimisation of the extension value in [JSON] when the type is known
      *  statically). */
-    val asDecimal: BigDecimal
-        get() = value
+    val asDecimal: BigDecimal get() = value
 
     /** The value as a [BigDecimal] or `null` (optimisation of the extension value in [JSON] when the type is known
      *  statically). */
-    val asDecimalOrNull: BigDecimal
-        get() = value
+    val asDecimalOrNull: BigDecimal get() = value
 
     companion object {
 

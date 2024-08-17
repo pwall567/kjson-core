@@ -25,6 +25,7 @@
 
 package io.kjson
 
+import java.math.BigDecimal
 import java.util.function.IntConsumer
 
 import io.kjson.JSON.accept
@@ -51,23 +52,71 @@ sealed interface JSONValue {
     /**
      * Output as a JSON string to an [IntConsumer].
      */
-    fun outputTo(out: IntConsumer) = out.accept(toJSON())
+    fun outputTo(out: IntConsumer) {
+        out.accept(toJSON())
+    }
 
     /**
      * Output as a JSON string to an [IntConsumer].
      */
     @Deprecated("renamed to outputTo", ReplaceWith("outputTo(out)"))
-    fun output(out: IntConsumer) = out.accept(toJSON())
+    fun output(out: IntConsumer) {
+        out.accept(toJSON())
+    }
 
     /**
      * Output as a JSON string to a [CoOutput].
      */
-    suspend fun coOutputTo(out: CoOutput) = out.output(toJSON())
+    suspend fun coOutputTo(out: CoOutput) {
+        out.output(toJSON())
+    }
 
     /**
      * Output as a JSON string to a [CoOutput].
      */
     @Deprecated("renamed to coOutputTo", ReplaceWith("coOutputTo(out)"))
-    suspend fun coOutput(out: CoOutput) = out.output(toJSON())
+    suspend fun coOutput(out: CoOutput) {
+        out.output(toJSON())
+    }
 
 }
+
+/**
+ * Construct a [JSONValue] from an [Int].
+ */
+fun JSONValue(int: Int): JSONValue = JSONInt.of(int)
+
+/**
+ * Construct a [JSONValue] from a [Long].
+ */
+fun JSONValue(long: Long): JSONValue = JSONLong.of(long)
+
+/**
+ * Construct a [JSONValue] from a [BigDecimal].
+ */
+fun JSONValue(decimal: BigDecimal): JSONValue = JSONDecimal.of(decimal)
+
+/**
+ * Construct a [JSONValue] from a [String].
+ */
+fun JSONValue(string: String): JSONValue = JSONString.of(string)
+
+/**
+ * Construct a [JSONValue] from a [Boolean].
+ */
+fun JSONValue(boolean: Boolean): JSONValue = JSONBoolean.of(boolean)
+
+/**
+ * Construct a [JSONValue] from an array of [JSONValue]?.
+ */
+fun JSONValue(vararg items: JSONValue?): JSONValue = JSONArray.of(*items)
+
+/**
+ * Construct a [JSONValue] from an array of [Pair]s (of [String] and [JSONValue]?).
+ */
+fun JSONValue(vararg items: Pair<String, JSONValue?>): JSONValue = JSONObject.of(*items)
+
+/**
+ * Construct a [JSONValue] from an array of [JSONObject.Property]s.
+ */
+fun JSONValue(vararg properties: JSONObject.Property): JSONValue = JSONObject.of(*properties)

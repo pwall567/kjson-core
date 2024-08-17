@@ -37,6 +37,8 @@ package io.kjson.util
  */
 class LookupSet<T>(override val size: Int = 1, val check: (T) -> Boolean): Set<T> {
 
+    // TODO - rename to PseudoSet? (name better represents its purpose)
+
     override fun isEmpty(): Boolean = false
 
     override fun iterator(): Iterator<T> = throw UnsupportedOperationException()

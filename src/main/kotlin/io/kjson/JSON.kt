@@ -28,6 +28,7 @@ package io.kjson
 import java.math.BigDecimal
 import java.util.function.IntConsumer
 
+import io.kjson.JSONObject.DuplicateKeyOption
 import io.kjson.parser.Parser
 import io.kjson.parser.ParseOptions
 import io.kjson.util.getIntProperty
@@ -83,9 +84,14 @@ object JSON {
     fun of(vararg items: JSONValue?): JSONArray = JSONArray.of(*items)
 
     /**
-     * Create a [JSONArray] from a `vararg` list of [Pair] of name to value pairs.
+     * Create a [JSONObject] from a `vararg` list of [Pair] of name to value pairs.
      */
     fun of(vararg items: Pair<String, JSONValue?>): JSONObject = JSONObject.of(*items)
+
+    /**
+     * Create a [JSONObject] from a `vararg` list of [JSONObject.Property]s.
+     */
+    fun of(vararg items: JSONObject.Property): JSONObject = JSONObject.of(*items)
 
     /**
      * Parse a [String] to a [JSONValue] (or `null` if the string is `"null"`).
@@ -625,3 +631,31 @@ object JSON {
     }
 
 }
+
+// NOTE: extension functions are being added here, rather than in the body of the JSON object, to simplify imports
+// More functions may be moved here from the JSON object later.
+
+/**
+ * Convert a [List] of [JSONValue] items to a [JSONArray].
+ */
+fun List<JSONValue?>.toJSONArray(): JSONArray = if (isEmpty()) JSONArray.EMPTY else JSONArray(toTypedArray(), size)
+
+/**
+ * Convert a [Map] to a [JSONObject].
+ */
+fun Map<String, JSONValue?>.toJSONObject(): JSONObject = if (isEmpty()) JSONObject.EMPTY else
+    JSONObject.build(size = size) {
+        for (entry in entries)
+            add(entry.key, entry.value)
+    }
+
+/**
+ * Convert a [List] of [JSONObject.Property]s to a [JSONObject].
+ */
+fun List<JSONObject.Property>.toJSONObject(
+    duplicateKeyOption: DuplicateKeyOption = DuplicateKeyOption.ERROR,
+): JSONObject = if (isEmpty()) JSONObject.EMPTY else
+    JSONObject.build(size = size, duplicateKeyOption = duplicateKeyOption) {
+        for (property in this@toJSONObject)
+            add(property)
+    }

@@ -56,6 +56,20 @@ The `JSONValue` interface specifies four functions:
 
 The implementing classes are all immutable.
 
+Following a common Kotlin pattern, there are creation functions named `JSONValue` which create the appropriate
+implementing class depending on the parameter type:
+
+| Parameter Type                    | Result                        |
+|-----------------------------------|-------------------------------|
+| `String`                          | [`JSONString`](#jsonstring)   |
+| `Int`                             | [`JSONInt`](#jsonint)         |
+| `Long`                            | [`JSONLong`](#jsonlong)       |
+| `BigDecimal`                      | [`JSONDecimal`](#jsondecimal) |
+| `Boolean`                         | [`JSONBoolean`](#jsonboolean) |
+| `vararg JSONValue?`               | [`JSONArray`](#jsonarray)     |
+| `vararg Pair<String, JSONValue?>` | [`JSONObject`](#jsonobject)   |
+| `vararg JSONObject.Property`      | [`JSONObject`](#jsonobject)   |
+
 ### `JSONPrimitive`
 
 `JSONPrimitive` is a sealed interface (and a sub-interface of [`JSONValue`](#jsonvalue)) implemented by the classes for
@@ -106,6 +120,15 @@ The `JSONNumber` classes also override `equals()` (and `hashCode()`) so that ins
 types will be regarded as equal.
 `JSONInt(27)`, `JSONLong(27)` and `JSONDecimal(27)` will all be considered equal, and will all return the same hash
 code.
+
+Following a common Kotlin pattern, there are creation functions named `JSONNumber` which create the appropriate
+derived class depending on the parameter type:
+
+| Parameter Type                    | Result                        |
+|-----------------------------------|-------------------------------|
+| `Int`                             | [`JSONInt`](#jsonint)         |
+| `Long`                            | [`JSONLong`](#jsonlong)       |
+| `BigDecimal`                      | [`JSONDecimal`](#jsondecimal) |
 
 ### `JSONInt`
 
@@ -206,6 +229,9 @@ The class also implements the [`JSONStructure`](#jsonstructure) interface with a
 The constructor for `JSONArray` is not publicly accessible, but an `of()` function is available in the
 `companion object`, and a `build` function and the `Builder` nested class allow arrays to be constructed dynamically.
 
+Following a common Kotlin pattern, there is also a creation function named `JSONArray` taking a `vararg` array of
+`JSONValue?`.
+
 `JSONArray` implements the `equals()` and `hashCode()` functions as specified for the Java Collections classes, so that
 an instance of `JSONArray` may be compared safely with an instance of any class correctly implementing
 `List<JSONValue?>`.
@@ -244,6 +270,9 @@ and:
 The constructor for `JSONObject` is not publicly accessible, but an `of()` function is available in the
 `companion object`, and a `build` function and the `Builder` nested class allow objects to be constructed dynamically.
 
+Following a common Kotlin pattern, there are also creation functions named `JSONObject` taking a `vararg` array of
+`Pair<String, JSONValue?>` or `JSONObject.Property`.
+
 `JSONObject` implements the `equals()` and `hashCode()` functions as specified for the Java Collections classes, so that
 an instance of `JSONObject` may be compared safely with an instance of any class correctly implementing
 `Map<String, JSONValue?>`.
@@ -280,6 +309,11 @@ It has two properties:
 | `value` | `JSONValue?` | The property value |
 
 The `JSONObject.Property` object is immutable.
+
+There is an infix function `refersTo` taking a `String` and a `JSONValue?` which creates a `JSONObject.Property`:
+```kotlin
+    val property = "propertyName" refersTo JSONString("Property value")
+```
 
 ### `JSONException`
 
@@ -600,7 +634,7 @@ parser leniency.
 For example:
 ```kotlin
     val options = ParseOptions(
-        objectKeyDuplicate = ParseOptions.DuplicateKeyOption.ERROR,
+        objectKeyDuplicate = JSONObject.DuplicateKeyOption.ERROR,
         objectKeyUnquoted = false,
         objectTrailingComma = false,
         arrayTrailingComma = false,
@@ -619,7 +653,7 @@ Under normal circumstances, the parser will throw an exception when it encounter
 but if such data is required to be accepted, the `objectKeyDuplicate` options setting may be used to specify the desired
 behaviour.
 
-The field is an `enum` (`DuplicateKeyOption`), and the possible values are:
+The field is an `enum` (`JSONObject.DuplicateKeyOption`), and the possible values are:
 
 - `ERROR`: treat the duplicate key as an error (this is the default)
 - `TAKE_FIRST`: take the value of the first occurrence and ignore duplicates
@@ -660,25 +694,25 @@ The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram
 
 ## Dependency Specification
 
-The latest version of the library is 9.0, and it may be obtained from the Maven Central repository.
+The latest version of the library is 9.1, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>9.0</version>
+      <version>9.1</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:9.0"
+    implementation "io.kjson:kjson-core:9.1"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:9.0")
+    implementation("io.kjson:kjson-core:9.1")
 ```
 
 Peter Wall
 
-2024-07-24
+2024-08-17

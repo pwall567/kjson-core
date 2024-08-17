@@ -2,6 +2,17 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [9.1] - 2024-08-17
+### Changed
+- `JSONString`: fixed bug in `toJSON()`
+- `JSON`: added `toJSONArray()` and `toJSONObject()` extension functions
+- `JSON`, `JSONObject`: added `of()` functions taking vararg array of `JSONObject.Property`
+- `JSON`, `JSONObject`: added `DuplicateKeyOption` to functions creating `JSONObject` from `List`
+- `JSONArray`, `JSONNumber`, `JSONObject`, `JSONValue`: added pseudo-constructor functions
+- `JSONObject`: added `refersTo` infix function to create `JSONObject.Property`
+- `JSONArray`, `JSONBoolean`, `JSONDecimal`, `JSONInt`, `JSONLong`, `JSONObject`, `JSONString`, `JSONValue`, `Parser`,
+  `ParseException`, `AbstractBuilder`: minor code style changes
+
 ## [9.0] - 2024-07-24
 ### Changed
 - `JSONArray`, `JSONDecimal`, `JSONInt`, `JSONLong`, `JSONObject`, `JSONString`: minor optimisation to `toJSON()`

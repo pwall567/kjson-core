@@ -53,7 +53,8 @@ class JSONStringTest {
     @Test fun `should use EMPTY`() {
         val testString = JSONString.of("")
         assertSame(JSONString.EMPTY, testString)
-        expect("") { testString.toString() }
+        expect(JSONString.EMPTY_STRING) { testString.toString() }
+        expect("\"\"") { testString.toJSON() }
     }
 
     @Test fun `should get value using stringValue`() {

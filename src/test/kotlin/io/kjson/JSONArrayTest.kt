@@ -66,8 +66,24 @@ class JSONArrayTest {
         expect("[9999,8888]") { testArray.toJSON() }
     }
 
+    @Test fun `should create JSONArray using JSONArray function`() {
+        val testArray = JSONArray(JSONInt(9999), JSONInt(8888))
+        expect(2) { testArray.size }
+        expect(JSONInt(9999)) { testArray[0] }
+        expect(JSONInt(8888)) { testArray[1] }
+        expect("[9999,8888]") { testArray.toJSON() }
+    }
+
     @Test fun `should create JSONArray using List`() {
         val testArray = JSONArray.from(listOf(JSONString("Hello"), JSONString("World")))
+        expect(2) { testArray.size }
+        expect(JSONString("Hello")) { testArray[0] }
+        expect(JSONString("World")) { testArray[1] }
+        expect("[\"Hello\",\"World\"]") { testArray.toJSON() }
+    }
+
+    @Test fun `should create JSONArray using List extension function`() {
+        val testArray = listOf(JSONString("Hello"), JSONString("World")).toJSONArray()
         expect(2) { testArray.size }
         expect(JSONString("Hello")) { testArray[0] }
         expect(JSONString("World")) { testArray[1] }

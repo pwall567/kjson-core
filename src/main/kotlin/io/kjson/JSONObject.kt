@@ -228,13 +228,11 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
 
     /** The value as a [JSONObject] (unnecessary when type is known statically). */
     @Deprecated("Unnecessary (value is known to be JSONObject)", ReplaceWith("this"))
-    val asObject: JSONObject
-        get() = this
+    val asObject: JSONObject get() = this
 
     /** The value as a [JSONObject] or `null` (unnecessary when type is known statically). */
     @Deprecated("Unnecessary (value is known to be JSONObject)", ReplaceWith("this"))
-    val asObjectOrNull: JSONObject
-        get() = this
+    val asObjectOrNull: JSONObject get() = this
 
     /**
      * Get a `JSONObject` containing the set of [Property]s bounded by `fromIndex` (inclusive) and `toIndex`
@@ -246,18 +244,6 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
         else -> JSONObject(array.copyOfRange(fromIndex, toIndex), toIndex - fromIndex)
     }
 
-    /**
-     * A class to represent a property (name-value pair).
-     */
-    class Property(key: String, value: JSONValue?) : ImmutableMapEntry<String, JSONValue?>(key, value) {
-
-        constructor(pair: Pair<String, JSONValue?>) : this(pair.first, pair.second)
-
-        val name: String
-            get() = key
-
-    }
-
     companion object {
 
         /** An empty [JSONObject]. */
@@ -266,26 +252,59 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
         /**
          * Create a [JSONObject] from a `vararg` list of [Pair]s of name and value.
          */
-        fun of(vararg items: Pair<String, JSONValue?>): JSONObject =
-                if (items.isEmpty()) EMPTY else JSONObject(Array(items.size) { i -> Property(items[i]) }, items.size)
+        fun of(
+            vararg items: Pair<String, JSONValue?>,
+            duplicateKeyOption: DuplicateKeyOption = DuplicateKeyOption.ERROR,
+        ): JSONObject = if (items.isEmpty()) EMPTY else
+            build(size = items.size, duplicateKeyOption = duplicateKeyOption) {
+                for (item in items)
+                    add(item.first, item.second)
+            }
+
+        /**
+         * Create a [JSONObject] from a `vararg` list of [Property]s.
+         */
+        fun of(
+            vararg properties: Property,
+            duplicateKeyOption: DuplicateKeyOption = DuplicateKeyOption.ERROR,
+        ): JSONObject = if (properties.isEmpty()) EMPTY else
+            build(size = properties.size, duplicateKeyOption = duplicateKeyOption) {
+                for (property in properties)
+                    add(property)
+            }
 
         /**
          * Create a [JSONObject] from a [Map].
          */
         fun from(map: Map<String, JSONValue?>): JSONObject = if (map.isEmpty()) EMPTY else
-                JSONObject(map.entries.map { Property(it.key, it.value) }.toTypedArray(), map.size)
+            build(size = map.size) {
+                for (entry in map.entries)
+                    add(entry.key, entry.value)
+            }
 
         /**
          * Create a [JSONObject] from a [List] of [Pair]s of name and value.
          */
-        fun from(list: List<Pair<String, JSONValue?>>): JSONObject =
-                if (list.isEmpty()) EMPTY else JSONObject(Array(list.size) { i -> Property(list[i]) }, list.size)
+        fun from(
+            list: List<Pair<String, JSONValue?>>,
+            duplicateKeyOption: DuplicateKeyOption = DuplicateKeyOption.ERROR,
+        ): JSONObject = if (list.isEmpty()) EMPTY else
+            build(size = list.size, duplicateKeyOption = duplicateKeyOption) {
+                for (item in list)
+                    add(item.first, item.second)
+            }
 
         /**
          * Create a [JSONObject] from a [List] of [Property].
          */
-        fun fromProperties(list: List<Property>): JSONObject =
-                if (list.isEmpty()) EMPTY else JSONObject(list.toTypedArray(), list.size)
+        fun fromProperties(
+            list: List<Property>,
+            duplicateKeyOption: DuplicateKeyOption = DuplicateKeyOption.ERROR,
+        ): JSONObject = if (list.isEmpty()) EMPTY else
+            build(size = list.size, duplicateKeyOption = duplicateKeyOption) {
+                for (property in list)
+                    add(property)
+            }
 
         /**
          * Create a [JSONObject] by applying the supplied block to a [Builder], and then taking the result.
@@ -296,6 +315,17 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
             errorKey: String? = null,
             block: Builder.() -> Unit
         ): JSONObject = Builder(size, duplicateKeyOption, errorKey, block).build()
+
+    }
+
+    /**
+     * A class to represent a property (name-value pair).
+     */
+    class Property(key: String, value: JSONValue?) : ImmutableMapEntry<String, JSONValue?>(key, value) {
+
+        constructor(pair: Pair<String, JSONValue?>) : this(pair.first, pair.second)
+
+        val name: String get() = key
 
     }
 
@@ -424,3 +454,34 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
     }
 
 }
+
+/**
+ * Create a [JSONObject] from a `vararg` list of [JSONObject.Property]s.
+ */
+fun JSONObject(
+    vararg items: Pair<String, JSONValue?>,
+    duplicateKeyOption: JSONObject.DuplicateKeyOption = JSONObject.DuplicateKeyOption.ERROR,
+): JSONObject =
+    if (items.isEmpty()) JSONObject.EMPTY else
+        JSONObject.build(size = items.size, duplicateKeyOption = duplicateKeyOption) {
+            for (item in items)
+                add(JSONObject.Property(item))
+        }
+
+/**
+ * Create a [JSONObject] from a `vararg` list of [JSONObject.Property]s.
+ */
+fun JSONObject(
+    vararg properties: JSONObject.Property,
+    duplicateKeyOption: JSONObject.DuplicateKeyOption = JSONObject.DuplicateKeyOption.ERROR,
+): JSONObject =
+    if (properties.isEmpty()) JSONObject.EMPTY else
+        JSONObject.build(size = properties.size, duplicateKeyOption = duplicateKeyOption) {
+            for (property in properties)
+                add(property)
+        }
+
+/**
+ * Create a [JSONObject.Property] from a [String] and a [JSONValue]?.
+ */
+infix fun String.refersTo(json: JSONValue?): JSONObject.Property = JSONObject.Property(this, json)

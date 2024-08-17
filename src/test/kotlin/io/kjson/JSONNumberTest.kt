@@ -1,8 +1,8 @@
 /*
- * @(#) ParseException.kt
+ * @(#) JSONNumberTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2024 Peter Wall
+ * Copyright (c) 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,21 +23,33 @@
  * SOFTWARE.
  */
 
-package io.kjson.parser
+package io.kjson
 
-import io.kjson.JSONException
-import io.kjson.parser.ParserConstants.rootPointer
+import kotlin.test.Test
+import kotlin.test.assertIs
+import kotlin.test.assertSame
+import kotlin.test.expect
 
-/**
- * An exception during the parsing process.
- *
- * @author  Peter Wall
- */
-class ParseException(
-    text: String,
-    override val key: String = rootPointer,
-) : JSONException(text, key) {
+import java.math.BigDecimal
 
-    val pointer: String get() = key
+class JSONNumberTest {
+
+    @Test fun `should create JSONNumber of correct type using JSONNumber function`() {
+        JSONNumber(123).let {
+            assertIs<JSONInt>(it)
+            expect(123) { it.value }
+        }
+        JSONNumber(1234567890123456789).let {
+            assertIs<JSONLong>(it)
+            expect(1234567890123456789) { it.value }
+        }
+        JSONNumber(BigDecimal.ONE).let {
+            assertIs<JSONDecimal>(it)
+            expect(BigDecimal.ONE) { it.value }
+        }
+        assertSame(JSONInt.ZERO, JSONNumber(0))
+        assertSame(JSONLong.ZERO, JSONNumber(0L))
+        assertSame(JSONDecimal.ZERO, JSONNumber(BigDecimal.ZERO))
+    }
 
 }

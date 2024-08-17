@@ -32,16 +32,14 @@ import io.kjson.JSONStructure
  * An abstract base class for the `Builder` classes of `JSONArray` and `JSONObject`.
  *
  * @author  Peter Wall
- * @param   T       the type of the array entry
  */
 abstract class AbstractBuilder<T>(private var array: Array<T?>?) {
 
     private var count: Int = 0
 
-    val size: Int
-        get() = count
+    val size: Int get() = count
 
-    fun checkArray() = array ?: throw JSONException("Builder is closed")
+    protected fun checkArray(): Array<T?> = array ?: throw JSONException("Builder is closed")
 
     protected fun internalAdd(value: T?) {
         var validArray = checkArray()
