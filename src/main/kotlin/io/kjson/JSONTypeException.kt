@@ -2,7 +2,7 @@
  * @(#) JSONTypeException.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2022 Peter Wall
+ * Copyright (c) 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,14 +28,14 @@ package io.kjson
 import io.kjson.JSON.displayValue
 
 /**
- * Exception class to represent "incorrect type" errors; thrown when a specific type is requested as a return value and
+ * Exception class to represent "incorrect type" errors; thrown when a specific type is expected as a return value and
  * the actual value was not of that type.
  *
  * @author  Peter Wall
  */
 class JSONTypeException(
     val nodeName: String = "Node",
-    val target: String,
+    val expected: String,
     val value: JSONValue?,
     key: Any? = null,
-) : JSONException("$nodeName not correct type ($target), was ${value.displayValue()}", key)
+) : JSONException("$nodeName not correct type ($expected), was ${value.displayValue()}", key)

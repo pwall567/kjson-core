@@ -2,7 +2,7 @@
  * @(#) ParserArrayTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2021, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,10 @@
 package io.kjson.parser
 
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
-import kotlin.test.assertIs
-import kotlin.test.expect
+
+import io.kstuff.test.shouldBe
+import io.kstuff.test.shouldBeType
+import io.kstuff.test.shouldThrow
 
 import io.kjson.JSONArray
 import io.kjson.JSONInt
@@ -42,66 +43,63 @@ class ParserArrayTest {
 
     @Test fun `should parse empty array`() {
         val result = Parser.parse("[]")
-        assertIs<JSONArray>(result)
-        expect(0) { result.size }
+        result.shouldBeType<JSONArray>()
+        result.size shouldBe 0
     }
 
     @Test fun `should parse array of string`() {
         val result = Parser.parse("""["simple"]""")
-        assertIs<JSONArray>(result)
-        expect(1) { result.size }
-        expect(JSONString("simple")) { result[0] }
+        result.shouldBeType<JSONArray>()
+        result.size shouldBe 1
+        result[0] shouldBe JSONString("simple")
     }
 
     @Test fun `should parse array of two strings`() {
         val result = Parser.parse("""["Hello","world"]""")
-        assertIs<JSONArray>(result)
-        expect(2) { result.size }
-        expect(JSONString("Hello")) { result[0] }
-        expect(JSONString("world")) { result[1] }
+        result.shouldBeType<JSONArray>()
+        result.size shouldBe 2
+        result[0] shouldBe JSONString("Hello")
+        result[1] shouldBe JSONString("world")
     }
 
     @Test fun `should parse array of arrays`() {
         val result = Parser.parse("""["Hello",["world","universe"]]""")
-        assertIs<JSONArray>(result)
-        expect(2) { result.size }
-        expect(JSONString("Hello")) { result[0] }
+        result.shouldBeType<JSONArray>()
+        result.size shouldBe 2
+        result[0] shouldBe JSONString("Hello")
         val inner = result[1]
-        assertIs<JSONArray>(inner)
-        expect(2) { inner.size }
-        expect(JSONString("world")) { inner[0] }
-        expect(JSONString("universe")) { inner[1] }
+        inner.shouldBeType<JSONArray>()
+        inner.size shouldBe 2
+        inner[0] shouldBe JSONString("world")
+        inner[1] shouldBe JSONString("universe")
     }
 
     @Test fun `should throw exception on trailing comma`() {
-        assertFailsWith<ParseException> { Parser.parse("""["simple",]""") }.let {
-            expect(ILLEGAL_SYNTAX) { it.text }
-            expect("$ILLEGAL_SYNTAX, at /1") { it.message }
-            expect("/1") { it.pointer }
+        shouldThrow<ParseException>("$ILLEGAL_SYNTAX, at /1") { Parser.parse("""["simple",]""") }.let {
+            it.text shouldBe ILLEGAL_SYNTAX
+            it.pointer shouldBe "/1"
         }
     }
 
     @Test fun `should allow trailing comma with option arrayTrailingComma`() {
         val options = ParseOptions(arrayTrailingComma = true)
         val result = Parser.parse("""["simple",]""", options)
-        assertIs<JSONArray>(result)
-        expect(1) { result.size }
-        expect(JSONString("simple")) { result[0] }
+        result.shouldBeType<JSONArray>()
+        result.size shouldBe 1
+        result[0] shouldBe JSONString("simple")
     }
 
     @Test fun `should throw exception on missing closing bracket`() {
-        assertFailsWith<ParseException> { Parser.parse("""["simple"""") }.let {
-            expect(MISSING_CLOSING_BRACKET) { it.text }
-            expect(MISSING_CLOSING_BRACKET) { it.message }
-            expect(rootPointer) { it.pointer }
+        shouldThrow<ParseException>(MISSING_CLOSING_BRACKET) { Parser.parse("""["simple"""") }.let {
+            it.text shouldBe MISSING_CLOSING_BRACKET
+            it.pointer shouldBe rootPointer
         }
     }
 
     @Test fun `should throw exception on syntax error`() {
-        assertFailsWith<ParseException> { Parser.parse("""[&]""") }.let {
-            expect(ILLEGAL_SYNTAX) { it.text }
-            expect("$ILLEGAL_SYNTAX, at /0") { it.message }
-            expect("/0") { it.pointer }
+        shouldThrow<ParseException>("$ILLEGAL_SYNTAX, at /0") { Parser.parse("""[&]""") }.let {
+            it.text shouldBe ILLEGAL_SYNTAX
+            it.pointer shouldBe "/0"
         }
     }
 
@@ -110,19 +108,18 @@ class ParserArrayTest {
         val allowed = "[".repeat(options.maximumNestingDepth) + '1' + "]".repeat(options.maximumNestingDepth)
         var result = Parser.parse(allowed, options)
         for (i in 0 until options.maximumNestingDepth) {
-            assertIs<JSONArray>(result)
+            result.shouldBeType<JSONArray>()
             result = result[0]
         }
-        expect(JSONInt(1)) { result }
+        result shouldBe JSONInt(1)
     }
 
     @Test fun `should throw exception on nesting depth exceeded`() {
         val options = ParseOptions(maximumNestingDepth = 50)
         val excessive = "[".repeat(options.maximumNestingDepth + 1)
-        assertFailsWith<ParseException> { Parser.parse(excessive, options) }.let {
-            expect(MAX_DEPTH_EXCEEDED) { it.text }
-            expect(MAX_DEPTH_EXCEEDED) { it.message }
-            expect(rootPointer) { it.pointer }
+        shouldThrow<ParseException>(MAX_DEPTH_EXCEEDED) { Parser.parse(excessive, options) }.let {
+            it.text shouldBe MAX_DEPTH_EXCEEDED
+            it.pointer shouldBe rootPointer
         }
     }
 

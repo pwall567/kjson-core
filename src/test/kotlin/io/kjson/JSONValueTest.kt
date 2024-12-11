@@ -2,7 +2,7 @@
  * @(#) JSONValueTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2021, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,10 +26,11 @@
 package io.kjson
 
 import kotlin.test.Test
-import kotlin.test.assertIs
-import kotlin.test.expect
 
 import java.math.BigDecimal
+
+import io.kstuff.test.shouldBe
+import io.kstuff.test.shouldBeType
 
 import io.kjson.JSON.appendJSONValue
 import io.kjson.JSON.appendTo
@@ -39,42 +40,42 @@ class JSONValueTest {
 
     @Test fun `should use nullable functions`() {
         var testNull: JSONValue? = createJSONValueNull()
-        expect("null") { testNull.toJSON() }
+        testNull.toJSON() shouldBe "null"
         val sb = StringBuilder()
         testNull.appendTo(sb)
-        expect("null") { sb.toString() }
+        sb.toString() shouldBe "null"
         testNull = createJSONValue()
-        expect("222") { testNull.toJSON() }
+        testNull.toJSON() shouldBe "222"
         sb.setLength(0)
         testNull.appendTo(sb)
-        expect("222") { sb.toString() }
+        sb.toString() shouldBe "222"
     }
 
     @Test fun `should use Appendable appendJSON`() {
         val test = StringBuilder()
         test.appendJSONValue(JSONArray.of(JSONInt(123), JSONInt(321)))
-        expect("[123,321]") { test.toString() }
+        test.toString() shouldBe "[123,321]"
     }
 
     @Test fun `should create JSONValue of correct type using of function`() {
-        assertIs<JSONInt>(JSON.of(123))
-        assertIs<JSONLong>(JSON.of(0L))
-        assertIs<JSONDecimal>(JSON.of(BigDecimal.ONE))
-        assertIs<JSONString>(JSON.of("hello"))
-        assertIs<JSONBoolean>(JSON.of(true))
-        assertIs<JSONArray>(JSON.of(JSONValue(0), JSONValue(1)))
-        assertIs<JSONObject>(JSON.of("alpha" to JSONValue(0), "beta" to JSONValue(1)))
+        JSON.of(123).shouldBeType<JSONInt>()
+        JSON.of(0L).shouldBeType<JSONLong>()
+        JSON.of(BigDecimal.ONE).shouldBeType<JSONDecimal>()
+        JSON.of("hello").shouldBeType<JSONString>()
+        JSON.of(true).shouldBeType<JSONBoolean>()
+        JSON.of(JSONValue(0), JSONValue(1)).shouldBeType<JSONArray>()
+        JSON.of("alpha" to JSONValue(0), "beta" to JSONValue(1)).shouldBeType<JSONObject>()
     }
 
     @Test fun `should create JSONValue of correct type using JSONValue function`() {
-        assertIs<JSONInt>(JSONValue(123))
-        assertIs<JSONLong>(JSONValue(0L))
-        assertIs<JSONDecimal>(JSONValue(BigDecimal.ONE))
-        assertIs<JSONString>(JSONValue("hello"))
-        assertIs<JSONBoolean>(JSONValue(true))
-        assertIs<JSONArray>(JSONValue(JSONValue(0), JSONValue(1)))
-        assertIs<JSONObject>(JSONValue("alpha" to JSONValue(0), "beta" to JSONValue(1)))
-        assertIs<JSONObject>(JSONValue("alpha" refersTo  JSONValue(0), "beta" refersTo  JSONValue(1)))
+        JSONValue(123).shouldBeType<JSONInt>()
+        JSONValue(0L).shouldBeType<JSONLong>()
+        JSONValue(BigDecimal.ONE).shouldBeType<JSONDecimal>()
+        JSONValue("hello").shouldBeType<JSONString>()
+        JSONValue(true).shouldBeType<JSONBoolean>()
+        JSONValue(JSONValue(0), JSONValue(1)).shouldBeType<JSONArray>()
+        JSONValue("alpha" to JSONValue(0), "beta" to JSONValue(1)).shouldBeType<JSONObject>()
+        JSONValue("alpha" refersTo  JSONValue(0), "beta" refersTo  JSONValue(1)).shouldBeType<JSONObject>()
     }
 
     companion object {

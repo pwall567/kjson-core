@@ -2,6 +2,13 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [9.2] - 2024-12-11
+### Changed
+- `JSON`: added `asNumber`, `asNumberOrNull`, `asNumberOr()` and `asNumberOrError()` extension values / functions
+- `JSON`, `JSONTypeException`: renamed parameter `target` to `expected`
+- `JSON`: cosmetic changes to comments
+- tests : switched to `should-test` library
+
 ## [9.1] - 2024-08-17
 ### Changed
 - `JSONString`: fixed bug in `toJSON()`

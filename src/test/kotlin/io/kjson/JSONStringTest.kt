@@ -26,9 +26,11 @@
 package io.kjson
 
 import kotlin.test.Test
-import kotlin.test.assertSame
-import kotlin.test.expect
+
 import kotlinx.coroutines.runBlocking
+
+import io.kstuff.test.shouldBe
+import io.kstuff.test.shouldBeSameInstance
 
 import io.kjson.JSON.asString
 import io.kjson.testutil.CoOutputCapture
@@ -38,52 +40,52 @@ class JSONStringTest {
 
     @Test fun `should create JSONString`() {
         val testString = JSONString("ab\u2014c\n")
-        expect("ab\u2014c\n") { testString.value }
-        expect("\"ab\\u2014c\\n\"") { testString.toJSON() }
-        expect("ab\u2014c\n") { testString.toString() }
+        testString.value shouldBe "ab\u2014c\n"
+        testString.toJSON() shouldBe "\"ab\\u2014c\\n\""
+        testString.toString() shouldBe "ab\u2014c\n"
     }
 
     @Test fun `should create JSONString using of`() {
         val testString = JSONString.of("Hello!")
-        expect("Hello!") { testString.value }
-        expect("\"Hello!\"") { testString.toJSON() }
-        expect("Hello!") { testString.toString() }
+        testString.value shouldBe "Hello!"
+        testString.toJSON() shouldBe "\"Hello!\""
+        testString.toString() shouldBe "Hello!"
     }
 
     @Test fun `should use EMPTY`() {
         val testString = JSONString.of("")
-        assertSame(JSONString.EMPTY, testString)
-        expect(JSONString.EMPTY_STRING) { testString.toString() }
-        expect("\"\"") { testString.toJSON() }
+        testString shouldBeSameInstance JSONString.EMPTY
+        testString.toString() shouldBe JSONString.EMPTY_STRING
+        testString.toJSON() shouldBe "\"\""
     }
 
     @Test fun `should get value using stringValue`() {
         val json = JSON.parse("\"abc\"")
-        expect("abc") { json.asString }
+        json.asString shouldBe "abc"
     }
 
     @Test fun `should return JSONString from subSequence`() {
         val json = JSONString.of("irrational")
         val substring = json.subSequence(2, 7)
-        expect("\"ratio\"") { substring.toJSON() }
+        substring.toJSON() shouldBe "\"ratio\""
     }
 
     @Test fun `should format JSONString using output`() {
         val capture = OutputCapture(16)
         JSONString.EMPTY.outputTo(capture)
-        expect("\"\"") { capture.toString() }
+        capture.toString() shouldBe "\"\""
         capture.reset()
         JSONString("Kia ora").outputTo(capture)
-        expect("\"Kia ora\"") { capture.toString() }
+        capture.toString() shouldBe "\"Kia ora\""
     }
 
     @Test fun `should format JSONString using coOutput`() = runBlocking {
         val capture = CoOutputCapture(16)
         JSONString.EMPTY.coOutputTo(capture)
-        expect("\"\"") { capture.toString() }
+        capture.toString() shouldBe "\"\""
         capture.reset()
         JSONString("Kia ora").coOutputTo(capture)
-        expect("\"Kia ora\"") { capture.toString() }
+        capture.toString() shouldBe "\"Kia ora\""
     }
 
     @Test fun `should build a JSONString using build function`() {
@@ -92,12 +94,12 @@ class JSONStringTest {
             append("able")
             append(99)
         }
-        expect(JSONString("Cable99")) { json }
+        json shouldBe JSONString("Cable99")
     }
 
     @Test fun `should return EMPTY when using build function with no content`() {
         val json = JSONString.build {}
-        assertSame(JSONString.EMPTY, json)
+        json shouldBeSameInstance JSONString.EMPTY
     }
 
 }

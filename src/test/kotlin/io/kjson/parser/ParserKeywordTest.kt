@@ -2,7 +2,7 @@
  * @(#) ParserKeywordTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2021, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,44 +26,42 @@
 package io.kjson.parser
 
 import kotlin.test.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
-import kotlin.test.expect
+
+import io.kstuff.test.shouldBe
+import io.kstuff.test.shouldBeType
 
 import io.kjson.JSONBoolean
 import io.kjson.JSONObject
-import kotlin.test.assertIs
 
 class ParserKeywordTest {
 
     @Test fun `should parse null`() {
-        assertNull(Parser.parse("null"))
+        Parser.parse("null") shouldBe null
     }
 
     @Test fun `should parse true`() {
         val result = Parser.parse("true")
-        assertIs<JSONBoolean>(result)
-        assertTrue(result.value)
+        result.shouldBeType<JSONBoolean>()
+        result.value shouldBe true
     }
 
     @Test fun `should parse false`() {
         val result = Parser.parse("false")
-        assertIs<JSONBoolean>(result)
-        assertFalse(result.value)
+        result.shouldBeType<JSONBoolean>()
+        result.value shouldBe false
     }
 
     @Test fun `should parse keywords in object`() {
         val result = Parser.parse("""{"aaa":true,"bbb":false,"ccc":null}""")
-        assertIs<JSONObject>(result)
-        expect(3) { result.size }
+        result.shouldBeType<JSONObject>()
+        result.size shouldBe 3
         val aaa = result["aaa"]
-        assertIs<JSONBoolean>(aaa)
-        assertTrue(aaa.value)
+        aaa.shouldBeType<JSONBoolean>()
+        aaa.value shouldBe true
         val bbb = result["bbb"]
-        assertIs<JSONBoolean>(bbb)
-        assertFalse(bbb.value)
-        assertNull(result["ccc"])
+        bbb.shouldBeType<JSONBoolean>()
+        bbb.value shouldBe false
+        result["ccc"] shouldBe null
     }
 
 }

@@ -26,13 +26,13 @@
 package io.kjson
 
 import kotlin.test.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertSame
-import kotlin.test.assertTrue
-import kotlin.test.expect
+
 import kotlinx.coroutines.runBlocking
 
 import java.math.BigDecimal
+
+import io.kstuff.test.shouldBe
+import io.kstuff.test.shouldBeSameInstance
 
 import io.kjson.testutil.CoOutputCapture
 import io.kjson.testutil.OutputCapture
@@ -41,168 +41,168 @@ class JSONIntTest {
 
     @Test fun `should create JSONInt`() {
         JSONInt(12345).let {
-            expect(12345) { it.value }
-            expect("12345") { it.toJSON() }
-            expect("12345") { it.toString() }
-            expect<JSONValue>(JSONLong(12345)) { it }
-            expect<JSONValue>(JSONDecimal(12345.toBigDecimal())) { it }
+            it.value shouldBe 12345
+            it.toJSON() shouldBe "12345"
+            it.toString() shouldBe "12345"
+            it.shouldBe<JSONValue>(JSONLong(12345))
+            it.shouldBe<JSONValue>(JSONDecimal(12345.toBigDecimal()))
         }
         JSONInt(-888).let {
-            expect(-888) { it.value }
-            expect("-888") { it.toJSON() }
-            expect("-888") { it.toString() }
+            it.value shouldBe -888
+            it.toJSON() shouldBe "-888"
+            it.toString() shouldBe "-888"
         }
     }
 
     @Test fun `should create JSONInt using of`() {
         JSONInt.of(12345).let {
-            expect(12345) { it.value }
-            expect("12345") { it.toJSON() }
-            expect("12345") { it.toString() }
+            it.value shouldBe 12345
+            it.toJSON() shouldBe "12345"
+            it.toString() shouldBe "12345"
         }
-        assertSame(JSONInt.ZERO, JSONInt.of(0))
+        JSONInt.of(0) shouldBeSameInstance JSONInt.ZERO
     }
 
     @Test fun `should implement isXxxx functions`() {
         JSONInt(123456789).let {
-            assertTrue(it.isIntegral())
-            assertTrue(it.isLong())
-            assertTrue(it.isInt())
-            assertFalse(it.isShort())
-            assertFalse(it.isByte())
-            assertTrue(it.isULong())
-            assertTrue(it.isUInt())
-            assertFalse(it.isUShort())
-            assertFalse(it.isUByte())
+            it.isIntegral() shouldBe true
+            it.isLong() shouldBe true
+            it.isInt() shouldBe true
+            it.isShort() shouldBe false
+            it.isByte() shouldBe false
+            it.isULong() shouldBe true
+            it.isUInt() shouldBe true
+            it.isUShort() shouldBe false
+            it.isUByte() shouldBe false
         }
         JSONInt(-123456789).let {
-            assertTrue(it.isIntegral())
-            assertTrue(it.isLong())
-            assertTrue(it.isInt())
-            assertFalse(it.isShort())
-            assertFalse(it.isByte())
-            assertFalse(it.isULong())
-            assertFalse(it.isUInt())
-            assertFalse(it.isUShort())
-            assertFalse(it.isUByte())
+            it.isIntegral() shouldBe true
+            it.isLong() shouldBe true
+            it.isInt() shouldBe true
+            it.isShort() shouldBe false
+            it.isByte() shouldBe false
+            it.isULong() shouldBe false
+            it.isUInt() shouldBe false
+            it.isUShort() shouldBe false
+            it.isUByte() shouldBe false
         }
         JSONInt(12345).let {
-            assertTrue(it.isIntegral())
-            assertTrue(it.isLong())
-            assertTrue(it.isInt())
-            assertTrue(it.isShort())
-            assertFalse(it.isByte())
-            assertTrue(it.isULong())
-            assertTrue(it.isUInt())
-            assertTrue(it.isUShort())
-            assertFalse(it.isUByte())
+            it.isIntegral() shouldBe true
+            it.isLong() shouldBe true
+            it.isInt() shouldBe true
+            it.isShort() shouldBe true
+            it.isByte() shouldBe false
+            it.isULong() shouldBe true
+            it.isUInt() shouldBe true
+            it.isUShort() shouldBe true
+            it.isUByte() shouldBe false
         }
         JSONInt(-12345).let {
-            assertTrue(it.isIntegral())
-            assertTrue(it.isLong())
-            assertTrue(it.isInt())
-            assertTrue(it.isShort())
-            assertFalse(it.isByte())
-            assertFalse(it.isULong())
-            assertFalse(it.isUInt())
-            assertFalse(it.isUShort())
-            assertFalse(it.isUByte())
+            it.isIntegral() shouldBe true
+            it.isLong() shouldBe true
+            it.isInt() shouldBe true
+            it.isShort() shouldBe true
+            it.isByte() shouldBe false
+            it.isULong() shouldBe false
+            it.isUInt() shouldBe false
+            it.isUShort() shouldBe false
+            it.isUByte() shouldBe false
         }
         JSONInt(123).let {
-            assertTrue(it.isIntegral())
-            assertTrue(it.isLong())
-            assertTrue(it.isInt())
-            assertTrue(it.isShort())
-            assertTrue(it.isByte())
-            assertTrue(it.isULong())
-            assertTrue(it.isUInt())
-            assertTrue(it.isUShort())
-            assertTrue(it.isUByte())
+            it.isIntegral() shouldBe true
+            it.isLong() shouldBe true
+            it.isInt() shouldBe true
+            it.isShort() shouldBe true
+            it.isByte() shouldBe true
+            it.isULong() shouldBe true
+            it.isUInt() shouldBe true
+            it.isUShort() shouldBe true
+            it.isUByte() shouldBe true
         }
         JSONInt(-123).let {
-            assertTrue(it.isIntegral())
-            assertTrue(it.isLong())
-            assertTrue(it.isInt())
-            assertTrue(it.isShort())
-            assertTrue(it.isByte())
-            assertFalse(it.isULong())
-            assertFalse(it.isUShort())
-            assertFalse(it.isUByte())
+            it.isIntegral() shouldBe true
+            it.isLong() shouldBe true
+            it.isInt() shouldBe true
+            it.isShort() shouldBe true
+            it.isByte() shouldBe true
+            it.isULong() shouldBe false
+            it.isUShort() shouldBe false
+            it.isUByte() shouldBe false
         }
     }
 
     @Test fun `should implement isZero etc functions`() {
         JSONInt.ZERO.let {
-            assertTrue(it.isZero())
-            assertFalse(it.isPositive())
-            assertFalse(it.isNegative())
-            assertTrue(it.isNotNegative())
-            assertTrue(it.isNotPositive())
+            it.isZero() shouldBe true
+            it.isPositive() shouldBe false
+            it.isNegative() shouldBe false
+            it.isNotNegative() shouldBe true
+            it.isNotPositive() shouldBe true
         }
         JSONInt(-123).let {
-            assertFalse(it.isZero())
-            assertFalse(it.isPositive())
-            assertTrue(it.isNegative())
-            assertFalse(it.isNotNegative())
-            assertTrue(it.isNotPositive())
+            it.isZero() shouldBe false
+            it.isPositive() shouldBe false
+            it.isNegative() shouldBe true
+            it.isNotNegative() shouldBe false
+            it.isNotPositive() shouldBe true
         }
         JSONInt(123).let {
-            assertFalse(it.isZero())
-            assertTrue(it.isPositive())
-            assertFalse(it.isNegative())
-            assertTrue(it.isNotNegative())
-            assertFalse(it.isNotPositive())
+            it.isZero() shouldBe false
+            it.isPositive() shouldBe true
+            it.isNegative() shouldBe false
+            it.isNotNegative() shouldBe true
+            it.isNotPositive() shouldBe false
         }
     }
 
     @Test fun `should implement toDecimal`() {
-        expect(BigDecimal.ZERO) { JSONInt.ZERO.toDecimal() }
-        expect(12345.toBigDecimal()) { JSONInt(12345).toDecimal() }
-        expect((-9).toBigDecimal()) { JSONInt(-9).toDecimal() }
+        JSONInt.ZERO.toDecimal() shouldBe BigDecimal.ZERO
+        JSONInt(12345).toDecimal() shouldBe 12345.toBigDecimal()
+        JSONInt(-9).toDecimal() shouldBe (-9).toBigDecimal()
     }
 
     @Test fun `should implement toULong`() {
-        expect(0U) { JSONInt.ZERO.toULong() }
-        expect(12345U) { JSONInt(12345).toULong() }
+        JSONInt.ZERO.toULong() shouldBe 0U
+        JSONInt(12345).toULong() shouldBe 12345U
     }
 
     @Test fun `should implement toUInt`() {
-        expect(0U) { JSONInt.ZERO.toUInt() }
-        expect(12345U) { JSONInt(12345).toUInt() }
+        JSONInt.ZERO.toUInt() shouldBe 0U
+        JSONInt(12345).toUInt() shouldBe 12345U
     }
 
     @Test fun `should implement toUShort`() {
-        expect(0U) { JSONInt.ZERO.toUShort() }
-        expect(32768U) { JSONInt(32768).toUShort() }
+        JSONInt.ZERO.toUShort() shouldBe 0U
+        JSONInt(32768).toUShort() shouldBe 32768U
     }
 
     @Test fun `should implement toUByte`() {
-        expect(0U) { JSONInt.ZERO.toUByte() }
-        expect(129U) { JSONInt(129).toUByte() }
+        JSONInt.ZERO.toUByte() shouldBe 0U
+        JSONInt(129).toUByte() shouldBe 129U
     }
 
     @Test fun `should format JSONInt using output`() {
         val capture = OutputCapture(16)
         JSONInt.ZERO.outputTo(capture)
-        expect("0") { capture.toString() }
+        capture.toString() shouldBe "0"
         capture.reset()
         JSONInt(1234567).outputTo(capture)
-        expect("1234567") { capture.toString() }
+        capture.toString() shouldBe "1234567"
         capture.reset()
         JSONInt(-888).outputTo(capture)
-        expect("-888") { capture.toString() }
+        capture.toString() shouldBe "-888"
     }
 
     @Test fun `should format JSONInt using coOutput`() = runBlocking {
         val capture = CoOutputCapture(16)
         JSONInt.ZERO.coOutputTo(capture)
-        expect("0") { capture.toString() }
+        capture.toString() shouldBe "0"
         capture.reset()
         JSONInt(1234567).coOutputTo(capture)
-        expect("1234567") { capture.toString() }
+        capture.toString() shouldBe "1234567"
         capture.reset()
         JSONInt(-888).coOutputTo(capture)
-        expect("-888") { capture.toString() }
+        capture.toString() shouldBe "-888"
     }
 
 }

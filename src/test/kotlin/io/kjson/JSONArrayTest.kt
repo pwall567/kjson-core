@@ -26,12 +26,11 @@
 package io.kjson
 
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
-import kotlin.test.expect
+
 import kotlinx.coroutines.runBlocking
+
+import io.kstuff.test.shouldBe
+import io.kstuff.test.shouldThrow
 
 import io.kjson.testutil.CoOutputCapture
 import io.kjson.testutil.OutputCapture
@@ -40,63 +39,63 @@ class JSONArrayTest {
 
     @Test fun `should create JSONArray`() {
         val testArray = JSONArray(arrayOf(JSONInt(123), JSONInt(456)), 2)
-        expect(2) { testArray.size }
-        expect(JSONInt(123)) { testArray[0] }
-        expect(JSONInt(456)) { testArray[1] }
-        expect("[123,456]") { testArray.toString() }
-        expect("[123,456]") { testArray.toJSON() }
-        assertFalse(testArray.isEmpty())
-        assertTrue(testArray.isNotEmpty())
+        testArray.size shouldBe 2
+        testArray[0] shouldBe JSONInt(123)
+        testArray[1] shouldBe JSONInt(456)
+        testArray.toString() shouldBe "[123,456]"
+        testArray.toJSON() shouldBe "[123,456]"
+        testArray.isEmpty() shouldBe false
+        testArray.isNotEmpty() shouldBe true
     }
 
     @Test fun `should create empty JSONArray`() {
         val testArray = JSONArray(emptyArray(), 0)
-        expect(0) { testArray.size }
-        expect("[]") { testArray.toString() }
-        expect("[]") { testArray.toJSON() }
-        assertTrue(testArray.isEmpty())
-        assertFalse(testArray.isNotEmpty())
+        testArray.size shouldBe 0
+        testArray.toString() shouldBe "[]"
+        testArray.toJSON() shouldBe "[]"
+        testArray.isEmpty() shouldBe true
+        testArray.isNotEmpty() shouldBe false
     }
 
     @Test fun `should create JSONArray using of`() {
         val testArray = JSONArray.of(JSONInt(9999), JSONInt(8888))
-        expect(2) { testArray.size }
-        expect(JSONInt(9999)) { testArray[0] }
-        expect(JSONInt(8888)) { testArray[1] }
-        expect("[9999,8888]") { testArray.toJSON() }
+        testArray.size shouldBe 2
+        testArray[0] shouldBe JSONInt(9999)
+        testArray[1] shouldBe JSONInt(8888)
+        testArray.toJSON() shouldBe "[9999,8888]"
     }
 
     @Test fun `should create JSONArray using JSONArray function`() {
         val testArray = JSONArray(JSONInt(9999), JSONInt(8888))
-        expect(2) { testArray.size }
-        expect(JSONInt(9999)) { testArray[0] }
-        expect(JSONInt(8888)) { testArray[1] }
-        expect("[9999,8888]") { testArray.toJSON() }
+        testArray.size shouldBe 2
+        testArray[0] shouldBe JSONInt(9999)
+        testArray[1] shouldBe JSONInt(8888)
+        testArray.toJSON() shouldBe "[9999,8888]"
     }
 
     @Test fun `should create JSONArray using List`() {
         val testArray = JSONArray.from(listOf(JSONString("Hello"), JSONString("World")))
-        expect(2) { testArray.size }
-        expect(JSONString("Hello")) { testArray[0] }
-        expect(JSONString("World")) { testArray[1] }
-        expect("[\"Hello\",\"World\"]") { testArray.toJSON() }
+        testArray.size shouldBe 2
+        testArray[0] shouldBe JSONString("Hello")
+        testArray[1] shouldBe JSONString("World")
+        testArray.toJSON() shouldBe "[\"Hello\",\"World\"]"
     }
 
     @Test fun `should create JSONArray using List extension function`() {
         val testArray = listOf(JSONString("Hello"), JSONString("World")).toJSONArray()
-        expect(2) { testArray.size }
-        expect(JSONString("Hello")) { testArray[0] }
-        expect(JSONString("World")) { testArray[1] }
-        expect("[\"Hello\",\"World\"]") { testArray.toJSON() }
+        testArray.size shouldBe 2
+        testArray[0] shouldBe JSONString("Hello")
+        testArray[1] shouldBe JSONString("World")
+        testArray.toJSON() shouldBe "[\"Hello\",\"World\"]"
     }
 
     @Test fun `should compare to other List`() {
         val list = listOf(JSONInt(123), JSONInt(456))
         val testArray = JSONArray.from(list)
-        expect(2) { testArray.size }
-        assertEquals<List<*>>(testArray, list)
-        assertEquals<List<*>>(list, testArray)
-        assertEquals(testArray.hashCode(), list.hashCode())
+        testArray.size shouldBe 2
+        list.shouldBe<List<*>>(testArray)
+        testArray.shouldBe<List<*>>(list)
+        list.hashCode() shouldBe testArray.hashCode()
     }
 
     @Test fun `should build JSONArray using Builder`() {
@@ -105,10 +104,10 @@ class JSONArrayTest {
             add(JSONInt(456))
             add(JSONInt(789))
         }.build()
-        expect(3) { json.size }
-        expect(JSONInt(123)) { json[0] }
-        expect(JSONInt(456)) { json[1] }
-        expect(JSONInt(789)) { json[2] }
+        json.size shouldBe 3
+        json[0] shouldBe JSONInt(123)
+        json[1] shouldBe JSONInt(456)
+        json[2] shouldBe JSONInt(789)
     }
 
     @Test fun `should build JSONArray using build`() {
@@ -117,10 +116,10 @@ class JSONArrayTest {
             add(JSONInt(456))
             add(JSONInt(789))
         }
-        expect(3) { json.size }
-        expect(JSONInt(123)) { json[0] }
-        expect(JSONInt(456)) { json[1] }
-        expect(JSONInt(789)) { json[2] }
+        json.size shouldBe 3
+        json[0] shouldBe JSONInt(123)
+        json[1] shouldBe JSONInt(456)
+        json[2] shouldBe JSONInt(789)
     }
 
     @Test fun `should build JSONArray using build with non-JSON classes`() {
@@ -131,12 +130,12 @@ class JSONArrayTest {
             add("1.456".toBigDecimal())
             add(true)
         }
-        expect(5) { json.size }
-        expect(JSONInt(123)) { json[0] }
-        expect(JSONString("abc")) { json[1] }
-        expect(JSONLong(112233445566778899)) { json[2] }
-        expect(JSONDecimal("1.456".toBigDecimal())) { json[3] }
-        expect(JSONBoolean.TRUE) { json[4] }
+        json.size shouldBe 5
+        json[0] shouldBe JSONInt(123)
+        json[1] shouldBe JSONString("abc")
+        json[2] shouldBe JSONLong(112233445566778899)
+        json[3] shouldBe JSONDecimal("1.456".toBigDecimal())
+        json[4] shouldBe JSONBoolean.TRUE
     }
 
     @Test fun `should limit Builder to single use`() {
@@ -144,35 +143,33 @@ class JSONArrayTest {
         builder.add(JSONInt(111))
         builder.add(JSONInt(222))
         builder.add(JSONInt(333))
-        expect(3) { builder.size }
+        builder.size shouldBe 3
         val json = builder.build()
-        expect(3) { json.size }
-        expect(JSONInt(111)) { json[0] }
-        expect(JSONInt(222)) { json[1] }
-        expect(JSONInt(333)) { json[2] }
-        assertFailsWith<JSONException> { builder.add(JSONInt(444)) }.let {
-            expect("Builder is closed") { it.message }
-        }
+        json.size shouldBe 3
+        json[0] shouldBe JSONInt(111)
+        json[1] shouldBe JSONInt(222)
+        json[2] shouldBe JSONInt(333)
+        shouldThrow<JSONException>("Builder is closed") { builder.add(JSONInt(444)) }
     }
 
     @Test fun `should return JSONArray from subList`() {
         val array = JSONArray.of(JSONInt(111), JSONInt(222), JSONInt(333), JSONInt(444), JSONInt(555))
         val subList = array.subList(2, 4)
-        expect("[333,444]") { subList.toJSON() }
+        subList.toJSON() shouldBe "[333,444]"
     }
 
     @Test fun `should format JSONArray using output`() {
         val capture = OutputCapture(64)
         JSONArray.from(listOf(JSONString("Hello"), JSONInt(123), JSONBoolean.TRUE,
-                JSONDecimal("1.5".toBigDecimal()), null, JSONLong(0))).outputTo(capture)
-        expect("[\"Hello\",123,true,1.5,null,0]") { capture.toString() }
+            JSONDecimal("1.5".toBigDecimal()), null, JSONLong(0))).outputTo(capture)
+        capture.toString() shouldBe "[\"Hello\",123,true,1.5,null,0]"
     }
 
     @Test fun `should format JSONArray using coOutput`() = runBlocking {
         val capture = CoOutputCapture(64)
         JSONArray.from(listOf(JSONString("Hello"), JSONInt(123), JSONBoolean.TRUE,
-                JSONDecimal("1.5".toBigDecimal()), null, JSONLong(0))).coOutputTo(capture)
-        expect("[\"Hello\",123,true,1.5,null,0]") { capture.toString() }
+            JSONDecimal("1.5".toBigDecimal()), null, JSONLong(0))).coOutputTo(capture)
+        capture.toString() shouldBe "[\"Hello\",123,true,1.5,null,0]"
     }
 
     @Test fun `should iterate over array`() {
@@ -186,14 +183,14 @@ class JSONArrayTest {
         var count = 0
         json.forEachItem {
             when (count++) {
-                0 -> expect(JSONInt(123)) { it }
-                1 -> expect(JSONString("abc")) { it }
-                2 -> expect(JSONLong(112233445566778899)) { it }
-                3 -> expect(JSONDecimal("1.456")) { it }
-                4 -> expect(JSONBoolean.TRUE) { it }
+                0 -> it shouldBe JSONInt(123)
+                1 -> it shouldBe JSONString("abc")
+                2 -> it shouldBe JSONLong(112233445566778899)
+                3 -> it shouldBe JSONDecimal("1.456")
+                4 -> it shouldBe JSONBoolean.TRUE
             }
         }
-        expect(5) { count }
+        count shouldBe 5
     }
 
     @Test fun `should iterate over array including index`() {
@@ -206,51 +203,51 @@ class JSONArrayTest {
         }
         var count = 0
         json.forEachItemIndexed { index, item ->
-            expect(count) { index }
+            index shouldBe count
             when (count++) {
-                0 -> expect(JSONInt(123)) { item }
-                1 -> expect(JSONString("abc")) { item }
-                2 -> expect(JSONLong(112233445566778899)) { item }
-                3 -> expect(JSONDecimal("1.456")) { item }
-                4 -> expect(JSONBoolean.TRUE) { item }
+                0 -> item shouldBe JSONInt(123)
+                1 -> item shouldBe JSONString("abc")
+                2 -> item shouldBe JSONLong(112233445566778899)
+                3 -> item shouldBe JSONDecimal("1.456")
+                4 -> item shouldBe JSONBoolean.TRUE
             }
         }
-        expect(5) { count }
+        count shouldBe 5
     }
 
     @Test fun `should append in JSON Lines format`() {
         val json = createJSONLines()
         val sb = StringBuilder()
         json.appendJSONLinesTo(sb)
-        expect("{\"a\":1,\"b\":2}\n{\"a\":21,\"b\":34}\n{\"a\":55,\"b\":66}\n") { sb.toString() }
+        sb.toString() shouldBe "{\"a\":1,\"b\":2}\n{\"a\":21,\"b\":34}\n{\"a\":55,\"b\":66}\n"
     }
 
     @Test fun `should append empty JSONArray in JSON Lines format`() {
         val sb = StringBuilder()
         JSONArray.EMPTY.appendJSONLinesTo(sb)
-        expect("") { sb.toString() }
+        sb.toString() shouldBe ""
     }
 
     @Test fun `should create JSON Lines string`() {
         val json = createJSONLines()
-        expect("{\"a\":1,\"b\":2}\n{\"a\":21,\"b\":34}\n{\"a\":55,\"b\":66}\n") { json.toJSONLines() }
+        json.toJSONLines() shouldBe "{\"a\":1,\"b\":2}\n{\"a\":21,\"b\":34}\n{\"a\":55,\"b\":66}\n"
     }
 
     @Test fun `should output empty string for toJSONLines of empty JSONArray`() {
         val json = JSONArray.EMPTY
-        expect("") { json.toJSONLines() }
+        json.toJSONLines() shouldBe ""
     }
 
     @Test fun `should output JSON Lines using output`() {
         val capture = OutputCapture(64)
         createJSONLines().outputJSONLinesTo(capture)
-        expect("{\"a\":1,\"b\":2}\n{\"a\":21,\"b\":34}\n{\"a\":55,\"b\":66}\n") { capture.toString() }
+        capture.toString() shouldBe "{\"a\":1,\"b\":2}\n{\"a\":21,\"b\":34}\n{\"a\":55,\"b\":66}\n"
     }
 
     @Test fun `should output JSON Lines using coOutput`() = runBlocking {
         val capture = CoOutputCapture(64)
         createJSONLines().coOutputJSONLinesTo(capture)
-        expect("{\"a\":1,\"b\":2}\n{\"a\":21,\"b\":34}\n{\"a\":55,\"b\":66}\n") { capture.toString() }
+        capture.toString() shouldBe "{\"a\":1,\"b\":2}\n{\"a\":21,\"b\":34}\n{\"a\":55,\"b\":66}\n"
     }
 
     companion object {

@@ -2,7 +2,7 @@
  * @(#) LookupSetTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2023 Peter Wall
+ * Copyright (c) 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,16 +26,16 @@
 package io.kjson.util
 
 import kotlin.test.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+
+import io.kstuff.test.shouldBe
 
 class LookupSetTest {
 
     @Test fun `should perform simple lookup`() {
-        assertTrue('a' in LookupSet<Char> { it in 'a'..'z' })
-        assertFalse('A' in LookupSet<Char> { it in 'a'..'z' })
-        assertTrue("AUD" in LookupSet<String> { it == "AUD" || it == "NZD" })
-        assertFalse("EUR" in LookupSet<String> { it == "AUD" || it == "NZD" })
+        ('a' in LookupSet<Char> { it in 'a'..'z' }) shouldBe true
+        ('A' in LookupSet<Char> { it in 'a'..'z' }) shouldBe false
+        ("AUD" in LookupSet<String> { it == "AUD" || it == "NZD" }) shouldBe true
+        ("EUR" in LookupSet<String> { it == "AUD" || it == "NZD" }) shouldBe false
     }
 
 }

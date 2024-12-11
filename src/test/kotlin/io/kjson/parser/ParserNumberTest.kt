@@ -26,12 +26,13 @@
 package io.kjson.parser
 
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
-import kotlin.test.assertIs
-import kotlin.test.assertSame
-import kotlin.test.expect
 
 import java.math.BigDecimal
+
+import io.kstuff.test.shouldBe
+import io.kstuff.test.shouldBeSameInstance
+import io.kstuff.test.shouldBeType
+import io.kstuff.test.shouldThrow
 
 import io.kjson.JSONDecimal
 import io.kjson.JSONInt
@@ -44,137 +45,132 @@ class ParserNumberTest {
 
     @Test fun `should parse zero`() {
         val result = Parser.parse("0")
-        assertSame(JSONInt.ZERO, result)
+        result shouldBeSameInstance JSONInt.ZERO
     }
 
     @Test fun `should reject leading zeros`() {
-        assertFailsWith<ParseException> { Parser.parse("00") }.let {
-            expect(ILLEGAL_NUMBER) { it.text }
-            expect(ILLEGAL_NUMBER) { it.message }
-            expect(rootPointer) { it.pointer }
+        shouldThrow<ParseException>(ILLEGAL_NUMBER) { Parser.parse("00") }.let {
+            it.text shouldBe ILLEGAL_NUMBER
+            it.pointer shouldBe rootPointer
         }
-        assertFailsWith<ParseException> { Parser.parse("0123") }.let {
-            expect(ILLEGAL_NUMBER) { it.text }
-            expect(ILLEGAL_NUMBER) { it.message }
-            expect(rootPointer) { it.pointer }
+        shouldThrow<ParseException>(ILLEGAL_NUMBER) { Parser.parse("0123") }.let {
+            it.text shouldBe ILLEGAL_NUMBER
+            it.pointer shouldBe rootPointer
         }
     }
 
     @Test fun `should reject incorrect numbers`() {
-        assertFailsWith<ParseException> { Parser.parse("123a") }.let {
-            expect(EXCESS_CHARS) { it.text }
-            expect(EXCESS_CHARS) { it.message }
-            expect(rootPointer) { it.pointer }
+        shouldThrow<ParseException>(EXCESS_CHARS) { Parser.parse("123a") }.let {
+            it.text shouldBe EXCESS_CHARS
+            it.pointer shouldBe rootPointer
         }
-        assertFailsWith<ParseException> { Parser.parse("12:00") }.let {
-            expect(EXCESS_CHARS) { it.text }
-            expect(EXCESS_CHARS) { it.message }
-            expect(rootPointer) { it.pointer }
+        shouldThrow<ParseException>(EXCESS_CHARS) { Parser.parse("12:00") }.let {
+            it.text shouldBe EXCESS_CHARS
+            it.pointer shouldBe rootPointer
         }
-        assertFailsWith<ParseException> { Parser.parse("1.23/4") }.let {
-            expect(EXCESS_CHARS) { it.text }
-            expect(EXCESS_CHARS) { it.message }
-            expect(rootPointer) { it.pointer }
+        shouldThrow<ParseException>(EXCESS_CHARS) { Parser.parse("1.23/4") }.let {
+            it.text shouldBe EXCESS_CHARS
+            it.pointer shouldBe rootPointer
         }
     }
 
     @Test fun `should parse positive integers`() {
         val result1 = Parser.parse("123")
-        assertIs<JSONInt>(result1)
-        expect(123) { result1.value }
+        result1.shouldBeType<JSONInt>()
+        result1.value shouldBe 123
         val result2 = Parser.parse("5678900")
-        assertIs<JSONInt>(result2)
-        expect(5678900) { result2.value }
+        result2.shouldBeType<JSONInt>()
+        result2.value shouldBe 5678900
         val result3 = Parser.parse("2147483647")
-        assertIs<JSONInt>(result3)
-        expect(2147483647) { result3.value }
+        result3.shouldBeType<JSONInt>()
+        result3.value shouldBe 2147483647
     }
 
     @Test fun `should parse negative integers`() {
         val result1 = Parser.parse("-1")
-        assertIs<JSONInt>(result1)
-        expect(-1) { result1.value }
+        result1.shouldBeType<JSONInt>()
+        result1.value shouldBe -1
         val result2 = Parser.parse("-876543")
-        assertIs<JSONInt>(result2)
-        expect(-876543) { result2.value }
+        result2.shouldBeType<JSONInt>()
+        result2.value shouldBe -876543
         val result3 = Parser.parse("-2147483648")
-        assertIs<JSONInt>(result3)
-        expect(-2147483648) { result3.value }
+        result3.shouldBeType<JSONInt>()
+        result3.value shouldBe -2147483648
     }
 
     @Test fun `should parse positive long integers`() {
         val result1 = Parser.parse("1234567890000")
-        assertIs<JSONLong>(result1)
-        expect(1234567890000) { result1.value }
+        result1.shouldBeType<JSONLong>()
+        result1.value shouldBe 1234567890000
         val result2 = Parser.parse("567895678956789")
-        assertIs<JSONLong>(result2)
-        expect(567895678956789) { result2.value }
+        result2.shouldBeType<JSONLong>()
+        result2.value shouldBe 567895678956789
         val result3 = Parser.parse("2147483648")
-        assertIs<JSONLong>(result3)
-        expect(2147483648) { result3.value }
+        result3.shouldBeType<JSONLong>()
+        result3.value shouldBe 2147483648
         val result4 = Parser.parse("9223372036854775807")
-        assertIs<JSONLong>(result4)
-        expect(9223372036854775807) { result4.value }
+        result4.shouldBeType<JSONLong>()
+        result4.value shouldBe 9223372036854775807
     }
 
     @Test fun `should parse negative long integers`() {
         val result1 = Parser.parse("-1234567890000")
-        assertIs<JSONLong>(result1)
-        expect(-1234567890000) { result1.value }
+        result1.shouldBeType<JSONLong>()
+        result1.value shouldBe -1234567890000
         val result2 = Parser.parse("-567895678956789")
-        assertIs<JSONLong>(result2)
-        expect(-567895678956789) { result2.value }
+        result2.shouldBeType<JSONLong>()
+        result2.value shouldBe -567895678956789
         val result3 = Parser.parse("-2147483649")
-        assertIs<JSONLong>(result3)
-        expect(-2147483649) { result3.value }
+        result3.shouldBeType<JSONLong>()
+        result3.value shouldBe -2147483649
         val result4 = Parser.parse("-9223372036854775808")
-        assertIs<JSONLong>(result4)
-        expect(-9223372036854775807 - 1) { result4.value }
+        result4.shouldBeType<JSONLong>()
+        result4.value shouldBe -9223372036854775807 - 1
     }
 
     @Test fun `should parse decimal`() {
         val result1 = Parser.parse("0.0")
-        assertIs<JSONDecimal>(result1)
-        expect(0) { result1.value.compareTo(BigDecimal.ZERO) }
+        result1.shouldBeType<JSONDecimal>()
+        result1.value.compareTo(BigDecimal.ZERO) shouldBe 0
         val result2 = Parser.parse("0.00")
-        assertIs<JSONDecimal>(result2)
-        expect(0) { result2.value.compareTo(BigDecimal.ZERO) }
+        result2.shouldBeType<JSONDecimal>()
+        result2.value.compareTo(BigDecimal.ZERO) shouldBe 0
     }
 
     @Test fun `should parse positive decimal`() {
         val result1 = Parser.parse("12340.0")
-        assertIs<JSONDecimal>(result1)
-        expect(0) { result1.value.compareTo("12340".toBigDecimal()) }
+        result1.shouldBeType<JSONDecimal>()
+        result1.value.compareTo("12340".toBigDecimal()) shouldBe 0
         val result2 = Parser.parse("1e200")
-        assertIs<JSONDecimal>(result2)
-        expect(0) { result2.value.compareTo("1e200".toBigDecimal()) }
+        result2.shouldBeType<JSONDecimal>()
+        result2.value.compareTo("1e200".toBigDecimal()) shouldBe 0
         val result3 = Parser.parse("27e-60")
-        assertIs<JSONDecimal>(result3)
-        expect(0) { result3.value.compareTo("27e-60".toBigDecimal()) }
+        result3.shouldBeType<JSONDecimal>()
+        result3.value.compareTo("27e-60".toBigDecimal()) shouldBe 0
         val result4 = Parser.parse("0.1e-48")
-        assertIs<JSONDecimal>(result4)
-        expect(0) { result4.value.compareTo("0.1e-48".toBigDecimal()) }
+        result4.shouldBeType<JSONDecimal>()
+        result4.value.compareTo("0.1e-48".toBigDecimal()) shouldBe 0
         val result5 = Parser.parse("9223372036854775808")
-        assertIs<JSONDecimal>(result5)
-        expect(0) { result5.value.compareTo("9223372036854775808".toBigDecimal()) }
+        result5.shouldBeType<JSONDecimal>()
+        result5.value.compareTo("9223372036854775808".toBigDecimal()) shouldBe 0
     }
 
     @Test fun `should parse negative decimal`() {
         val result1 = Parser.parse("-12340.0")
-        assertIs<JSONDecimal>(result1)
-        expect(0) { result1.value.compareTo("-12340".toBigDecimal()) }
+        result1.shouldBeType<JSONDecimal>()
+        result1.value.compareTo("-12340".toBigDecimal()) shouldBe 0
         val result2 = Parser.parse("-1e200")
-        assertIs<JSONDecimal>(result2)
-        expect(0) { result2.value.compareTo("-1e200".toBigDecimal()) }
+        result2.shouldBeType<JSONDecimal>()
+        result2.value.compareTo("-1e200".toBigDecimal()) shouldBe 0
         val result3 = Parser.parse("-27e-60")
-        assertIs<JSONDecimal>(result3)
-        expect(0) { result3.value.compareTo("-27e-60".toBigDecimal()) }
+        result3.shouldBeType<JSONDecimal>()
+        result3.value.compareTo("-27e-60".toBigDecimal()) shouldBe 0
         val result4 = Parser.parse("-0.1e-48")
-        assertIs<JSONDecimal>(result4)
-        expect(0) { result4.value.compareTo("-0.1e-48".toBigDecimal()) }
+        result4.shouldBeType<JSONDecimal>()
+        result4.value.compareTo("-0.1e-48".toBigDecimal()) shouldBe 0
         val result5 = Parser.parse("-9223372036854775809")
-        assertIs<JSONDecimal>(result5)
-        expect(0) { result5.value.compareTo("-9223372036854775809".toBigDecimal()) }
+        result5.shouldBeType<JSONDecimal>()
+        result5.value.compareTo("-9223372036854775809".toBigDecimal()) shouldBe 0
     }
 
 }

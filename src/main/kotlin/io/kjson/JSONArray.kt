@@ -274,7 +274,7 @@ class JSONArray internal constructor (private val array: Array<out JSONValue?>, 
     /**
      * Get the hash code for the array, applying the rule in Java for `List` hash codes.
      */
-    override fun hashCode(): Int = this.fold(1) { a, b -> 31 * a + b.hashCode() }
+    override fun hashCode(): Int = fold(1) { a, b -> 31 * a + b.hashCode() }
 
     /**
      * Convert to a [String] (converts to JSON).

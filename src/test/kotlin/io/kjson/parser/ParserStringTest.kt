@@ -2,7 +2,7 @@
  * @(#) ParserStringTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021 Peter Wall
+ * Copyright (c) 2021, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,10 @@
 package io.kjson.parser
 
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
-import kotlin.test.assertIs
-import kotlin.test.expect
+
+import io.kstuff.test.shouldBe
+import io.kstuff.test.shouldBeType
+import io.kstuff.test.shouldThrow
 
 import io.kjson.JSONString
 import io.kjson.parser.ParserConstants.rootPointer
@@ -38,56 +39,61 @@ class ParserStringTest {
 
     @Test fun `should parse simple string`() {
         val result = Parser.parse("\"simple\"")
-        assertIs<JSONString>(result)
-        expect("simple") { result.value }
+        result.shouldBeType<JSONString>()
+        result.value shouldBe "simple"
     }
 
     @Test fun `should parse string with escape sequences`() {
         val result = Parser.parse("\"tab\\tnewline\\nquote\\\" \"")
-        assertIs<JSONString>(result)
-        expect("tab\tnewline\nquote\" ") { result.value }
+        result.shouldBeType<JSONString>()
+        result.value shouldBe "tab\tnewline\nquote\" "
     }
 
     @Test fun `should parse string with unicode escape sequences`() {
         val result = Parser.parse("\"mdash \\u2014\"")
-        assertIs<JSONString>(result)
-        expect("mdash \u2014") { result.value }
+        result.shouldBeType<JSONString>()
+        result.value shouldBe "mdash \u2014"
     }
 
     @Test fun `should throw exception on missing closing quote`() {
-        assertFailsWith<ParseException> { Parser.parse("\"abc") }.let {
-            expect(JSONFunctions.UNTERMINATED_STRING) { it.text }
-            expect(JSONFunctions.UNTERMINATED_STRING) { it.message }
-            expect(rootPointer) { it.pointer }
+        shouldThrow<ParseException>(JSONFunctions.UNTERMINATED_STRING) {
+            Parser.parse("\"abc")
+        }.let {
+            it.text shouldBe JSONFunctions.UNTERMINATED_STRING
+            it.pointer shouldBe rootPointer
         }
     }
 
     @Test fun `should throw exception on bad escape sequence`() {
-        assertFailsWith<ParseException> { Parser.parse("\"ab\\c\"") }.let {
-            expect(JSONFunctions.ILLEGAL_ESCAPE_SEQUENCE) { it.text }
-            expect(JSONFunctions.ILLEGAL_ESCAPE_SEQUENCE) { it.message }
-            expect(rootPointer) { it.pointer }
+        shouldThrow<ParseException>(JSONFunctions.ILLEGAL_ESCAPE_SEQUENCE) {
+            Parser.parse("\"ab\\c\"")
+        }.let {
+            it.text shouldBe JSONFunctions.ILLEGAL_ESCAPE_SEQUENCE
+            it.pointer shouldBe rootPointer
         }
     }
 
     @Test fun `should throw exception on bad unicode sequence`() {
-        assertFailsWith<ParseException> { Parser.parse("\"ab\\uxxxx\"") }.let {
-            expect(JSONFunctions.ILLEGAL_UNICODE_SEQUENCE) { it.text }
-            expect(JSONFunctions.ILLEGAL_UNICODE_SEQUENCE) { it.message }
-            expect(rootPointer) { it.pointer }
+        shouldThrow<ParseException>(JSONFunctions.ILLEGAL_UNICODE_SEQUENCE) {
+            Parser.parse("\"ab\\uxxxx\"")
+        }.let {
+            it.text shouldBe JSONFunctions.ILLEGAL_UNICODE_SEQUENCE
+            it.pointer shouldBe rootPointer
         }
     }
 
     @Test fun `should throw exception on illegal character`() {
-        assertFailsWith<ParseException> { Parser.parse("\"ab\u0001\"") }.let {
-            expect(JSONFunctions.ILLEGAL_CHAR) { it.text }
-            expect(JSONFunctions.ILLEGAL_CHAR) { it.message }
-            expect(rootPointer) { it.pointer }
+        shouldThrow<ParseException>(JSONFunctions.ILLEGAL_CHAR) {
+            Parser.parse("\"ab\u0001\"")
+        }.let {
+            it.text shouldBe JSONFunctions.ILLEGAL_CHAR
+            it.pointer shouldBe rootPointer
         }
-        assertFailsWith<ParseException> { Parser.parse("\"ab\n\"") }.let {
-            expect(JSONFunctions.ILLEGAL_CHAR) { it.text }
-            expect(JSONFunctions.ILLEGAL_CHAR) { it.message }
-            expect(rootPointer) { it.pointer }
+        shouldThrow<ParseException>(JSONFunctions.ILLEGAL_CHAR) {
+            Parser.parse("\"ab\n\"")
+        }.let {
+            it.text shouldBe JSONFunctions.ILLEGAL_CHAR
+            it.pointer shouldBe rootPointer
         }
     }
 

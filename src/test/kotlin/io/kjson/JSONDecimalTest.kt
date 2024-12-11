@@ -26,13 +26,13 @@
 package io.kjson
 
 import kotlin.test.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertSame
-import kotlin.test.assertTrue
-import kotlin.test.expect
+
 import kotlinx.coroutines.runBlocking
 
 import java.math.BigDecimal
+
+import io.kstuff.test.shouldBe
+import io.kstuff.test.shouldBeSameInstance
 
 import io.kjson.testutil.CoOutputCapture
 import io.kjson.testutil.OutputCapture
@@ -41,271 +41,271 @@ class JSONDecimalTest {
 
     @Test fun `should create JSONDecimal`() {
         JSONDecimal(BigDecimal.ZERO).let {
-            expect(BigDecimal.ZERO) { it.value }
-            expect("0") { it.toJSON() }
-            expect(JSONDecimal("0.00")) { it }
-            expect<JSONValue>(JSONInt(0)) { it }
-            expect<JSONValue>(JSONLong(0)) { it }
+            it.value shouldBe BigDecimal.ZERO
+            it.toJSON() shouldBe "0"
+            it shouldBe JSONDecimal("0.00")
+            it.shouldBe<JSONValue>(JSONInt(0))
+            it.shouldBe<JSONValue>(JSONLong(0))
         }
     }
 
     @Test fun `should create JSONDecimal from Long`() {
         JSONDecimal(123456789123456789).let {
-            expect(123456789123456789.toBigDecimal()) { it.value }
-            expect("123456789123456789") { it.toJSON() }
-            expect<JSONValue>(JSONLong(123456789123456789)) { it }
+            it.value shouldBe 123456789123456789.toBigDecimal()
+            it.toJSON() shouldBe "123456789123456789"
+            it.shouldBe<JSONValue>(JSONLong(123456789123456789))
         }
     }
 
     @Test fun `should create JSONDecimal from Int`() {
         JSONDecimal(12345).let {
-            expect(12345.toBigDecimal()) { it.value }
-            expect("12345") { it.toJSON() }
-            expect<JSONValue>(JSONInt(12345)) { it }
+            it.value shouldBe 12345.toBigDecimal()
+            it.toJSON() shouldBe "12345"
+            it.shouldBe<JSONValue>(JSONInt(12345))
         }
     }
 
     @Test fun `should create JSONDecimal using of`() {
         JSONDecimal.of(BigDecimal.ZERO).let {
-            assertSame(JSONDecimal.ZERO, it)
-            expect(BigDecimal.ZERO) { it.value }
-            expect("0") { it.toJSON() }
-            expect(JSONDecimal("0.00")) { it }
+            it shouldBeSameInstance JSONDecimal.ZERO
+            it.value shouldBe BigDecimal.ZERO
+            it.toJSON() shouldBe "0"
+            it shouldBe JSONDecimal("0.00")
         }
         JSONDecimal.of(BigDecimal.ONE).let {
-            expect(BigDecimal.ONE) { it.value }
-            expect("1") { it.toJSON() }
-            expect(JSONDecimal("1.00")) { it }
+            it.value shouldBe BigDecimal.ONE
+            it.toJSON() shouldBe "1"
+            it shouldBe JSONDecimal("1.00")
         }
-        assertSame(JSONDecimal.ZERO, JSONDecimal.of(0))
+        JSONDecimal.of(0) shouldBeSameInstance JSONDecimal.ZERO
         JSONDecimal.of(23456).let {
-            expect("23456".toBigDecimal()) { it.value }
-            expect("23456") { it.toJSON() }
-            expect(JSONDecimal("23456")) { it }
+            it.value shouldBe "23456".toBigDecimal()
+            it.toJSON() shouldBe "23456"
+            it shouldBe JSONDecimal("23456")
         }
-        assertSame(JSONDecimal.ZERO, JSONDecimal.of(0L))
+        JSONDecimal.of(0L) shouldBeSameInstance JSONDecimal.ZERO
         JSONDecimal.of(9876543210).let {
-            expect("9876543210".toBigDecimal()) { it.value }
-            expect("9876543210") { it.toJSON() }
-            expect(JSONDecimal("9876543210")) { it }
+            it.value shouldBe "9876543210".toBigDecimal()
+            it.toJSON() shouldBe "9876543210"
+            it shouldBe JSONDecimal("9876543210")
         }
-        assertSame(JSONDecimal.ZERO, JSONDecimal.of("0"))
+        JSONDecimal.of("0") shouldBeSameInstance JSONDecimal.ZERO
         JSONDecimal.of("333.5").let {
-            expect("333.5".toBigDecimal()) { it.value }
-            expect("333.5") { it.toJSON() }
-            expect(JSONDecimal("333.5")) { it }
+            it.value shouldBe "333.5".toBigDecimal()
+            it.toJSON() shouldBe "333.5"
+            it shouldBe JSONDecimal("333.5")
         }
     }
 
     @Test fun `should implement isXxxx functions`() {
         JSONDecimal(123456789123456789).let {
-            assertTrue(it.isIntegral())
-            assertTrue(it.isLong())
-            assertFalse(it.isInt())
-            assertFalse(it.isShort())
-            assertFalse(it.isByte())
-            assertTrue(it.isULong())
-            assertFalse(it.isUInt())
-            assertFalse(it.isUShort())
-            assertFalse(it.isUByte())
+            it.isIntegral() shouldBe true
+            it.isLong() shouldBe true
+            it.isInt() shouldBe false
+            it.isShort() shouldBe false
+            it.isByte() shouldBe false
+            it.isULong() shouldBe true
+            it.isUInt() shouldBe false
+            it.isUShort() shouldBe false
+            it.isUByte() shouldBe false
         }
         JSONDecimal(-123456789123456789).let {
-            assertTrue(it.isIntegral())
-            assertTrue(it.isLong())
-            assertFalse(it.isInt())
-            assertFalse(it.isShort())
-            assertFalse(it.isByte())
-            assertFalse(it.isULong())
-            assertFalse(it.isUInt())
-            assertFalse(it.isUShort())
-            assertFalse(it.isUByte())
+            it.isIntegral() shouldBe true
+            it.isLong() shouldBe true
+            it.isInt() shouldBe false
+            it.isShort() shouldBe false
+            it.isByte() shouldBe false
+            it.isULong() shouldBe false
+            it.isUInt() shouldBe false
+            it.isUShort() shouldBe false
+            it.isUByte() shouldBe false
         }
         JSONDecimal(123456789).let {
-            assertTrue(it.isIntegral())
-            assertTrue(it.isLong())
-            assertTrue(it.isInt())
-            assertFalse(it.isShort())
-            assertFalse(it.isByte())
-            assertTrue(it.isULong())
-            assertTrue(it.isUInt())
-            assertFalse(it.isUShort())
-            assertFalse(it.isUByte())
+            it.isIntegral() shouldBe true
+            it.isLong() shouldBe true
+            it.isInt() shouldBe true
+            it.isShort() shouldBe false
+            it.isByte() shouldBe false
+            it.isULong() shouldBe true
+            it.isUInt() shouldBe true
+            it.isUShort() shouldBe false
+            it.isUByte() shouldBe false
         }
         JSONDecimal(-123456789).let {
-            assertTrue(it.isIntegral())
-            assertTrue(it.isLong())
-            assertTrue(it.isInt())
-            assertFalse(it.isShort())
-            assertFalse(it.isByte())
-            assertFalse(it.isULong())
-            assertFalse(it.isUInt())
-            assertFalse(it.isUShort())
-            assertFalse(it.isUByte())
+            it.isIntegral() shouldBe true
+            it.isLong() shouldBe true
+            it.isInt() shouldBe true
+            it.isShort() shouldBe false
+            it.isByte() shouldBe false
+            it.isULong() shouldBe false
+            it.isUInt() shouldBe false
+            it.isUShort() shouldBe false
+            it.isUByte() shouldBe false
         }
         JSONDecimal(12345).let {
-            assertTrue(it.isIntegral())
-            assertTrue(it.isLong())
-            assertTrue(it.isInt())
-            assertTrue(it.isShort())
-            assertFalse(it.isByte())
-            assertTrue(it.isULong())
-            assertTrue(it.isUInt())
-            assertTrue(it.isUShort())
-            assertFalse(it.isUByte())
+            it.isIntegral() shouldBe true
+            it.isLong() shouldBe true
+            it.isInt() shouldBe true
+            it.isShort() shouldBe true
+            it.isByte() shouldBe false
+            it.isULong() shouldBe true
+            it.isUInt() shouldBe true
+            it.isUShort() shouldBe true
+            it.isUByte() shouldBe false
         }
         JSONDecimal(-12345).let {
-            assertTrue(it.isIntegral())
-            assertTrue(it.isLong())
-            assertTrue(it.isInt())
-            assertTrue(it.isShort())
-            assertFalse(it.isByte())
-            assertFalse(it.isULong())
-            assertFalse(it.isUInt())
-            assertFalse(it.isUShort())
-            assertFalse(it.isUByte())
+            it.isIntegral() shouldBe true
+            it.isLong() shouldBe true
+            it.isInt() shouldBe true
+            it.isShort() shouldBe true
+            it.isByte() shouldBe false
+            it.isULong() shouldBe false
+            it.isUInt() shouldBe false
+            it.isUShort() shouldBe false
+            it.isUByte() shouldBe false
         }
         JSONDecimal(123).let {
-            assertTrue(it.isIntegral())
-            assertTrue(it.isLong())
-            assertTrue(it.isInt())
-            assertTrue(it.isShort())
-            assertTrue(it.isByte())
-            assertTrue(it.isULong())
-            assertTrue(it.isUInt())
-            assertTrue(it.isUShort())
-            assertTrue(it.isUByte())
+            it.isIntegral() shouldBe true
+            it.isLong() shouldBe true
+            it.isInt() shouldBe true
+            it.isShort() shouldBe true
+            it.isByte() shouldBe true
+            it.isULong() shouldBe true
+            it.isUInt() shouldBe true
+            it.isUShort() shouldBe true
+            it.isUByte() shouldBe true
         }
         JSONDecimal(-123).let {
-            assertTrue(it.isIntegral())
-            assertTrue(it.isLong())
-            assertTrue(it.isInt())
-            assertTrue(it.isShort())
-            assertTrue(it.isByte())
-            assertFalse(it.isULong())
-            assertFalse(it.isUInt())
-            assertFalse(it.isUShort())
-            assertFalse(it.isUByte())
+            it.isIntegral() shouldBe true
+            it.isLong() shouldBe true
+            it.isInt() shouldBe true
+            it.isShort() shouldBe true
+            it.isByte() shouldBe true
+            it.isULong() shouldBe false
+            it.isUInt() shouldBe false
+            it.isUShort() shouldBe false
+            it.isUByte() shouldBe false
         }
         JSONDecimal("0.123").let {
-            assertFalse(it.isIntegral())
-            assertFalse(it.isLong())
-            assertFalse(it.isInt())
-            assertFalse(it.isShort())
-            assertFalse(it.isByte())
-            assertFalse(it.isULong())
-            assertFalse(it.isUInt())
-            assertFalse(it.isUShort())
-            assertFalse(it.isUByte())
+            it.isIntegral() shouldBe false
+            it.isLong() shouldBe false
+            it.isInt() shouldBe false
+            it.isShort() shouldBe false
+            it.isByte() shouldBe false
+            it.isULong() shouldBe false
+            it.isUInt() shouldBe false
+            it.isUShort() shouldBe false
+            it.isUByte() shouldBe false
         }
         JSONDecimal("-0.123").let {
-            assertFalse(it.isIntegral())
-            assertFalse(it.isLong())
-            assertFalse(it.isInt())
-            assertFalse(it.isShort())
-            assertFalse(it.isByte())
-            assertFalse(it.isULong())
-            assertFalse(it.isUInt())
-            assertFalse(it.isUShort())
-            assertFalse(it.isUByte())
+            it.isIntegral() shouldBe false
+            it.isLong() shouldBe false
+            it.isInt() shouldBe false
+            it.isShort() shouldBe false
+            it.isByte() shouldBe false
+            it.isULong() shouldBe false
+            it.isUInt() shouldBe false
+            it.isUShort() shouldBe false
+            it.isUByte() shouldBe false
         }
         JSONDecimal("888.00").let {
-            assertTrue(it.isIntegral())
-            assertTrue(it.isLong())
-            assertTrue(it.isInt())
-            assertTrue(it.isShort())
-            assertFalse(it.isByte())
-            assertTrue(it.isULong())
-            assertTrue(it.isUInt())
-            assertTrue(it.isUShort())
-            assertFalse(it.isUByte())
+            it.isIntegral() shouldBe true
+            it.isLong() shouldBe true
+            it.isInt() shouldBe true
+            it.isShort() shouldBe true
+            it.isByte() shouldBe false
+            it.isULong() shouldBe true
+            it.isUInt() shouldBe true
+            it.isUShort() shouldBe true
+            it.isUByte() shouldBe false
         }
         JSONDecimal("-888.00").let {
-            assertTrue(it.isIntegral())
-            assertTrue(it.isLong())
-            assertTrue(it.isInt())
-            assertTrue(it.isShort())
-            assertFalse(it.isByte())
-            assertFalse(it.isULong())
-            assertFalse(it.isUInt())
-            assertFalse(it.isUShort())
-            assertFalse(it.isUByte())
+            it.isIntegral() shouldBe true
+            it.isLong() shouldBe true
+            it.isInt() shouldBe true
+            it.isShort() shouldBe true
+            it.isByte() shouldBe false
+            it.isULong() shouldBe false
+            it.isUInt() shouldBe false
+            it.isUShort() shouldBe false
+            it.isUByte() shouldBe false
         }
     }
 
     @Test fun `should implement isZero etc functions`() {
         JSONDecimal.ZERO.let {
-            assertTrue(it.isZero())
-            assertFalse(it.isPositive())
-            assertFalse(it.isNegative())
-            assertTrue(it.isNotNegative())
-            assertTrue(it.isNotPositive())
+            it.isZero() shouldBe true
+            it.isPositive() shouldBe false
+            it.isNegative() shouldBe false
+            it.isNotNegative() shouldBe true
+            it.isNotPositive() shouldBe true
         }
         JSONDecimal(-123).let {
-            assertFalse(it.isZero())
-            assertFalse(it.isPositive())
-            assertTrue(it.isNegative())
-            assertFalse(it.isNotNegative())
-            assertTrue(it.isNotPositive())
+            it.isZero() shouldBe false
+            it.isPositive() shouldBe false
+            it.isNegative() shouldBe true
+            it.isNotNegative() shouldBe false
+            it.isNotPositive() shouldBe true
         }
         JSONDecimal(123).let {
-            assertFalse(it.isZero())
-            assertTrue(it.isPositive())
-            assertFalse(it.isNegative())
-            assertTrue(it.isNotNegative())
-            assertFalse(it.isNotPositive())
+            it.isZero() shouldBe false
+            it.isPositive() shouldBe true
+            it.isNegative() shouldBe false
+            it.isNotNegative() shouldBe true
+            it.isNotPositive() shouldBe false
         }
     }
 
     @Test fun `should implement toDecimal`() {
-        expect(BigDecimal.ZERO) { JSONDecimal.ZERO.toDecimal() }
-        expect(12345.toBigDecimal()) { JSONDecimal(12345).toDecimal() }
-        expect((-9).toBigDecimal()) { JSONDecimal(-9).toDecimal() }
-        expect("567.89".toBigDecimal()) { JSONDecimal("567.89").toDecimal() }
+        JSONDecimal.ZERO.toDecimal() shouldBe BigDecimal.ZERO
+        JSONDecimal(12345).toDecimal() shouldBe 12345.toBigDecimal()
+        JSONDecimal(-9).toDecimal() shouldBe (-9).toBigDecimal()
+        JSONDecimal("567.89").toDecimal() shouldBe "567.89".toBigDecimal()
     }
 
     @Test fun `should implement toULong`() {
-        expect(0U) { JSONDecimal.ZERO.toULong() }
-        expect(123456789123456789U) { JSONDecimal(123456789123456789).toULong() }
+        JSONDecimal.ZERO.toULong() shouldBe 0U
+        JSONDecimal(123456789123456789).toULong() shouldBe 123456789123456789U
     }
 
     @Test fun `should implement toUInt`() {
-        expect(0U) { JSONDecimal.ZERO.toUInt() }
-        expect(12345U) { JSONDecimal(12345).toUInt() }
-        expect(2147483648U) { JSONDecimal(2147483648).toUInt() }
+        JSONDecimal.ZERO.toUInt() shouldBe 0U
+        JSONDecimal(12345).toUInt() shouldBe 12345U
+        JSONDecimal(2147483648).toUInt() shouldBe 2147483648U
     }
 
     @Test fun `should implement toUShort`() {
-        expect(0U) { JSONDecimal.ZERO.toUShort() }
-        expect(32768U) { JSONDecimal(32768).toUShort() }
+        JSONDecimal.ZERO.toUShort() shouldBe 0U
+        JSONDecimal(32768).toUShort() shouldBe 32768U
     }
 
     @Test fun `should implement toUByte`() {
-        expect(0U) { JSONDecimal.ZERO.toUByte() }
-        expect(129U) { JSONDecimal(129).toUByte() }
+        JSONDecimal.ZERO.toUByte() shouldBe 0U
+        JSONDecimal(129).toUByte() shouldBe 129U
     }
 
     @Test fun `should format JSONDecimal using output`() {
         val capture = OutputCapture(16)
         JSONDecimal.ZERO.outputTo(capture)
-        expect("0") { capture.toString() }
+        capture.toString() shouldBe "0"
         capture.reset()
         JSONDecimal(12345).outputTo(capture)
-        expect("12345") { capture.toString() }
+        capture.toString() shouldBe "12345"
         capture.reset()
         JSONDecimal("-527.5").outputTo(capture)
-        expect("-527.5") { capture.toString() }
+        capture.toString() shouldBe "-527.5"
     }
 
     @Test fun `should format JSONDecimal using coOutput`() = runBlocking {
         val capture = CoOutputCapture(16)
         JSONDecimal.ZERO.coOutputTo(capture)
-        expect("0") { capture.toString() }
+        capture.toString() shouldBe "0"
         capture.reset()
         JSONDecimal(12345).coOutputTo(capture)
-        expect("12345") { capture.toString() }
+        capture.toString() shouldBe "12345"
         capture.reset()
         JSONDecimal("-527.5").coOutputTo(capture)
-        expect("-527.5") { capture.toString() }
+        capture.toString() shouldBe "-527.5"
     }
 
 }

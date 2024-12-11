@@ -2,7 +2,7 @@
  * @(#) ParseOptionsTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2023 Peter Wall
+ * Copyright (c) 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,34 +26,35 @@
 package io.kjson.parser
 
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
-import kotlin.test.expect
+
+import io.kstuff.test.shouldBe
+import io.kstuff.test.shouldThrow
 
 class ParseOptionsTest {
 
     @Test fun `should set maximum nesting depth`() {
         val parseOptions = ParseOptions(maximumNestingDepth = 27)
-        expect(27) { parseOptions.maximumNestingDepth }
+        parseOptions.maximumNestingDepth shouldBe 27
     }
 
     @Test fun `should reject maximum nesting depth too low`() {
-        assertFailsWith<IllegalArgumentException> { ParseOptions(maximumNestingDepth = 0) }.let {
-            expect("Maximum nesting depth must be 1..1200, was 0") { it.message }
+        shouldThrow<IllegalArgumentException>("Maximum nesting depth must be 1..1200, was 0") {
+            ParseOptions(maximumNestingDepth = 0)
         }
-        assertFailsWith<IllegalArgumentException> { ParseOptions(maximumNestingDepth = -1) }.let {
-            expect("Maximum nesting depth must be 1..1200, was -1") { it.message }
+        shouldThrow<IllegalArgumentException>("Maximum nesting depth must be 1..1200, was -1") {
+            ParseOptions(maximumNestingDepth = -1)
         }
-        assertFailsWith<IllegalArgumentException> { ParseOptions(maximumNestingDepth = -10) }.let {
-            expect("Maximum nesting depth must be 1..1200, was -10") { it.message }
+        shouldThrow<IllegalArgumentException>("Maximum nesting depth must be 1..1200, was -10") {
+            ParseOptions(maximumNestingDepth = -10)
         }
     }
 
     @Test fun `should reject maximum nesting depth too high`() {
-        assertFailsWith<IllegalArgumentException> { ParseOptions(maximumNestingDepth = 1500) }.let {
-            expect("Maximum nesting depth must be 1..1200, was 1500") { it.message }
+        shouldThrow<IllegalArgumentException>("Maximum nesting depth must be 1..1200, was 1500") {
+            ParseOptions(maximumNestingDepth = 1500)
         }
-        assertFailsWith<IllegalArgumentException> { ParseOptions(maximumNestingDepth = 9999) }.let {
-            expect("Maximum nesting depth must be 1..1200, was 9999") { it.message }
+        shouldThrow<IllegalArgumentException>("Maximum nesting depth must be 1..1200, was 9999") {
+            ParseOptions(maximumNestingDepth = 9999)
         }
     }
 

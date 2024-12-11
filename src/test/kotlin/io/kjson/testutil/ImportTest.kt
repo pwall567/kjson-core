@@ -26,7 +26,8 @@
 package io.kjson.testutil
 
 import kotlin.test.Test
-import kotlin.test.expect
+
+import io.kstuff.test.shouldBe
 
 import io.kjson.JSONInt
 import io.kjson.JSONValue
@@ -36,7 +37,7 @@ class ImportTest {
     @Test fun `should import JSONValue once for both class and function`() {
         val intValue1: JSONValue = JSONInt(123)
         val intValue2 = JSONValue(123)
-        expect(intValue1) { intValue2 }
+        intValue2 shouldBe intValue1
     }
 
 }

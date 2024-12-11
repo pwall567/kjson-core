@@ -9,12 +9,12 @@ JSON Kotlin core library
 
 ## Background
 
-The input of JSON data generally consists of two main phases &ndash; parsing the input text and converting the
-human-readable form into an easily navigated internal representation, and then mapping that internal form into
-pre-existing data types.
+The input of JSON data generally consists of two main phases:
+1. parsing the input text and converting the human-readable form into an easily navigated internal structure, and
+2. mapping that internal form into pre-existing data types.
 Output may similarly use an intermediate form, but it is on the input side that the converted form is most useful
 &ndash; it allows, for example, all of the properties of an object to be analysed before the determination of the
-appropriate representation for the object.
+appropriate internal representation for the object.
 
 There are also many types of JSON processing functions that do not require mapping to a target class &ndash; they simply
 require an internal representation of the JSON data.
@@ -25,12 +25,14 @@ The `kjson-core` library provides the basic functionality required to represent 
 - output functions to create valid JSON representations from the internal form
 
 The library is an evolution of the [`jsonutil`](https://github.com/pwall567/jsonutil) Java library; it makes better use
-of Kotlin-specific functionality like controlled nullability.
+of Kotlin-specific functionality like controlled nullability, and it adds functions to simplify the navigation of the
+internal structure.
 
 ## User Guide
 
-All JSON values are represented by Kotlin objects of type `JSONValue?` &ndash; that is, they are all instances of
-classes that implement the `JSONValue` interface, or in the case of the JSON &ldquo;`null`&rdquo; value they are `null`.
+All JSON values are represented by Kotlin objects of type &ldquo;`JSONValue?`&rdquo; &ndash; that is, they are all
+instances of classes that implement the `JSONValue` interface, or in the case of the JSON &ldquo;`null`&rdquo; value
+they are `null`.
 
 ### `JSONValue`
 
@@ -38,8 +40,8 @@ The `JSONValue` interface specifies four functions:
 - `appendTo()` &ndash; this appends the JSON text form of the object to a specified `Appendable`, _e.g._ a `Writer`
   (when outputting JSON, it is more efficient to append to a single `Appendable`, as opposed to creating strings for
   each element)
-- `toJSON()` &ndash; this outputs the value in syntactically-correct JSON (a default implementation makes use of the
-  above `appendTo()` function)
+- `toJSON()` &ndash; this creates a `String` representation of the value in syntactically-correct JSON (a default
+  implementation makes use of the above `appendTo()` function)
 - `outputTo()` &ndash; this outputs the JSON text form of the object using an `IntConsumer` (similar to `appendTo()`,
   but allowing a greater choice of output mechanism)
 - `coOutputTo()` (suspend function) &ndash; non-blocking version of `outputTo()`, suitable for use in a coroutine-based
@@ -83,7 +85,7 @@ The value is never `null`.
 
 In addition to implementing [`JSONPrimitive`](#jsonprimitive), the number value classes [`JSONInt`](#jsonint),
 [`JSONLong`](#jsonlong) and [`JSONDecimal`](#jsondecimal) all derive from the sealed class `JSONNumber`, which itself
-derives from the system class `Number`.
+derives from the system class `java.lang.Number`.
 This means that these classes may be used without conversion anywhere a `Number` is called for.
 
 The `Number` class provides a set of `toInt()`, `toLong()` _etc._ functions, to which `JSONNumber` adds the following:
@@ -337,12 +339,13 @@ The `JSONTypeException` provides a way of reporting such errors in a consistent 
 the human-readable node name, the expected type, the actual value and an optional key (as described
 [above](#jsonexception)).
 
-The `JSONTypeException` constructor takes the following parameters:
+The `JSONTypeException` constructor takes the following parameters, all of which are accessible as values of the
+exception object:
 
 | Name       | Type         | Default  | Description                                         |
 |------------|--------------|----------|-----------------------------------------------------|
 | `nodeName` | `String`     | `"Node"` | The name of the field, _e.g._ `"Surname"`           |
-| `target`   | `String`     |          | The expected type, _e.g._ `"string"`                |
+| `expected` | `String`     |          | The expected type, _e.g._ `"string"`                |
 | `value`    | `JSONValue?` |          | The actual value found                              |
 | `key`      | `Any?`       | `null`   | The &ldquo;key&rdquo; (the location in a structure) |
 
@@ -456,7 +459,7 @@ It takes the following parameters:
 
 | Name       | Type     | Default  | Description                                         |
 |------------|----------|----------|-----------------------------------------------------|
-| `target`   | `String` |          | The expected type, _e.g._ `"string"`                | 
+| `expected` | `String` |          | The expected type, _e.g._ `"string"`                | 
 | `key`      | `Any?`   | `null`   | The &ldquo;key&rdquo; (the location in a structure) |
 | `nodeName` | `String` | `"Node"` | The name of the field, _e.g._ `"Surname"`           |
 
@@ -482,6 +485,7 @@ The conversion may be combined with the error reporting using the `asXxxxOrError
 | `JSONValue?.asUShortOrError()`  | `UShort`     |
 | `JSONValue?.asUByteOrError()`   | `UByte`      |
 | `JSONValue?.asDecimalOrError()` | `BigDecimal` |
+| `JSONValue?.asNumberOrError()`  | `Number`     |
 | `JSONValue?.asBooleanOrError()` | `Boolean`    |
 | `JSONValue?.asArrayOrError()`   | `JSONArray`  |
 | `JSONValue?.asObjectOrError()`  | `JSONObject` |
@@ -491,8 +495,8 @@ The `asArrayOrError()` and `asObjectOrError()` functions return `JSONArray` and 
 of course be used as the underlying implementation types (`List` and `Map`).
 
 The functions all take the same parameters as the `typeError()` function (which they all call if the type is not
-correct), but in the case of these functions, the `target` parameter also has a default value, a string representing the
-target type.
+correct), but in the case of these functions, the `expected` parameter also has a default value, a string representing
+the expected type.
 
 Using these functions, the above example (for the use of `typeError`) may be written:
 ```kotlin
@@ -525,6 +529,8 @@ To simplify casting a `JSONValue` to the expected type, the `JSON` object provid
 | `JSONValue?.asUByteOrNull`   | `UByte?`      | return `null`                       |
 | `JSONValue?.asDecimal`       | `BigDecimal`  | throw `JSONTypeException`           |
 | `JSONValue?.asDecimalOrNull` | `BigDecimal?` | return `null`                       |
+| `JSONValue?.asNumber`        | `Number`      | throw `JSONTypeException`           |
+| `JSONValue?.asNumberOrNull`  | `Number?`     | return `null`                       |
 | `JSONValue?.asBoolean`       | `Boolean`     | throw `JSONTypeException`           |
 | `JSONValue?.asBooleanOrNull` | `Boolean?`    | return `null`                       |
 | `JSONValue?.asArray`         | `JSONArray`   | throw `JSONTypeException`           |
@@ -533,7 +539,7 @@ To simplify casting a `JSONValue` to the expected type, the `JSON` object provid
 | `JSONValue?.asObjectOrNull`  | `JSONObject?` | return `null`                       |
 
 The [`JSONTypeException`](#jsontypeexception) will use the default value `"Node"` for the `nodeName`, and the class name
-of the target type as the default for `target`.
+of the expected type as the default for `expected`.
 The default value for `key` is `null`.
 
 As with the `asXxxxOrError()` functions, the extension values representing a simple value return the actual value type,
@@ -556,6 +562,7 @@ A further way of casting a `JSONValue` to the expected type is provided by the `
 | `JSONValue?.asUShortOr()`  | `UShort`     |
 | `JSONValue?.asUByteOr()`   | `UByte`      |
 | `JSONValue?.asDecimalOr()` | `BigDecimal` |
+| `JSONValue?.asNumberOr()`  | `Number`     |
 | `JSONValue?.asBooleanOr()` | `Boolean`    |
 | `JSONValue?.asArrayOr()`   | `JSONArray`  |
 | `JSONValue?.asObjectOr()`  | `JSONObject` |
@@ -566,7 +573,7 @@ This may be used to provide a default value, silently ignoring the type error, b
 throw an exception.
 For example:
 ```kotlin
-    node.asStringOr { typeError(target = "string", key = "/person/surname", nodeName = "Surname") }
+    node.asStringOr { typeError(expected = "string", key = "/person/surname", nodeName = "Surname") }
 ```
 
 The advantage of using these functions as compared to `asXxxxOrError()`, is that these functions are inline, and the
@@ -694,25 +701,25 @@ The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram
 
 ## Dependency Specification
 
-The latest version of the library is 9.1, and it may be obtained from the Maven Central repository.
+The latest version of the library is 9.2, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>9.1</version>
+      <version>9.2</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:9.1"
+    implementation "io.kjson:kjson-core:9.2"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:9.1")
+    implementation("io.kjson:kjson-core:9.2")
 ```
 
 Peter Wall
 
-2024-08-17
+2024-12-11

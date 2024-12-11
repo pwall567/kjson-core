@@ -26,30 +26,31 @@
 package io.kjson
 
 import kotlin.test.Test
-import kotlin.test.assertIs
-import kotlin.test.assertSame
-import kotlin.test.expect
 
 import java.math.BigDecimal
+
+import io.kstuff.test.shouldBe
+import io.kstuff.test.shouldBeSameInstance
+import io.kstuff.test.shouldBeType
 
 class JSONNumberTest {
 
     @Test fun `should create JSONNumber of correct type using JSONNumber function`() {
         JSONNumber(123).let {
-            assertIs<JSONInt>(it)
-            expect(123) { it.value }
+            it.shouldBeType<JSONInt>()
+            it.value shouldBe 123
         }
         JSONNumber(1234567890123456789).let {
-            assertIs<JSONLong>(it)
-            expect(1234567890123456789) { it.value }
+            it.shouldBeType<JSONLong>()
+            it.value shouldBe 1234567890123456789
         }
         JSONNumber(BigDecimal.ONE).let {
-            assertIs<JSONDecimal>(it)
-            expect(BigDecimal.ONE) { it.value }
+            it.shouldBeType<JSONDecimal>()
+            it.value shouldBe BigDecimal.ONE
         }
-        assertSame(JSONInt.ZERO, JSONNumber(0))
-        assertSame(JSONLong.ZERO, JSONNumber(0L))
-        assertSame(JSONDecimal.ZERO, JSONNumber(BigDecimal.ZERO))
+        JSONNumber(0) shouldBeSameInstance JSONInt.ZERO
+        JSONNumber(0L) shouldBeSameInstance JSONLong.ZERO
+        JSONNumber(BigDecimal.ZERO) shouldBeSameInstance JSONDecimal.ZERO
     }
 
 }

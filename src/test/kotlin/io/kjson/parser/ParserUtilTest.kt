@@ -2,7 +2,7 @@
  * @(#) ParserUtilTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2023 Peter Wall
+ * Copyright (c) 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,8 +26,8 @@
 package io.kjson.parser
 
 import kotlin.test.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+
+import io.kstuff.test.shouldBe
 
 import io.kjson.parser.ParserConstants.identifierContinuationSet
 import io.kjson.parser.ParserConstants.identifierStartSet
@@ -35,33 +35,33 @@ import io.kjson.parser.ParserConstants.identifierStartSet
 class ParserUtilTest {
 
     @Test fun `should recognise leading character of identifier`() {
-        assertTrue('A' in identifierStartSet)
-        assertTrue('B' in identifierStartSet)
-        assertTrue('Z' in identifierStartSet)
-        assertTrue('a' in identifierStartSet)
-        assertTrue('z' in identifierStartSet)
-        assertTrue('_' in identifierStartSet)
-        assertFalse('0' in identifierStartSet)
-        assertFalse('9' in identifierStartSet)
-        assertFalse('.' in identifierStartSet)
-        assertFalse('"' in identifierStartSet)
-        assertFalse('{' in identifierStartSet)
-        assertFalse('[' in identifierStartSet)
+        ('A' in identifierStartSet) shouldBe true
+        ('B' in identifierStartSet) shouldBe true
+        ('Z' in identifierStartSet) shouldBe true
+        ('a' in identifierStartSet) shouldBe true
+        ('z' in identifierStartSet) shouldBe true
+        ('_' in identifierStartSet) shouldBe true
+        ('0' in identifierStartSet) shouldBe false
+        ('9' in identifierStartSet) shouldBe false
+        ('.' in identifierStartSet) shouldBe false
+        ('"' in identifierStartSet) shouldBe false
+        ('{' in identifierStartSet) shouldBe false
+        ('[' in identifierStartSet) shouldBe false
     }
 
     @Test fun `should recognise continuation character of identifier`() {
-        assertTrue('A' in identifierContinuationSet)
-        assertTrue('B' in identifierContinuationSet)
-        assertTrue('Z' in identifierContinuationSet)
-        assertTrue('a' in identifierContinuationSet)
-        assertTrue('z' in identifierContinuationSet)
-        assertTrue('_' in identifierContinuationSet)
-        assertTrue('0' in identifierContinuationSet)
-        assertTrue('9' in identifierContinuationSet)
-        assertFalse('.' in identifierContinuationSet)
-        assertFalse('"' in identifierContinuationSet)
-        assertFalse('{' in identifierContinuationSet)
-        assertFalse('[' in identifierContinuationSet)
+        ('A' in identifierContinuationSet) shouldBe true
+        ('B' in identifierContinuationSet) shouldBe true
+        ('Z' in identifierContinuationSet) shouldBe true
+        ('a' in identifierContinuationSet) shouldBe true
+        ('z' in identifierContinuationSet) shouldBe true
+        ('_' in identifierContinuationSet) shouldBe true
+        ('0' in identifierContinuationSet) shouldBe true
+        ('9' in identifierContinuationSet) shouldBe true
+        ('.' in identifierContinuationSet) shouldBe false
+        ('"' in identifierContinuationSet) shouldBe false
+        ('{' in identifierContinuationSet) shouldBe false
+        ('[' in identifierContinuationSet) shouldBe false
     }
 
 }
