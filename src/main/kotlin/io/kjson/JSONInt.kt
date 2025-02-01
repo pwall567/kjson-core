@@ -28,9 +28,9 @@ package io.kjson
 import java.math.BigDecimal
 import java.util.function.IntConsumer
 
-import net.pwall.util.CoIntOutput.outputInt
-import net.pwall.util.CoOutput
-import net.pwall.util.IntOutput
+import io.jstuff.util.IntOutput
+import io.kstuff.util.CoIntOutput.outputInt
+import io.kstuff.util.CoOutput
 
 /**
  * A JSON integer value (up to 32 bits).

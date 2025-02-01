@@ -2,7 +2,7 @@
  * @(#) ParserErrors.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2023 Peter Wall
+ * Copyright (c) 2023, 2025 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -56,5 +56,6 @@ object ParserErrors {
     const val ILLEGAL_ARRAY = "Array must start with open bracket"
     const val MAX_DEPTH_EXCEEDED = "Maximum nesting depth exceeded"
     const val MAX_DEPTH_ERROR = "Maximum nesting depth must be 1..1200"
+    const val UNCLOSED_COMMENT = "Unclosed comment"
 
 }

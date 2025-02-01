@@ -2,6 +2,15 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [10.0] - 2025-02-01
+### Added
+- `BuilderException`: to isolate exceptions originating from builders
+### Changed
+- `Parser`, `JSONObject`: changed exception handling to report location using `try` - `catch`
+- `Parser`, `ParseOptions`: added optional comment handling
+- `AbstractBuilder`: changed to use `BuilderException`
+- `pom.xml`: updated multiple dependency versions
+
 ## [9.2] - 2024-12-11
 ### Changed
 - `JSON`: added `asNumber`, `asNumberOrNull`, `asNumberOr()` and `asNumberOrError()` extension values / functions

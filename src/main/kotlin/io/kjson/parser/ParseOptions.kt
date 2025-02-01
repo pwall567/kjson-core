@@ -2,7 +2,7 @@
  * @(#) ParseOptions.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2022, 2023 Peter Wall
+ * Copyright (c) 2022, 2023, 2025 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,11 @@
 
 package io.kjson.parser
 
+import io.jstuff.json.JSONFunctions
+import io.jstuff.text.TextMatcher
 import io.kjson.JSONObject
 import io.kjson.parser.ParserErrors.MAX_DEPTH_ERROR
+import io.kjson.parser.ParserErrors.UNCLOSED_COMMENT
 
 /**
  * Options to control parsing.
@@ -39,10 +42,38 @@ data class ParseOptions(
     val objectTrailingComma: Boolean = false,
     val arrayTrailingComma: Boolean = false,
     val maximumNestingDepth: Int = 1000,
+    val slashSlashComment: Boolean = false,
+    val slashStarComment: Boolean = false,
 ) {
 
     init {
         require(maximumNestingDepth in 1..1200) { "$MAX_DEPTH_ERROR, was $maximumNestingDepth" }
+    }
+
+    val skipSpaces: (TextMatcher) -> Unit = if (slashSlashComment || slashStarComment)
+        ::skipSpacesWithComments
+    else
+        ::skipSpacesSimple
+
+    private fun skipSpacesSimple(tm: TextMatcher) {
+        tm.skip(JSONFunctions::isSpaceCharacter)
+    }
+
+    private fun skipSpacesWithComments(tm: TextMatcher) {
+        while (!tm.isAtEnd) {
+            tm.skip(JSONFunctions::isSpaceCharacter)
+            when {
+                slashSlashComment && tm.match("//") -> {
+                    tm.skip { it != '\n' && it != '\r' }
+                }
+                slashStarComment && tm.match("/*") -> {
+                    tm.skipTo("*/")
+                    if (!tm.match("*/"))
+                        throw ParseException(UNCLOSED_COMMENT)
+                }
+                else -> break
+            }
+        }
     }
 
     companion object {

@@ -27,9 +27,9 @@ package io.kjson
 
 import java.util.function.IntConsumer
 
-import net.pwall.json.JSONCoFunctions.outputString
-import net.pwall.json.JSONFunctions
-import net.pwall.util.CoOutput
+import io.jstuff.json.JSONFunctions
+import io.kstuff.json.JSONCoFunctions.outputString
+import io.kstuff.util.CoOutput
 
 /**
  * A JSON string value.

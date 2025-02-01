@@ -1,8 +1,8 @@
 /*
- * @(#) ParseException.kt
+ * @(#) BuilderException.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2024, 2025 Peter Wall
+ * Copyright (c) 2025 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,23 +23,22 @@
  * SOFTWARE.
  */
 
-package io.kjson.parser
+package io.kjson.util
 
 import io.kjson.JSONException
 import io.kjson.parser.ParserConstants.rootPointer
 
 /**
- * An exception during the parsing process.
+ * An exception during object or array buildings.
  *
  * @author  Peter Wall
  */
-class ParseException(
+class BuilderException(
     text: String,
     override val key: String = rootPointer,
 ) : JSONException(text, key) {
 
-    val pointer: String get() = key
-
-    fun nested(prefix: String): ParseException = ParseException(text, "$prefix$pointer")
+    override val message: String
+        get() = if (key.isEmpty()) text else "$text - $key"
 
 }

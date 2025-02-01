@@ -25,7 +25,7 @@
 
 package io.kjson.testutil
 
-import net.pwall.util.CoOutput
+import io.kstuff.util.CoOutput
 
 /**
  * Class to capture non-blocking output for testing purposes.

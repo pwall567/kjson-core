@@ -2,7 +2,7 @@
  * @(#) ParserArrayTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2024 Peter Wall
+ * Copyright (c) 2021, 2024, 2025 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,7 @@ import io.kstuff.test.shouldBeType
 import io.kstuff.test.shouldThrow
 
 import io.kjson.JSONArray
+import io.kjson.JSONException
 import io.kjson.JSONInt
 import io.kjson.JSONString
 import io.kjson.parser.ParserConstants.rootPointer
@@ -117,9 +118,9 @@ class ParserArrayTest {
     @Test fun `should throw exception on nesting depth exceeded`() {
         val options = ParseOptions(maximumNestingDepth = 50)
         val excessive = "[".repeat(options.maximumNestingDepth + 1)
-        shouldThrow<ParseException>(MAX_DEPTH_EXCEEDED) { Parser.parse(excessive, options) }.let {
+        shouldThrow<JSONException>(MAX_DEPTH_EXCEEDED) { Parser.parse(excessive, options) }.let {
             it.text shouldBe MAX_DEPTH_EXCEEDED
-            it.pointer shouldBe rootPointer
+            it.key shouldBe null
         }
     }
 

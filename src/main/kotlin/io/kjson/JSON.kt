@@ -28,14 +28,15 @@ package io.kjson
 import java.math.BigDecimal
 import java.util.function.IntConsumer
 
+import io.jstuff.json.JSONFunctions.appendString
+import io.jstuff.json.JSONFunctions.displayString
+import io.kstuff.util.CoOutput
+import io.kstuff.util.output
+
 import io.kjson.JSONObject.DuplicateKeyOption
 import io.kjson.parser.Parser
 import io.kjson.parser.ParseOptions
 import io.kjson.util.getIntProperty
-import net.pwall.json.JSONFunctions.appendString
-import net.pwall.json.JSONFunctions.displayString
-import net.pwall.util.CoOutput
-import net.pwall.util.output
 
 /**
  * JSON core library - a set of functions to assist with the creation and output of JSON data.

@@ -2,7 +2,7 @@
  * @(#) JSONObject.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023, 2024 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2024, 2025 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,17 +28,19 @@ package io.kjson
 import java.math.BigDecimal
 import java.util.function.IntConsumer
 
+import io.jstuff.json.JSONFunctions
+import io.jstuff.util.ImmutableList
+import io.jstuff.util.ImmutableMap
+import io.jstuff.util.ImmutableMapEntry
+import io.kstuff.json.JSONCoFunctions.outputString
+import io.kstuff.util.CoOutput
+import io.kstuff.util.output
+
 import io.kjson.JSON.appendTo
 import io.kjson.JSON.coOutputTo
 import io.kjson.JSON.outputTo
 import io.kjson.util.AbstractBuilder
-import net.pwall.json.JSONCoFunctions.outputString
-import net.pwall.json.JSONFunctions
-import net.pwall.util.CoOutput
-import net.pwall.util.ImmutableList
-import net.pwall.util.ImmutableMap
-import net.pwall.util.ImmutableMapEntry
-import net.pwall.util.output
+import io.kjson.util.BuilderException
 
 /**
  * A JSON object.
@@ -312,9 +314,8 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
         fun build(
             size: Int = 8,
             duplicateKeyOption: DuplicateKeyOption = DuplicateKeyOption.ERROR,
-            errorKey: String? = null,
             block: Builder.() -> Unit
-        ): JSONObject = Builder(size, duplicateKeyOption, errorKey, block).build()
+        ): JSONObject = Builder(size, duplicateKeyOption, block).build()
 
     }
 
@@ -340,7 +341,6 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
     class Builder(
         size: Int = 8,
         private val duplicateKeyOption: DuplicateKeyOption = DuplicateKeyOption.ERROR,
-        private val errorKey: String? = null,
         block: Builder.() -> Unit = {}
     ) : AbstractBuilder<Property>(arrayOfNulls(size)) {
 
@@ -378,7 +378,7 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
         }
 
         private fun throwDuplicateKeyError(property: Property): Nothing {
-            throw JSONException("Duplicate key - ${property.key}", errorKey)
+            throw BuilderException("Duplicate key", property.key)
         }
 
         /**
@@ -430,7 +430,7 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
             checkArray().let {
                 val index = ImmutableMap.findKey(it, size, name)
                 if (index < 0)
-                    throw JSONException("Key not found - $name")
+                    throw BuilderException("Key not found", name)
                 internalRemove(index)
             }
         }

@@ -27,13 +27,13 @@ package io.kjson.parser
 
 import kotlin.test.Test
 
+import io.jstuff.json.JSONFunctions
 import io.kstuff.test.shouldBe
 import io.kstuff.test.shouldBeType
 import io.kstuff.test.shouldThrow
 
 import io.kjson.JSONString
 import io.kjson.parser.ParserConstants.rootPointer
-import net.pwall.json.JSONFunctions
 
 class ParserStringTest {
 

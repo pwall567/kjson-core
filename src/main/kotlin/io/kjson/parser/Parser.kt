@@ -2,7 +2,7 @@
  * @(#) Parser.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023, 2024 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2024, 2025 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,9 +25,13 @@
 
 package io.kjson.parser
 
+import io.jstuff.json.JSONFunctions
+import io.jstuff.text.TextMatcher
+
 import io.kjson.JSONArray
 import io.kjson.JSONBoolean
 import io.kjson.JSONDecimal
+import io.kjson.JSONException
 import io.kjson.JSONInt
 import io.kjson.JSONLong
 import io.kjson.JSONNumber
@@ -38,7 +42,6 @@ import io.kjson.parser.ParserConstants.BOM
 import io.kjson.parser.ParserConstants.MAX_INTEGER_DIGITS_LENGTH
 import io.kjson.parser.ParserConstants.identifierContinuationSet
 import io.kjson.parser.ParserConstants.identifierStartSet
-import io.kjson.parser.ParserConstants.rootPointer
 import io.kjson.parser.ParserErrors.EXCESS_CHARS
 import io.kjson.parser.ParserErrors.ILLEGAL_KEY
 import io.kjson.parser.ParserErrors.ILLEGAL_NUMBER
@@ -47,8 +50,7 @@ import io.kjson.parser.ParserErrors.MAX_DEPTH_EXCEEDED
 import io.kjson.parser.ParserErrors.MISSING_CLOSING_BRACE
 import io.kjson.parser.ParserErrors.MISSING_CLOSING_BRACKET
 import io.kjson.parser.ParserErrors.MISSING_COLON
-import net.pwall.json.JSONFunctions
-import net.pwall.text.TextMatcher
+import io.kjson.util.BuilderException
 
 /**
  * A JSON parser.
@@ -63,8 +65,8 @@ object Parser {
     fun parse(json: String, options: ParseOptions = ParseOptions.DEFAULT): JSONValue? {
         val tm = TextMatcher(json)
         tm.match(BOM) // skip BOM if present (not required, but may help interoperability)
-        val result = parse(tm, options, rootPointer, 0)
-        tm.skip(JSONFunctions::isSpaceCharacter)
+        val result = parse(tm, options, 0)
+        options.skipSpaces(tm)
         if (!tm.isAtEnd)
             throw ParseException(EXCESS_CHARS)
         return result
@@ -77,28 +79,35 @@ object Parser {
         val tm = TextMatcher(jsonLines)
         tm.match(BOM) // skip BOM if present (not required, but may help interoperability)
         return JSONArray.build {
-            tm.skip(JSONFunctions::isSpaceCharacter)
+            options.skipSpaces(tm)
             var counter = 0
             while (!tm.isAtEnd) {
-                add(parse(tm, options, "/${counter++}", 0))
-                tm.skip(JSONFunctions::isSpaceCharacter)
+                try {
+                    val value = parse(tm, options, 0)
+                    add(value)
+                    counter++
+                    options.skipSpaces(tm)
+                }
+                catch (pe: ParseException) {
+                    throw pe.nested("/$counter")
+                }
             }
         }
     }
 
-    private fun parse(tm: TextMatcher, options: ParseOptions, pointer: String, depth: Int): JSONValue? {
+    private fun parse(tm: TextMatcher, options: ParseOptions, depth: Int): JSONValue? {
         if (depth > options.maximumNestingDepth)
-            throw ParseException(MAX_DEPTH_EXCEEDED)
-        tm.skip(JSONFunctions::isSpaceCharacter)
+            throw JSONException(MAX_DEPTH_EXCEEDED)
+        options.skipSpaces(tm)
 
         if (tm.match('{'))
-            return parseObject(tm, options, pointer, depth)
+            return parseObject(tm, options, depth)
 
         if (tm.match('['))
-            return parseArray(tm, options, pointer, depth)
+            return parseArray(tm, options, depth)
 
         if (tm.match('"'))
-            return JSONString(parseString(tm, pointer))
+            return JSONString(parseString(tm))
 
         if (tm.match("true"))
             return JSONBoolean.TRUE
@@ -109,71 +118,95 @@ object Parser {
         if (tm.match("null"))
             return null
 
-        return parseNumber(tm, pointer) ?: throw ParseException(ILLEGAL_SYNTAX, pointer)
+        return parseNumber(tm) ?: throw ParseException(ILLEGAL_SYNTAX)
     }
 
-    private fun parseObject(tm: TextMatcher, options: ParseOptions, pointer: String, depth: Int) =
-            JSONObject.build(duplicateKeyOption = options.objectKeyDuplicate, errorKey = pointer) {
-        tm.skip(JSONFunctions::isSpaceCharacter)
+    private fun parseObject(
+        tm: TextMatcher,
+        options: ParseOptions,
+        depth: Int,
+    ) = JSONObject.build(duplicateKeyOption = options.objectKeyDuplicate) {
+        options.skipSpaces(tm)
         if (!tm.match('}')) {
             while (true) {
                 val key = when {
-                    tm.match('"') -> parseString(tm, pointer)
+                    tm.match('"') -> parseString(tm)
                     options.objectKeyUnquoted && tm.matchIdentifier() -> tm.result
-                    else -> throw ParseException(ILLEGAL_KEY, pointer)
+                    else -> throw ParseException(ILLEGAL_KEY)
                 }
-                tm.skip(JSONFunctions::isSpaceCharacter)
-                if (!tm.match(':'))
-                    throw ParseException(MISSING_COLON, pointer)
-                add(key, parse(tm, options, "$pointer/$key", depth + 1))
-                tm.skip(JSONFunctions::isSpaceCharacter)
-                if (!tm.match(','))
-                    break
-                tm.skip(JSONFunctions::isSpaceCharacter)
+                try {
+                    options.skipSpaces(tm)
+                    if (!tm.match(':'))
+                        throw ParseException(MISSING_COLON)
+                    val value = parse(tm, options, depth + 1)
+                    try {
+                        add(key, value)
+                    }
+                    catch (e: BuilderException) {
+                        throw ParseException(e.text)
+                    }
+                    options.skipSpaces(tm)
+                    if (!tm.match(','))
+                        break
+                    options.skipSpaces(tm)
+                }
+                catch (pe: ParseException) {
+                    throw pe.nested("/$key")
+                }
                 if (options.objectTrailingComma && tm.match('}'))
                     return@build
             }
             if (!tm.match('}'))
-                throw ParseException(MISSING_CLOSING_BRACE, pointer)
+                throw ParseException(MISSING_CLOSING_BRACE)
         }
     }
 
-    private fun parseArray(tm: TextMatcher, options: ParseOptions, pointer: String, depth: Int) = JSONArray.build {
-        tm.skip(JSONFunctions::isSpaceCharacter)
+    private fun parseArray(
+        tm: TextMatcher,
+        options: ParseOptions,
+        depth: Int,
+    ) = JSONArray.build {
+        options.skipSpaces(tm)
         if (!tm.match(']')) {
             while (true) {
-                add(parse(tm, options, "$pointer/$size", depth + 1))
-                tm.skip(JSONFunctions::isSpaceCharacter)
-                if (!tm.match(','))
-                    break
-                tm.skip(JSONFunctions::isSpaceCharacter)
+                try {
+                    val value = parse(tm, options, depth + 1)
+                    add(value)
+                    options.skipSpaces(tm)
+                    if (!tm.match(','))
+                        break
+                    options.skipSpaces(tm)
+                }
+                catch (pe: ParseException) {
+                    throw pe.nested("/$size")
+                }
                 if (options.arrayTrailingComma && tm.match(']'))
                     return@build
             }
             if (!tm.match(']'))
-                throw ParseException(MISSING_CLOSING_BRACKET, pointer)
+                throw ParseException(MISSING_CLOSING_BRACKET)
         }
     }
 
-    private fun parseString(tm: TextMatcher, pointer: String): String = try {
+    private fun parseString(tm: TextMatcher): String = try {
         JSONFunctions.parseString(tm)
     } catch (iae: IllegalArgumentException) {
-        throw ParseException(iae.message ?: "Error parsing JSON string", pointer)
+        throw ParseException(iae.message ?: "Error parsing JSON string")
     }
 
-    private fun parseNumber(tm: TextMatcher, pointer: String): JSONNumber? {
+    private fun parseNumber(tm: TextMatcher): JSONNumber? {
         val numberStart = tm.index
         val negative = tm.match('-')
         if (tm.matchDec()) {
             val integerLength = tm.resultLength
             when {
-                integerLength > 1 && tm.resultChar == '0' -> throw ParseException(ILLEGAL_NUMBER, pointer)
+                integerLength > 1 && tm.resultChar == '0' -> throw ParseException(ILLEGAL_NUMBER)
                 tm.match('.') -> {
                     if (!tm.matchDec())
-                        throw ParseException(ILLEGAL_NUMBER, pointer)
-                    skipExponent(tm, pointer)
+                        throw ParseException(ILLEGAL_NUMBER)
+                    skipExponent(tm)
                 }
-                !skipExponent(tm, pointer) -> {
+                !skipExponent(tm) -> {
                     // no decimal point or "e"/"E" - try JSONInt or JSONLong
                     if (integerLength < MAX_INTEGER_DIGITS_LENGTH)
                         return JSONInt.of(tm.getResultInt(negative))
@@ -194,10 +227,10 @@ object Parser {
         return null
     }
 
-    private fun skipExponent(tm: TextMatcher, pointer: String): Boolean = if (tm.match { it == 'e' || it == 'E' }) {
+    private fun skipExponent(tm: TextMatcher): Boolean = if (tm.match { it == 'e' || it == 'E' }) {
         tm.match { it == '-' || it == '+' } // ignore the result, just step the index
         if (!tm.matchDec())
-            throw ParseException(ILLEGAL_NUMBER, pointer)
+            throw ParseException(ILLEGAL_NUMBER)
         true
     } else
         false

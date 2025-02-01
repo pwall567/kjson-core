@@ -34,6 +34,9 @@ import io.kstuff.test.shouldBeSameInstance
 import io.kstuff.test.shouldBeType
 import io.kstuff.test.shouldThrow
 
+import io.jstuff.json.format.Formatter
+import io.jstuff.json.format.Formatter.unixLineSeparator
+
 import io.kjson.JSON.asArray
 import io.kjson.JSON.asArrayOr
 import io.kjson.JSON.asArrayOrError
@@ -96,8 +99,6 @@ import io.kjson.JSON.parseJSONArray
 import io.kjson.JSON.parseJSONObject
 import io.kjson.JSON.parseJSONValue
 import io.kjson.JSON.typeError
-import net.pwall.json.format.Formatter
-import net.pwall.json.format.Formatter.unixLineSeparator
 
 class JSONTest {
 

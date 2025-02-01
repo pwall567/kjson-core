@@ -2,7 +2,7 @@
  * @(#) AbstractBuilder.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023, 2024 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2024, 2025 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@
 
 package io.kjson.util
 
-import io.kjson.JSONException
 import io.kjson.JSONStructure
 
 /**
@@ -39,7 +38,7 @@ abstract class AbstractBuilder<T>(private var array: Array<T?>?) {
 
     val size: Int get() = count
 
-    protected fun checkArray(): Array<T?> = array ?: throw JSONException("Builder is closed")
+    protected fun checkArray(): Array<T?> = array ?: throw BuilderException("Builder is closed")
 
     protected fun internalAdd(value: T?) {
         var validArray = checkArray()

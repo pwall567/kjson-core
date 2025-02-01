@@ -28,9 +28,10 @@ package io.kjson
 import java.math.BigDecimal
 import java.util.function.IntConsumer
 
+import io.kstuff.util.CoOutput
+import io.kstuff.util.output
+
 import io.kjson.JSON.accept
-import net.pwall.util.CoOutput
-import net.pwall.util.output
 
 /**
  * Interface to represent a JSON value.

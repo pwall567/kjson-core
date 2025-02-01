@@ -632,12 +632,15 @@ purpose:
 The functions all add a single newline after each item in the `JSONArray` for human readability reasons, even though (as
 noted above) this is not strictly necessary.
 
-## Lenient Parsing
+## `ParseOptions`
 
 The parser will by default apply strict validation to the JSON input, and in some cases this may be unhelpful.
-There is occasionally a need to parse JSON that is not correctly formatted according to the specification, and to
-accommodate this requirement, the parser may be supplied with a `ParseOptions` object containing option settings for
-parser leniency.
+There is occasionally a need to parse JSON that is not correctly formatted according to the specification, particularly
+for human-edited JSON, as opposed to JSON output by an automated process.
+Also, for human-edited JSON, the ability to add comments is sometimes seen as desirable.
+
+To accommodate these requirements, and to allow the specification of a maximum nesting depth, the parser may be supplied
+with a `ParseOptions` object.
 For example:
 ```kotlin
     val options = ParseOptions(
@@ -645,12 +648,16 @@ For example:
         objectKeyUnquoted = false,
         objectTrailingComma = false,
         arrayTrailingComma = false,
+        maximumNestingDepth = 1000,
+        slashSlashComment = false,
+        slashStarComment = false,
     )
     val jsonValue = Parser.parse(jsonString, options)
 ```
 
-Note that in order to use this functionality, the `Parser` must be called directly;
-the helper functions in the `JSON` object do not include this capability.
+The `parseOptions` parameter is available on most functions invoking the `Parser`.
+All of the properties of the object have default values, so only the properties that differ from their defaults need be
+specified.
 
 ### `objectKeyDuplicate`
 
@@ -690,6 +697,29 @@ To allow trailing commas in objects, the option `objectTrailingComma` can be set
 Similarly, when outputting the items of an array, it can be simpler to add a comma after each item.
 To allow trailing commas in arrays, the option `arrayTrailingComma` can be set to `true`.
 
+### `maximumNestingDepth`
+
+Faulty JSON output software &ndash; or malicious actors &ndash; may sometimes cause a sequence of characters
+representing very deep nesting of objects or arrays to be presented to the parser.
+Very few uses of JSON will require more than about 100 levels of nesting, so a sequence of characters that cause more
+than a few hundred levels of nesting are almost always the result of an error or a malicious attack.
+
+The parser needs to allocate a small amount of memory for each level of nesting, and unlimited nesting would cause the
+process to fail, so the parser limits the number of levels allowed.
+The default maximum nesting level is 1000, which should be more than enough for most uses.
+The limit may be increased (or decreased) by the use of the `maximumNestingDepth` option.
+
+### `slashSlashComment`
+
+When this option is set to `true`, single-line comments (starting with `//` and ending with a newline or carriage
+return) may be included anywhere spaces would be allowed in the JSON data (that is, not in the middle of a string or 
+number, but anywhere between tokens).
+
+### `slashStarComment`
+
+When this option is set to `true`, delimited comments (starting with `/*` and ending with `*/`) may be included anywhere
+spaces would be allowed in the JSON data (see [above](#slashslashcomment)).
+
 ## Class Diagram
 
 This class diagram may help to explain the main classes and interfaces and the inheritance and interface implementation
@@ -701,25 +731,25 @@ The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram
 
 ## Dependency Specification
 
-The latest version of the library is 9.2, and it may be obtained from the Maven Central repository.
+The latest version of the library is 10.0, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>9.2</version>
+      <version>10.0</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:9.2"
+    implementation "io.kjson:kjson-core:10.0"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:9.2")
+    implementation("io.kjson:kjson-core:10.0")
 ```
 
 Peter Wall
 
-2024-12-11
+2025-02-01

@@ -2,7 +2,7 @@
  * @(#) JSONObjectTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023, 2024 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2024, 2025 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,7 @@ import io.kstuff.test.shouldThrow
 
 import io.kjson.testutil.CoOutputCapture
 import io.kjson.testutil.OutputCapture
+import io.kjson.util.BuilderException
 
 class JSONObjectTest {
 
@@ -66,18 +67,24 @@ class JSONObjectTest {
     }
 
     @Test fun `should report duplicate key error creating JSONObject using of`() {
-        shouldThrow<JSONException>("Duplicate key - abc") {
+        shouldThrow<BuilderException>("Duplicate key - abc") {
             JSONObject.of("abc" to JSONInt(12345), "abc" to JSONString("X"))
+        }.let {
+            it.text shouldBe "Duplicate key"
+            it.key shouldBe "abc"
         }
     }
 
     @Test fun `should report duplicate key error creating JSONObject using of with duplicateKeyOption ERROR`() {
-        shouldThrow<JSONException>("Duplicate key - abc") {
+        shouldThrow<BuilderException>("Duplicate key - abc") {
             JSONObject.of(
                 "abc" to JSONInt(12345),
                 "abc" to JSONString("X"),
                 duplicateKeyOption = JSONObject.DuplicateKeyOption.ERROR,
             )
+        }.let {
+            it.text shouldBe "Duplicate key"
+            it.key shouldBe "abc"
         }
     }
 
@@ -124,12 +131,15 @@ class JSONObjectTest {
     }
 
     @Test fun `should report duplicate key error creating JSONObject using of with CHECK_IDENTICAL`() {
-        shouldThrow<JSONException>("Duplicate key - abc") {
+        shouldThrow<BuilderException>("Duplicate key - abc") {
             JSONObject.of(
                 "abc" to JSONInt(12345),
                 "abc" to JSONString("X"),
                 duplicateKeyOption = JSONObject.DuplicateKeyOption.CHECK_IDENTICAL,
             )
+        }.let {
+            it.text shouldBe "Duplicate key"
+            it.key shouldBe "abc"
         }
     }
 
@@ -162,18 +172,24 @@ class JSONObjectTest {
     }
 
     @Test fun `should report duplicate key error creating JSONObject using JSONObject function`() {
-        shouldThrow<JSONException>("Duplicate key - abc") {
+        shouldThrow<BuilderException>("Duplicate key - abc") {
             JSONObject("abc" to JSONInt(12345), "abc" to JSONString("X"))
+        }.let {
+            it.text shouldBe "Duplicate key"
+            it.key shouldBe "abc"
         }
     }
 
     @Test fun `should report duplicate key error creating JSONObject using JSONObject function with option ERROR`() {
-        shouldThrow<JSONException>("Duplicate key - abc") {
+        shouldThrow<BuilderException>("Duplicate key - abc") {
             JSONObject(
                 "abc" to JSONInt(12345),
                 "abc" to JSONString("X"),
                 duplicateKeyOption = JSONObject.DuplicateKeyOption.ERROR,
             )
+        }.let {
+            it.text shouldBe "Duplicate key"
+            it.key shouldBe "abc"
         }
     }
 
@@ -220,12 +236,15 @@ class JSONObjectTest {
     }
 
     @Test fun `should report duplicate key error creating JSONObject using JSONObject function with CHECK_IDENTICAL`() {
-        shouldThrow<JSONException>("Duplicate key - abc") {
+        shouldThrow<BuilderException>("Duplicate key - abc") {
             JSONObject(
                 "abc" to JSONInt(12345),
                 "abc" to JSONString("X"),
                 duplicateKeyOption = JSONObject.DuplicateKeyOption.CHECK_IDENTICAL,
             )
+        }.let {
+            it.text shouldBe "Duplicate key"
+            it.key shouldBe "abc"
         }
     }
 
@@ -280,16 +299,22 @@ class JSONObjectTest {
     }
 
     @Test fun `should report duplicate key error creating JSONObject using from List`() {
-        shouldThrow<JSONException>("Duplicate key - abc") {
+        shouldThrow<BuilderException>("Duplicate key - abc") {
             val list = listOf<Pair<String, JSONValue?>>("abc" to JSONInt(12345), "abc" to JSONString("X"))
             JSONObject.from(list)
+        }.let {
+            it.text shouldBe "Duplicate key"
+            it.key shouldBe "abc"
         }
     }
 
     @Test fun `should report duplicate key error creating JSONObject using from List with duplicateKeyOption ERROR`() {
-        shouldThrow<JSONException>("Duplicate key - abc") {
+        shouldThrow<BuilderException>("Duplicate key - abc") {
             val list = listOf<Pair<String, JSONValue?>>("abc" to JSONInt(12345), "abc" to JSONString("X"))
             JSONObject.from(list, duplicateKeyOption = JSONObject.DuplicateKeyOption.ERROR)
+        }.let {
+            it.text shouldBe "Duplicate key"
+            it.key shouldBe "abc"
         }
     }
 
@@ -328,8 +353,11 @@ class JSONObjectTest {
 
     @Test fun `should report duplicate key error creating JSONObject using from List with CHECK_IDENTICAL`() {
         val list = listOf<Pair<String, JSONValue?>>("abc" to JSONInt(12345), "abc" to JSONString("X"))
-        shouldThrow<JSONException>("Duplicate key - abc") {
+        shouldThrow<BuilderException>("Duplicate key - abc") {
             JSONObject.from(list, duplicateKeyOption = JSONObject.DuplicateKeyOption.CHECK_IDENTICAL)
+        }.let {
+            it.text shouldBe "Duplicate key"
+            it.key shouldBe "abc"
         }
     }
 
@@ -370,8 +398,11 @@ class JSONObjectTest {
             "abc" refersTo JSONInt(12345),
             "abc" refersTo JSONString("X"),
         )
-        shouldThrow<JSONException>("Duplicate key - abc") {
+        shouldThrow<BuilderException>("Duplicate key - abc") {
             JSONObject.fromProperties(properties)
+        }.let {
+            it.text shouldBe "Duplicate key"
+            it.key shouldBe "abc"
         }
     }
 
@@ -380,8 +411,11 @@ class JSONObjectTest {
             "abc" refersTo JSONInt(12345),
             "abc" refersTo JSONString("X"),
         )
-        shouldThrow<JSONException>("Duplicate key - abc") {
+        shouldThrow<BuilderException>("Duplicate key - abc") {
             JSONObject.fromProperties(properties, duplicateKeyOption = JSONObject.DuplicateKeyOption.ERROR)
+        }.let {
+            it.text shouldBe "Duplicate key"
+            it.key shouldBe "abc"
         }
     }
 
@@ -441,11 +475,14 @@ class JSONObjectTest {
             "abc" refersTo JSONInt(12345),
             "abc" refersTo JSONString("X"),
         )
-        shouldThrow<JSONException>("Duplicate key - abc") {
+        shouldThrow<BuilderException>("Duplicate key - abc") {
             JSONObject.fromProperties(
                 properties,
                 duplicateKeyOption = JSONObject.DuplicateKeyOption.CHECK_IDENTICAL,
             )
+        }.let {
+            it.text shouldBe "Duplicate key"
+            it.key shouldBe "abc"
         }
     }
 
@@ -486,8 +523,11 @@ class JSONObjectTest {
             JSONObject.Property("abc", JSONInt(12345)),
             JSONObject.Property("abc", JSONString("X")),
         )
-        shouldThrow<JSONException>("Duplicate key - abc") {
+        shouldThrow<BuilderException>("Duplicate key - abc") {
             properties.toJSONObject()
+        }.let {
+            it.text shouldBe "Duplicate key"
+            it.key shouldBe "abc"
         }
     }
 
@@ -496,8 +536,11 @@ class JSONObjectTest {
             JSONObject.Property("abc", JSONInt(12345)),
             JSONObject.Property("abc", JSONString("X")),
         )
-        shouldThrow<JSONException>("Duplicate key - abc") {
+        shouldThrow<BuilderException>("Duplicate key - abc") {
             properties.toJSONObject(duplicateKeyOption = JSONObject.DuplicateKeyOption.ERROR)
+        }.let {
+            it.text shouldBe "Duplicate key"
+            it.key shouldBe "abc"
         }
     }
 
@@ -548,8 +591,11 @@ class JSONObjectTest {
             JSONObject.Property("abc", JSONInt(12345)),
             JSONObject.Property("abc", JSONString("X")),
         )
-        shouldThrow<JSONException>("Duplicate key - abc") {
+        shouldThrow<BuilderException>("Duplicate key - abc") {
             properties.toJSONObject(duplicateKeyOption = JSONObject.DuplicateKeyOption.CHECK_IDENTICAL)
+        }.let {
+            it.text shouldBe "Duplicate key"
+            it.key shouldBe "abc"
         }
     }
 
@@ -606,13 +652,21 @@ class JSONObjectTest {
         builder.add("first", JSONInt(123))
         builder.add("second", JSONString("dummy"))
         builder.containsKey("second") shouldBe true
-        shouldThrow<JSONException>("Duplicate key - second") {
+        shouldThrow<BuilderException>("Duplicate key - second") {
             builder.add("second", JSONString("another"))
+        }.let {
+            it.text shouldBe "Duplicate key"
+            it.key shouldBe "second"
         }
         builder.size shouldBe 2
         val json = builder.build()
         json.size shouldBe 2
-        shouldThrow<JSONException>("Builder is closed") { builder.build() }
+        shouldThrow<BuilderException>("Builder is closed") {
+            builder.build()
+        }.let {
+            it.text shouldBe "Builder is closed"
+            it.key shouldBe ""
+        }
     }
 
     @Test fun `should correctly report containsKey`() {
@@ -726,7 +780,12 @@ class JSONObjectTest {
         val builder = JSONObject.Builder()
         builder.add("first", JSONInt(123))
         builder.add("second", JSONString("dummy"))
-        shouldThrow<JSONException>("Key not found - third") { builder.remove("third") }
+        shouldThrow<BuilderException>("Key not found - third") {
+            builder.remove("third")
+        }.let {
+            it.text shouldBe "Key not found"
+            it.key shouldBe "third"
+        }
     }
 
     @Test fun `should iterate over object entries`() {
@@ -953,7 +1012,12 @@ class JSONObjectTest {
         val builder = JSONObject.Builder(duplicateKeyOption = JSONObject.DuplicateKeyOption.ERROR)
         builder.add("first", 111)
         builder.add("second", 222)
-        shouldThrow<JSONException>("Duplicate key - second") { builder.add("second", 333) }
+        shouldThrow<BuilderException>("Duplicate key - second") {
+            builder.add("second", 333)
+        }.let {
+            it.text shouldBe "Duplicate key"
+            it.key shouldBe "second"
+        }
     }
 
     @Test fun `should respect DuplicateKeyOption TAKE_FIRST`() {
@@ -996,7 +1060,12 @@ class JSONObjectTest {
         val builder = JSONObject.Builder(duplicateKeyOption = JSONObject.DuplicateKeyOption.CHECK_IDENTICAL)
         builder.add("first", 111)
         builder.add("second", 222)
-        shouldThrow<JSONException>("Duplicate key - second") { builder.add("second", 333) }
+        shouldThrow<BuilderException>("Duplicate key - second") {
+            builder.add("second", 333)
+        }.let {
+            it.text shouldBe "Duplicate key"
+            it.key shouldBe "second"
+        }
     }
 
     companion object {
