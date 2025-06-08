@@ -2,7 +2,7 @@
  * @(#) JSONBoolean.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2025 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,27 +30,55 @@ package io.kjson
  *
  * @author  Peter Wall
  */
-enum class JSONBoolean(override val value: Boolean) : JSONPrimitive<Boolean> {
+enum class JSONBoolean : JSONPrimitive<Boolean> {
 
-    TRUE(true),
-    FALSE(false);
+    TRUE {
 
-    /**
-     * Convert to a JSON string.
-     */
-    override fun toJSON(): String = if (value) "true" else "false"
+        /** The [Boolean] value. */
+        override val value: Boolean = true
 
-    /**
-     * Append as a JSON string to an [Appendable].
-     */
-    override fun appendTo(a: Appendable) {
-        a.append(toJSON())
-    }
+        /**
+         * Convert to a JSON string.
+         */
+        override fun toJSON(): String = "true"
 
-    /**
-     * Convert the value to [String].
-     */
-    override fun toString(): String = toJSON()
+        /**
+         * Append as a JSON string to an [Appendable].
+         */
+        override fun appendTo(a: Appendable) {
+            a.append("true")
+        }
+
+        /**
+         * Convert the value to [String].
+         */
+        override fun toString(): String = "true"
+
+    },
+
+    FALSE {
+
+        /** The [Boolean] value. */
+        override val value: Boolean = false
+
+        /**
+         * Convert to a JSON string.
+         */
+        override fun toJSON(): String = "false"
+
+        /**
+         * Append as a JSON string to an [Appendable].
+         */
+        override fun appendTo(a: Appendable) {
+            a.append("false")
+        }
+
+        /**
+         * Convert the value to [String].
+         */
+        override fun toString(): String = "false"
+
+    };
 
     /** The value as a [Boolean] (optimisation of the extension value in [JSON] when the type is known statically). */
     val asBoolean: Boolean get() = value
@@ -69,3 +97,8 @@ enum class JSONBoolean(override val value: Boolean) : JSONPrimitive<Boolean> {
     }
 
 }
+
+/**
+ * Pseudo-constructor to return a [JSONBoolean] for a [Boolean].
+ */
+fun JSONBoolean(value: Boolean): JSONBoolean = JSONBoolean.of(value)

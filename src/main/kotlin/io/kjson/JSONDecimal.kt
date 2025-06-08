@@ -2,7 +2,7 @@
  * @(#) JSONDecimal.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023, 2024 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2024, 2025 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -55,48 +55,47 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumber(), JSONPrimitive<
     /**
      * Return `true` if the value is integral (has no fractional part, or the fractional part is zero).
      */
-    override fun isIntegral(): Boolean =
-        value.scale() <= 0 || value.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0
+    override fun isIntegral(): Boolean = isIntegral(value)
 
     /**
      * Return `true` if the value is will fit in a `Long`.
      */
-    override fun isLong(): Boolean = isIntegral() && value in MIN_LONG..MAX_LONG
+    override fun isLong(): Boolean = isIntegral(value) && value in MIN_LONG..MAX_LONG
 
     /**
      * Return `true` if the value is will fit in an `Int`.
      */
-    override fun isInt(): Boolean = isIntegral() && value in MIN_INT..MAX_INT
+    override fun isInt(): Boolean = isIntegral(value) && value in MIN_INT..MAX_INT
 
     /**
      * Return `true` if the value is will fit in a `Short`.
      */
-    override fun isShort(): Boolean = isIntegral() && value in MIN_SHORT..MAX_SHORT
+    override fun isShort(): Boolean = isIntegral(value) && value in MIN_SHORT..MAX_SHORT
 
     /**
      * Return `true` if the value is will fit in a `Byte`.
      */
-    override fun isByte(): Boolean = isIntegral() && value in MIN_BYTE..MAX_BYTE
+    override fun isByte(): Boolean = isIntegral(value) && value in MIN_BYTE..MAX_BYTE
 
     /**
      * Return `true` if the value is will fit in a `ULong`.
      */
-    override fun isULong(): Boolean = isIntegral() && value in BigDecimal.ZERO..MAX_ULONG
+    override fun isULong(): Boolean = isIntegral(value) && value in BigDecimal.ZERO..MAX_ULONG
 
     /**
      * Return `true` if the value is will fit in a `UInt`.
      */
-    override fun isUInt(): Boolean = isIntegral() && value in BigDecimal.ZERO..MAX_UINT
+    override fun isUInt(): Boolean = isIntegral(value) && value in BigDecimal.ZERO..MAX_UINT
 
     /**
      * Return `true` if the value is will fit in a `UShort`.
      */
-    override fun isUShort(): Boolean = isIntegral() && value in BigDecimal.ZERO..MAX_USHORT
+    override fun isUShort(): Boolean = isIntegral(value) && value in BigDecimal.ZERO..MAX_USHORT
 
     /**
      * Return `true` if the value is will fit in a `UByte`.
      */
-    override fun isUByte(): Boolean = isIntegral() && value in BigDecimal.ZERO..MAX_UBYTE
+    override fun isUByte(): Boolean = isIntegral(value) && value in BigDecimal.ZERO..MAX_UBYTE
 
     /**
      * Return `true` if the value is zero.
@@ -253,6 +252,12 @@ class JSONDecimal(override val value: BigDecimal) : JSONNumber(), JSONPrimitive<
          * Create a [JSONDecimal] from a [String].
          */
         fun of(s: String): JSONDecimal = if (s == "0") ZERO else JSONDecimal(s)
+
+        /**
+         * Return `true` if the given value is integral (has no fractional part, or the fractional part is zero).
+         */
+        fun isIntegral(value: BigDecimal): Boolean =
+                value.scale() <= 0 || value.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0
 
     }
 

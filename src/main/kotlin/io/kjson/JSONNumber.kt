@@ -2,7 +2,7 @@
  * @(#) JSONNumber.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2025 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -160,9 +160,20 @@ fun JSONNumber(int: Int): JSONNumber = JSONInt.of(int)
 /**
  * Construct a [JSONNumber] from a [Long].
  */
-fun JSONNumber(long: Long): JSONNumber = JSONLong.of(long)
+fun JSONNumber(long: Long): JSONNumber = if (long in Int.MIN_VALUE.toLong()..Int.MAX_VALUE.toLong())
+    JSONInt.of(long.toInt())
+else
+    JSONLong.of(long)
 
 /**
  * Construct a [JSONNumber] from a [BigDecimal].
  */
-fun JSONNumber(decimal: BigDecimal): JSONNumber = JSONDecimal.of(decimal)
+fun JSONNumber(decimal: BigDecimal): JSONNumber {
+    if (JSONDecimal.isIntegral(decimal)) {
+        if (decimal in Int.MIN_VALUE.toBigDecimal()..Int.MAX_VALUE.toBigDecimal())
+            return JSONInt(decimal.toInt())
+        if (decimal in Long.MIN_VALUE.toBigDecimal()..Long.MAX_VALUE.toBigDecimal())
+            return JSONLong(decimal.toLong())
+    }
+    return JSONDecimal.of(decimal)
+}

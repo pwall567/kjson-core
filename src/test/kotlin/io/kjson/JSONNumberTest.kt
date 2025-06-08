@@ -2,7 +2,7 @@
  * @(#) JSONNumberTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2024 Peter Wall
+ * Copyright (c) 2024, 2025 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,22 +35,38 @@ import io.kstuff.test.shouldBeType
 
 class JSONNumberTest {
 
-    @Test fun `should create JSONNumber of correct type using JSONNumber function`() {
+    @Test fun `should create JSONInt using JSONNumber function`() {
         JSONNumber(123).let {
             it.shouldBeType<JSONInt>()
             it.value shouldBe 123
         }
+        JSONNumber(3L).let {
+            it.shouldBeType<JSONInt>()
+            it.value shouldBe 3
+        }
+        JSONNumber(BigDecimal.ONE).let {
+            it.shouldBeType<JSONInt>()
+            it.value shouldBe 1
+        }
+        JSONNumber(0) shouldBeSameInstance JSONInt.ZERO
+    }
+
+    @Test fun `should create JSONLong using JSONNumber function`() {
         JSONNumber(1234567890123456789).let {
             it.shouldBeType<JSONLong>()
             it.value shouldBe 1234567890123456789
         }
-        JSONNumber(BigDecimal.ONE).let {
-            it.shouldBeType<JSONDecimal>()
-            it.value shouldBe BigDecimal.ONE
+        JSONNumber(BigDecimal("1234567890123456789")).let {
+            it.shouldBeType<JSONLong>()
+            it.value shouldBe 1234567890123456789
         }
-        JSONNumber(0) shouldBeSameInstance JSONInt.ZERO
-        JSONNumber(0L) shouldBeSameInstance JSONLong.ZERO
-        JSONNumber(BigDecimal.ZERO) shouldBeSameInstance JSONDecimal.ZERO
+    }
+
+    @Test fun `should create JSONDecimal using JSONNumber function`() {
+        JSONNumber(BigDecimal("1.5")).let {
+            it.shouldBeType<JSONDecimal>()
+            it.value shouldBe BigDecimal("1.5")
+        }
     }
 
 }

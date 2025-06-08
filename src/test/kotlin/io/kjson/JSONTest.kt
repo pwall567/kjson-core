@@ -2,7 +2,7 @@
  * @(#) JSONTest.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023, 2024 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2024, 2025 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,7 @@ import io.kstuff.test.shouldThrow
 import io.jstuff.json.format.Formatter
 import io.jstuff.json.format.Formatter.unixLineSeparator
 
+import io.kjson.JSON.appendDisplayValue
 import io.kjson.JSON.asArray
 import io.kjson.JSON.asArrayOr
 import io.kjson.JSON.asArrayOrError
@@ -211,6 +212,13 @@ class JSONTest {
         JSONDecimal("0.123".toBigDecimal()).displayValue() shouldBe "0.123"
     }
 
+    @Test fun `should append displayValue for number types`() {
+        buildString { appendDisplayValue(JSONInt(0)) } shouldBe "0"
+        buildString { appendDisplayValue(JSONInt(12345)) } shouldBe "12345"
+        buildString { appendDisplayValue(JSONLong(1234567812345678)) } shouldBe "1234567812345678"
+        buildString { appendDisplayValue(JSONDecimal("0.123".toBigDecimal())) } shouldBe "0.123"
+    }
+
     @Test fun `should return displayValue for boolean`() {
         JSONBoolean.TRUE.displayValue() shouldBe "true"
         JSONBoolean.FALSE.displayValue() shouldBe "false"
@@ -232,14 +240,27 @@ class JSONTest {
 
     @Test fun `should return displayValue for array`() {
         JSONArray.EMPTY.displayValue() shouldBe "[]"
+        JSONArray.EMPTY.displayValue(maxArray = 3) shouldBe "[]"
         JSONArray.of(JSONString("Hello")).displayValue() shouldBe "[ ... ]"
+        JSONArray.of(JSONString("Hello")).displayValue(maxArray = 3) shouldBe "[ \"Hello\" ]"
         JSONArray.of(JSONInt(123), JSONInt(456)).displayValue() shouldBe "[ ... ]"
+        JSONArray.of(JSONInt(123), JSONInt(456), JSONInt(789)).let {
+            it.displayValue() shouldBe "[ ... ]"
+            it.displayValue(maxArray = 3) shouldBe "[ 123, 456, 789 ]"
+            it.displayValue(maxArray = 1) shouldBe "[ 123, ... ]"
+        }
     }
 
     @Test fun `should return displayValue for object`() {
         JSONObject.EMPTY.displayValue() shouldBe "{}"
+        JSONObject.EMPTY.displayValue(maxObject = 3) shouldBe "{}"
         JSONObject.of("abc" to JSONInt(123)).displayValue() shouldBe "{ ... }"
-        JSONObject.of("abc" to JSONInt(123), "def" to JSONInt(456)).displayValue() shouldBe "{ ... }"
+        JSONObject.of("abc" to JSONInt(123)).displayValue(maxObject = 3) shouldBe "{ \"abc\": 123 }"
+        JSONObject.of("abc" to JSONInt(123), "def" to JSONInt(456), "ghi" to JSONInt(789)).let {
+            it.displayValue() shouldBe "{ ... }"
+            it.displayValue(maxObject = 3) shouldBe "{ \"abc\": 123, \"def\": 456, \"ghi\": 789 }"
+            it.displayValue(maxObject = 1) shouldBe "{ \"abc\": 123, ... }"
+        }
     }
 
     @Test fun `should return elidedValue for number types`() {
