@@ -3,7 +3,7 @@
 [![Build Status](https://github.com/pwall567/kjson-core/actions/workflows/build.yml/badge.svg)](https://github.com/pwall567/kjson-core/actions/workflows/build.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Kotlin](https://img.shields.io/static/v1?label=Kotlin&message=v2.0.21&color=7f52ff&logo=kotlin&logoColor=7f52ff)](https://github.com/JetBrains/kotlin/releases/tag/v2.0.21)
-[![Maven Central](https://img.shields.io/maven-central/v/io.kjson/kjson-core?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.kjson%22%20AND%20a:%22kjson-core%22)
+[![Maven Central](https://img.shields.io/maven-central/v/io.kjson/kjson-core?label=Maven%20Central)](https://central.sonatype.com/artifact/io.kjson/kjson-core)
 
 JSON Kotlin core library
 
@@ -42,8 +42,8 @@ The `JSONValue` interface specifies four functions:
   each element)
 - `toJSON()` &ndash; this creates a `String` representation of the value in syntactically-correct JSON (a default
   implementation makes use of the above `appendTo()` function)
-- `outputTo()` &ndash; this outputs the JSON text form of the object using an `IntConsumer` (similar to `appendTo()`,
-  but allowing a greater choice of output mechanism)
+- `outputTo()` &ndash; this outputs the JSON text form of the value using an `IntConsumer` (similar to `appendTo()`, but
+  allowing a greater choice of output mechanism)
 - `coOutputTo()` (suspend function) &ndash; non-blocking version of `outputTo()`, suitable for use in a coroutine-based
   environment
 
@@ -85,7 +85,7 @@ The value is never `null`.
 
 In addition to implementing [`JSONPrimitive`](#jsonprimitive), the number value classes [`JSONInt`](#jsonint),
 [`JSONLong`](#jsonlong) and [`JSONDecimal`](#jsondecimal) all derive from the sealed class `JSONNumber`, which itself
-derives from the system class `java.lang.Number`.
+derives from the system class `kotlin.Number`.
 This means that these classes may be used without conversion anywhere a `Number` is called for.
 
 The `Number` class provides a set of `toInt()`, `toLong()` _etc._ functions, to which `JSONNumber` adds the following:
@@ -120,7 +120,7 @@ The `Number` class provides a set of `toInt()`, `toLong()` _etc._ functions, to 
 
 The `JSONNumber` classes also override `equals()` (and `hashCode()`) so that instances with the same value but different
 types will be regarded as equal.
-`JSONInt(27)`, `JSONLong(27)` and `JSONDecimal(27)` will all be considered equal, and will all return the same hash
+`JSONInt(27)`, `JSONLong(27)` and `JSONDecimal("27.0")` will all be considered equal, and will all return the same hash
 code.
 
 Following a common Kotlin pattern, there are creation functions named `JSONNumber` which create the appropriate
@@ -167,7 +167,7 @@ characters to escape sequences on output.
 The `String` value may be accessed by the property `value` (which will never be `null`).
 
 A `JSONString` may be constructed dynamically using the `build {}` function, which takes as a lambda parameter an
-extension function on `StringBuilder`; anything appended to the `StringBuilder` will become part of the `JSONStrong`.
+extension function on `StringBuilder`; anything appended to the `StringBuilder` will become part of the `JSONString`.
 For example:
 ```kotlin
     val jsonString = JSONString.build {
@@ -179,6 +179,8 @@ For example:
 `JSONString` also implements the `CharSequence` interface, which allows access to all the functionality of that
 interface without having to extract the `value` property.
 The `subSequence()` function will return a new `JSONString`.
+
+`JSONString` is implemented as a value class.
 
 ### `JSONBoolean`
 
@@ -414,20 +416,80 @@ The `JSON` object also provides a number of shortcut functions to create `JSONVa
 
 To simplify error reporting, the `JSON` object provides a `displayValue()` extension function on `JSONValue?` to create
 an abbreviated form of the value suitable for error messages.
-Arrays are displayed as `[ ... ]`, objects are displayed as `{ ... }`, and long strings are shortened with
-&ldquo;` ... `&rdquo; in the middle.
+
+| Parameter   | Type  | Default | Purpose                                         |
+|-------------|-------|--------:|-------------------------------------------------|
+| `maxString` | `Int` |      21 | limit the number of string characters displayed |
+| `maxArray`  | `Int` |       0 | limit the number of array items displayed       |
+| `maxObject` | `Int` |       0 | limit the number of object properties displayed |
+
+When displaying array items, the function will by default display `[ ... ]`, but when the `maxArray` parameter is
+supplied with a positive value, the specified number of array items will be displayed.
+If there are more values than specified in `maxArray`, the excess parameters are elided and `, ...` will be displayed.
 
 For example:
 ```kotlin
-     JSONString("the quick brown fox jumps over the lazy dog").displayValue()
+    val array = JSONArray.build {
+        add(123)
+        add(456)
+        add(789)
+    }
+    array.displayValue()                // displays [ ... ]
+    array.displayValue(maxArray = 1)    // displays [ 123, ... ]
+    array.displayValue(maxArray = 2)    // displays [ 123, 456, ... ]
+    array.displayValue(maxArray = 3)    // displays [ 123, 456, 456 ]
+```
+
+Similarly, when displaying objects, the function will by default display `{ ... }`, and the use of the `maxObject`
+parameter may be used to control the display of a specified number of properties.
+
+For example:
+```kotlin
+    val obj = JSONObject.build {
+        add("alpha", 123)
+        add("beta", 456)
+        add("gamma", 789)
+    }
+    obj.displayValue()                  // displays { ... }
+    obj.displayValue(maxObject = 1)     // displays { "alpha": 123, ... }
+    obj.displayValue(maxObject = 2)     // displays { "alpha": 123, "beta": 456, ... }
+    obj.displayValue(maxObject = 3)     // displays { "alpha": 123, "beta": 456, "gamma": 789 }
+```
+
+Long strings are shortened with &ldquo;` ... `&rdquo; in the middle.
+For example:
+```kotlin
+    JSONString("the quick brown fox jumps over the lazy dog").displayValue()
 ```
 will display:
 ```
 "the quic ... lazy dog"
 ```
 The maximum number of characters to display in a string defaults to 21, but may be specified as a parameter, _e.g._
-`displayValue(17)` (odd numbers are best, because they result in the same number of characters before and after the
-elision).
+`displayValue(maxString = 17)` (odd numbers are best, because they result in the same number of characters before and
+after the elision).
+
+When nested array items or object properties are included, they are displayed using the same function recursively, but
+with the `MaxString`, `maxArray` and `maxObject` values all halved.
+So, for example, when `maxObject` is specified as 4, nested objects are displayed with `maxObject=2`, and next-level
+nested objects are displayed with `maxOnject = 1`.
+
+Internally, the `displayString()` function uses an `appendDisplayString()` extension function on `Appendable` to avoid
+having to create a large number of small strings.
+This function is also available for public use, with the following parameters.
+
+| Parameter   | Type         | Default | Purpose                                         |
+|-------------|--------------|--------:|-------------------------------------------------|
+| `json`      | `JSONValue?` |         | the JSON value (or `null`)                      |
+| `maxString` | `Int`        |      21 | limit the number of string characters displayed |
+| `maxArray`  | `Int`        |       0 | limit the number of array items displayed       |
+| `maxObject` | `Int`        |       0 | limit the number of object properties displayed |
+
+For example:
+```kotlin
+    val sb = StringBuilder()
+    sb.appendDisplayString(obj, maxArray = 4, maxObject = 2)
+```
 
 #### Security-Aware Output
 
@@ -731,25 +793,25 @@ The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram
 
 ## Dependency Specification
 
-The latest version of the library is 10.0, and it may be obtained from the Maven Central repository.
+The latest version of the library is 10.1, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>10.0</version>
+      <version>10.1</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:10.0"
+    implementation "io.kjson:kjson-core:10.1"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:10.0")
+    implementation("io.kjson:kjson-core:10.1")
 ```
 
 Peter Wall
 
-2025-02-01
+2025-06-08

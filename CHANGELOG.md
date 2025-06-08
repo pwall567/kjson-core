@@ -2,6 +2,15 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [10.1] - 2025-06-08
+### Changed
+- `JSONObject`, `JSON`: use `HashMap` when number of properties exceeds threshold
+- `JSONString`: changed to value class
+- `JSONBoolean`: optimisations, added pseudo-constructor
+- `JSONNumber`: added pseudo-constructors
+- `JSON`: added `appendDisplayValue()` (expanded `displayValue()` from earlier version)
+- `pom.xml`: updated multiple dependency versions
+
 ## [10.0] - 2025-02-01
 ### Added
 - `BuilderException`: to isolate exceptions originating from builders
