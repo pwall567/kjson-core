@@ -2,7 +2,7 @@
  * @(#) JSONString.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023, 2024 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2024, 2025 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,10 +36,11 @@ import io.kstuff.util.CoOutput
  *
  * @author  Peter Wall
  */
-class JSONString(override val value: String) : JSONPrimitive<String>, CharSequence {
+@JvmInline
+value class JSONString(override val value: String) : JSONPrimitive<String>, CharSequence {
 
     /** The length of the string */
-    override val length: Int = value.length
+    override val length: Int get() = value.length
 
     /**
      * Get a single [Char] from the string.
@@ -97,16 +98,6 @@ class JSONString(override val value: String) : JSONPrimitive<String>, CharSequen
     override suspend fun coOutput(out: CoOutput) {
         out.outputString(value, false)
     }
-
-    /**
-     * Compare the value to another value.
-     */
-    override fun equals(other: Any?): Boolean = this === other || other is JSONString && value == other.value
-
-    /**
-     * Get the hash code for the [JSONString] value.
-     */
-    override fun hashCode(): Int = value.hashCode()
 
     /**
      * Get the string value.

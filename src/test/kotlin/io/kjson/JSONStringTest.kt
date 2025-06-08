@@ -30,7 +30,6 @@ import kotlin.test.Test
 import kotlinx.coroutines.runBlocking
 
 import io.kstuff.test.shouldBe
-import io.kstuff.test.shouldBeSameInstance
 
 import io.kjson.JSON.asString
 import io.kjson.testutil.CoOutputCapture
@@ -54,7 +53,7 @@ class JSONStringTest {
 
     @Test fun `should use EMPTY`() {
         val testString = JSONString.of("")
-        testString shouldBeSameInstance JSONString.EMPTY
+        testString shouldBe JSONString.EMPTY
         testString.toString() shouldBe JSONString.EMPTY_STRING
         testString.toJSON() shouldBe "\"\""
     }
@@ -99,7 +98,7 @@ class JSONStringTest {
 
     @Test fun `should return EMPTY when using build function with no content`() {
         val json = JSONString.build {}
-        json shouldBeSameInstance JSONString.EMPTY
+        json shouldBe JSONString.EMPTY
     }
 
 }
