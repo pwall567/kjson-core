@@ -26,6 +26,7 @@
 package io.kjson
 
 import java.math.BigDecimal
+import java.util.HashMap
 import java.util.function.IntConsumer
 
 import io.jstuff.json.JSONFunctions
@@ -48,7 +49,7 @@ import io.kjson.util.BuilderException
  * @author  Peter Wall
  */
 class JSONObject internal constructor(private val array: Array<out Property>, override val size: Int) :
-        JSONStructure<String>, Map<String, JSONValue?> by ImmutableMap<String, JSONValue?>(array, size),
+        JSONStructure<String>, Map<String, JSONValue?> by ObjectMap(array, size),
         List<JSONObject.Property> by ImmutableList(array, size) {
 
     /**
@@ -450,6 +451,27 @@ class JSONObject internal constructor(private val array: Array<out Property>, ov
         override fun build(): JSONObject = checkArray().let {
             (if (size == 0) EMPTY else JSONObject(it as Array<Property>, size)).also { invalidate() }
         }
+
+    }
+
+    /**
+     * [Map] implementation that uses [ImmutableMap] for 0 .. _n_ entries (where _n_ defaults to 5, but may be
+     * overridden by setting `JSON.objectMapThreshold` or through the use of the `io.kjson.objectMapThreshold` system
+     * property), or [HashMap] for more than _n_.  [ImmutableMap] uses a serial search through the list of entries to
+     * perform a lookup, which is OK for a small number of keys, but causes serious performance degradation when the
+     * number of keys is large.
+     */
+    internal class ObjectMap(array: Array<out Property>, size: Int) : ImmutableMap<String, JSONValue?>(array, size) {
+
+        private val hashMap = if (size <= JSON.objectMapThreshold) null else
+            HashMap<String, JSONValue?>(size, 1.0F).also { map ->
+                for (i in 0 until size)
+                    array[i].let { map[it.key] = it.value }
+            }
+
+        override fun get(key: String?): JSONValue? = if (hashMap != null) hashMap[key] else super.get(key)
+
+        override fun containsKey(key: String?): Boolean = hashMap?.containsKey(key) ?: super.containsKey(key)
 
     }
 

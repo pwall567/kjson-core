@@ -1068,6 +1068,27 @@ class JSONObjectTest {
         }
     }
 
+    @Test fun `should use hashMap when more than 5 entries`() {
+        val obj = JSONObject.build {
+            add("un", 1)
+            add("deux", 2)
+            add("trois", 3)
+            add("quatre", 4)
+            add("cinq", 5)
+            add("six", 6)
+            add("sept", 7)
+            add("huit", 8)
+            add("neuf", 9)
+            add("dix", 10)
+        }
+        obj["trois"] shouldBe JSONInt(3)
+        obj["sept"] shouldBe JSONInt(7)
+        obj.containsKey("huit") shouldBe true
+        obj.containsKey("onze") shouldBe false
+        obj.joinToString(" ") shouldBe "un=1 deux=2 trois=3 quatre=4 cinq=5 six=6 sept=7 huit=8 neuf=9 dix=10"
+        obj.keys.joinToString(" ") shouldBe "un deux trois quatre cinq six sept huit neuf dix"
+    }
+
     companion object {
 
         val simpleObject = JSONObject.of("abc" to JSONInt(12345), "def" to JSONString("X"))

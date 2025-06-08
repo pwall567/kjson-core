@@ -2,7 +2,7 @@
  * @(#) JSON.kt
  *
  * kjson-core  JSON Kotlin core functionality
- * Copyright (c) 2021, 2022, 2023, 2024 Peter Wall
+ * Copyright (c) 2021, 2022, 2023, 2024, 2025 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,8 +28,8 @@ package io.kjson
 import java.math.BigDecimal
 import java.util.function.IntConsumer
 
+import io.jstuff.json.JSONFunctions.appendDisplayString
 import io.jstuff.json.JSONFunctions.appendString
-import io.jstuff.json.JSONFunctions.displayString
 import io.kstuff.util.CoOutput
 import io.kstuff.util.output
 
@@ -45,13 +45,22 @@ import io.kjson.util.getIntProperty
  */
 object JSON {
 
-    /** The default output buffer size for `toJSON()` operations (`JSONArray` and `JSONObject`) */
-    var defaultOutputBuilderSize = getIntProperty("io.kjson.defaultOutputBuilderSize", 2048)
+    /** The default output buffer initial allocation size for `toJSON()` operations ([JSONArray] and [JSONObject]) */
+    var defaultOutputBuilderSize = getIntProperty("io.kjson.defaultOutputBuilderSize", defaultValue = 2048)
         set(value) {
             if (value in 16..(256 * 1024))
                 field = value
             else
                 throw JSONException("Stringify initial allocation size invalid - $value")
+        }
+
+    /** The threshold number of properties for switching to a [HashMap] for [JSONObject] lookups */
+    var objectMapThreshold = getIntProperty("io.kjson.objectMapThreshold", defaultValue = 5)
+        set(value) {
+            if (value > 0)
+                field = value
+            else
+                throw JSONException("Object map threshold invalid - $value")
         }
 
     /**
@@ -229,12 +238,62 @@ object JSON {
     /**
      * Convert the receiver [JSONValue] to a string suitable for use in human-readable messages.
      */
-    fun JSONValue?.displayValue(maxString: Int = 21): String = when (this) {
-        null -> "null"
-        is JSONString -> displayString(value, maxString)
-        is JSONArray -> if (isEmpty()) "[]" else "[ ... ]"
-        is JSONObject -> if (isEmpty()) "{}" else "{ ... }"
-        else -> toString()
+    fun JSONValue?.displayValue(maxString: Int = 21, maxArray: Int = 0, maxObject: Int = 0): String = buildString {
+        appendDisplayValue(this@displayValue, maxString, maxArray, maxObject)
+    }
+
+    /**
+     * Append a [JSONValue] to an [Appendable] as a string suitable for use in human-readable messages.
+     */
+    fun Appendable.appendDisplayValue(json: JSONValue?, maxString: Int = 21, maxArray: Int = 0, maxObject: Int = 0) {
+        when (json) {
+            is JSONString -> appendDisplayString(this, json.value, maxString)
+            is JSONArray -> {
+                append('[')
+                if (json.isNotEmpty()) {
+                    append(' ')
+                    var i = 0
+                    while (true) {
+                        if (i >= maxArray) {
+                            append("...")
+                            break
+                        }
+                        appendDisplayValue(json[i], (maxString + 1) / 2, maxArray / 2, maxObject / 2)
+                        if (++i >= json.size)
+                            break
+                        append(',')
+                        append(' ')
+                    }
+                    append(' ')
+                }
+                append(']')
+            }
+            is JSONObject -> {
+                append('{')
+                if (json.isNotEmpty()) {
+                    append(' ')
+                    var i = 0
+                    while (true) {
+                        if (i >= maxObject) {
+                            append("...")
+                            break
+                        }
+                        val property = json[i]
+                        appendString(this, property.name, false)
+                        append(':')
+                        append(' ')
+                        appendDisplayValue(property.value, (maxString + 1) / 2, maxArray / 2, maxObject / 2)
+                        if (++i >= json.size)
+                            break
+                        append(',')
+                        append(' ')
+                    }
+                    append(' ')
+                }
+                append('}')
+            }
+            else -> json.appendTo(this)
+        }
     }
 
     /**
