@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [10.2] - 2025-06-09
+### Changed
+- `JSONString`: reverted to a regular class (not a value class - see implementation note in source)
+
 ## [10.1] - 2025-06-08
 ### Changed
 - `JSONObject`, `JSON`: use `HashMap` when number of properties exceeds threshold

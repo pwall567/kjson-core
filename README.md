@@ -180,8 +180,6 @@ For example:
 interface without having to extract the `value` property.
 The `subSequence()` function will return a new `JSONString`.
 
-`JSONString` is implemented as a value class.
-
 ### `JSONBoolean`
 
 `JSONBoolean` is an `enum class` with two members &ndash; `TRUE` and `FALSE`.
@@ -341,7 +339,7 @@ The `JSONTypeException` provides a way of reporting such errors in a consistent 
 the human-readable node name, the expected type, the actual value and an optional key (as described
 [above](#jsonexception)).
 
-The `JSONTypeException` constructor takes the following parameters, all of which are accessible as values of the
+The `JSONTypeException` constructor takes the following parameters, all of which are accessible as properties of the
 exception object:
 
 | Name       | Type         | Default  | Description                                         |
@@ -793,25 +791,25 @@ The diagram was produced by [Dia](https://wiki.gnome.org/Apps/Dia/); the diagram
 
 ## Dependency Specification
 
-The latest version of the library is 10.1, and it may be obtained from the Maven Central repository.
+The latest version of the library is 10.2, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>10.1</version>
+      <version>10.2</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-core:10.1"
+    implementation "io.kjson:kjson-core:10.2"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-core:10.1")
+    implementation("io.kjson:kjson-core:10.2")
 ```
 
 Peter Wall
 
-2025-06-08
+2025-06-09

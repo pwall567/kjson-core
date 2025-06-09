@@ -36,8 +36,13 @@ import io.kstuff.util.CoOutput
  *
  * @author  Peter Wall
  */
-@JvmInline
-value class JSONString(override val value: String) : JSONPrimitive<String>, CharSequence {
+class JSONString(override val value: String) : JSONPrimitive<String>, CharSequence {
+
+    // Implementation Note: this class seemed a good candidate for a value class, but the attempt to convert it to a
+    // value class (with Kotlin 2.0.21) ran into problems; specifically, the function names in the companion object were
+    // generated with "mangled" names (see https://kotlinlang.org/docs/inline-classes.html#mangling), but later uses of
+    // the library generated code that called the un-mangled forms, resulting in java.lang.NoSuchMethodError exceptions.
+    // It may be worth trying again with a later version of Kotlin, but the performance gains may be negligible.
 
     /** The length of the string */
     override val length: Int get() = value.length
@@ -98,6 +103,16 @@ value class JSONString(override val value: String) : JSONPrimitive<String>, Char
     override suspend fun coOutput(out: CoOutput) {
         out.outputString(value, false)
     }
+
+    /**
+     * Compare the value to another value.
+     */
+    override fun equals(other: Any?): Boolean = this === other || other is JSONString && value == other.value
+
+    /**
+     * Get the hash code for the [JSONString] value.
+     */
+    override fun hashCode(): Int = value.hashCode()
 
     /**
      * Get the string value.
